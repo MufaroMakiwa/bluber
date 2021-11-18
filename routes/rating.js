@@ -12,36 +12,40 @@ const replyModel = require("../models/reply");
 router.post(
   '/',
   [
-    validator.isUserLoggedIn
-  ],
-  (req, res) => {
-
-  }
-);
-
-router.patch(
-  '/:markId?',
-  [
     validator.isUserLoggedIn,
-    validator.isMarkIdInParamsExists,
-    validator.isValidMarkModifier
+    validator.isMarkIdInBodyExists,
+    validator.isMarkRatingAllowed,
+    (req, res, next) => validator.checkMarkRatingStatus(req, res, next, false)
   ],
   (req, res) => {
     
   }
 );
 
-router.delete(
-  '/:markId?',
+router.patch(
+  '/',
   [
     validator.isUserLoggedIn,
-    validator.isMarkIdInParamsExists,
-    validator.isValidMarkModifier
+    validator.isMarkIdInBodyExists,
+    validator.isMarkRatingAllowed,
+    (req, res, next) => validator.checkMarkRatingStatus(req, res, next, true)
   ],
   (req, res) => {
 
   }
 );
 
+router.delete(
+  '/',
+  [
+    validator.isUserLoggedIn,
+    validator.isMarkIdInBodyExists,
+    validator.isMarkRatingAllowed,
+    (req, res, next) => validator.checkMarkRatingStatus(req, res, next, true)
+  ],
+  (req, res) => {
+
+  }
+);
 
 module.exports = router;

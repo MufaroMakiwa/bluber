@@ -20,23 +20,23 @@ router.post(
 );
 
 router.patch(
-  '/:markId?',
+  '/:commentId?',
   [
     validator.isUserLoggedIn,
-    validator.isMarkIdInParamsExists,
-    validator.isValidMarkModifier
+    validator.isCommentIdInParamsExists,
+    validator.isValidCommentModifier
   ],
   (req, res) => {
-    
+
   }
 );
 
 router.delete(
-  '/:markId?',
+  '/:commentId?',
   [
     validator.isUserLoggedIn,
-    validator.isMarkIdInParamsExists,
-    validator.isValidMarkModifier
+    validator.isCommentIdInParamsExists,
+    validator.isValidCommentModifier
   ],
   (req, res) => {
 

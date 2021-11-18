@@ -12,7 +12,8 @@ const replyModel = require("../models/reply");
 router.post(
   '/',
   [
-    validator.isUserLoggedIn
+    validator.isUserLoggedIn,
+    validator.isSavedNameAlreadyExists,
   ],
   (req, res) => {
 
@@ -20,28 +21,30 @@ router.post(
 );
 
 router.patch(
-  '/:markId?',
+  '/:savedId?',
   [
     validator.isUserLoggedIn,
-    validator.isMarkIdInParamsExists,
-    validator.isValidMarkModifier
+    validator.isSavedIdInParamsExists,
+    validator.isValidSavedModifier,
+    validator.isSavedNameAlreadyExists
   ],
   (req, res) => {
-    
+
   }
 );
 
 router.delete(
-  '/:markId?',
+  '/:savedId?',
   [
     validator.isUserLoggedIn,
-    validator.isMarkIdInParamsExists,
-    validator.isValidMarkModifier
+    validator.isSavedIdInParamsExists,
+    validator.isValidSavedModifier
   ],
   (req, res) => {
 
   }
 );
+
 
 
 module.exports = router;
