@@ -10,7 +10,7 @@ let data = [];
  * @prop {Date} dateModified - The date the comment was modified
  * @prop {string} markId - The id of the mark the comment is for
  * @prop {string} content - The content of the comment
- * @prop {string} markerId - The id of the user who made the mark
+ * @prop {string} targetUserId - The id of the user who made the mark
  */
 
 
@@ -21,13 +21,13 @@ class Comment {
    * @param {string} userId - The id of user making the comment
    * @param {string} markId - The id of the mark the comment is for
    * @param {string} content - The content of the comment
-   * @param {string} markerId - The id of the user who made the mark
+   * @param {string} targetUserId - The id of the user who made the mark
    * @returns {Comment} - The newly created comment object
    */
-  static addOne(userId, markId, content, markerId) {
+  static addOne(userId, markId, content, targetUserId) {
     const date = new Date();
     const commentId = uuidv4();
-    const comment = { commentId, userId, dateAdded: date, dateModified: date, markId, content, markerId };
+    const comment = { commentId, userId, dateAdded: date, dateModified: date, markId, content, targetUserId };
     data.push(comment);
     return comment;
   }
@@ -65,11 +65,11 @@ class Comment {
   /**
    * Find all comments for the given marker
    * 
-   * @param {string} markerId - The id of the user who places some marks
+   * @param {string} targetUserId - The id of the user who places some marks
    * @returns {Comment[]} - An array of comments for the given user 
    */
-  static findAllByMarkerId(markerId) {
-    return data.filter(comment => comment.markerId === markerId);
+  static findAllByTargetUserId(targetUserId) {
+    return data.filter(comment => comment.targetUserId === targetUserId);
   }
 
   /**
@@ -82,6 +82,7 @@ class Comment {
   updateOne(commentId, content) {
     const comment = Comment.findOne(commentId);
     comment.content = content;
+    comment.dateModified = new Date();
     return comment;
 
   }
