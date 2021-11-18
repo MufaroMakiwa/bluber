@@ -72,6 +72,11 @@ const isSavedNameAlreadyExists = (req, res, next) => {
   next();
 }
 
+// checks if the target user id is valid (rating, comment, reply)
+const isTargetUserIdExists = (req, res, next) => {
+  next();
+}
+
 module.exports = Object.freeze({
   isMarkIdInParamsExists,
   isMarkIdInBodyExists,
@@ -85,5 +90,6 @@ module.exports = Object.freeze({
   isReplyIdInParamsExists,
   isSavedIdInParamsExists,
   isValidSavedModifier,
-  isSavedNameAlreadyExists
+  isSavedNameAlreadyExists,
+  isTargetUserIdExists
 });

@@ -12,7 +12,9 @@ const replyModel = require("../models/reply");
 router.post(
   '/',
   [
-    validator.isUserLoggedIn
+    validator.isUserLoggedIn,
+    validator.isCommentIdInBodyExists,
+    validator.isTargetUserIdExists
   ],
   (req, res) => {
 
@@ -24,7 +26,6 @@ router.patch(
   [
     validator.isUserLoggedIn,
     validator.isReplyIdInParamsExists,
-    validator.isCommentIdInBodyExists,
     validator.isValidCommentModifier
   ],
   (req, res) => {

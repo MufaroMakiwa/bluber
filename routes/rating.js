@@ -15,6 +15,7 @@ router.post(
     validator.isUserLoggedIn,
     validator.isMarkIdInBodyExists,
     validator.isMarkRatingAllowed,
+    validator.isTargetUserIdExists,
     (req, res, next) => validator.checkMarkRatingStatus(req, res, next, false)
   ],
   (req, res) => {

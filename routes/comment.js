@@ -12,7 +12,9 @@ const replyModel = require("../models/reply");
 router.post(
   '/',
   [
-    validator.isUserLoggedIn
+    validator.isUserLoggedIn,
+    validator.isMarkIdInBodyExists,
+    validator.isTargetUserIdExists
   ],
   (req, res) => {
 
