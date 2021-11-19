@@ -13,6 +13,7 @@ let data = [];
  * @prop {string} caption - The caption associated with the mark
  * @prop {Object} start - The start (lat, lng) for the mark
  * @prop {Object} end - The end (lat, lng) for the mark
+ * @prop {Object[]} path - The path associated with the start and end if end is defined
  */
 
 class Mark {
@@ -24,11 +25,12 @@ class Mark {
    * @param {string} caption - The caption for the mark
    * @param {Object} start - the start (lat, lng) for the mark
    * @param {Object} end - The end (lat, lng) for the mark
+   * @param {Object[]} path - The path from start to end
    */
-  static addOne(userId, tags, caption, start, end) {
+  static addOne(userId, tags, caption, start, end, path) {
     const date = new Date();
     const markId = uuidv4();
-    const mark = { markId, userId, dateAdded: date, dateModified: date, tags, caption, start, end };
+    const mark = { markId, userId, dateAdded: date, dateModified: date, tags, caption, start, end, path };
     data.push(mark);
   }
 
@@ -40,6 +42,15 @@ class Mark {
    */
   static findOne(markId){
     return data.filter(mark => mark.markId === markId)[0];
+  }
+
+  /**
+   * Get all the marks present
+   * 
+   * @returns {Mark[]} - All the marks
+   */
+  static findAll() {
+    return data;
   }
 
   /**
