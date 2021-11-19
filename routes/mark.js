@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const validator = require("./middleware");
-const markController = require("./mark-controller");
+const markController = require("./mark-controller.js");
 const markModel = require("../models/mark");
 
 
@@ -11,7 +11,7 @@ const userId = "gangoffour";
 router.get(
   '/',
   [
-    validator.isUserLoggedIn
+    // validator.isUserLoggedIn
   ],
   (req, res) => {
     const start = {
@@ -33,9 +33,10 @@ router.get(
 router.get(
   '/path',
   [
-    validator.isUserLoggedIn
+    // validator.isUserLoggedIn
   ],
-  (req, res) => {
+  async(req, res) => {
+    // console.log(req)
     const start = {
       lat: req.query.startLat, 
       lng: req.query.startLng
@@ -45,8 +46,7 @@ router.get(
       lat: req.query.endLat,
       lng: req.query.endLng
     }
-
-    const path = markController.getPath(start, end);
+    const path = await markController.getPath(start, end);
     res.status(200).json(path).end();
   }
 );
@@ -55,7 +55,7 @@ router.get(
 router.post(
   '/',
   [
-    validator.isUserLoggedIn
+    // validator.isUserLoggedIn
   ],
   (req, res) => {
     const { tags, caption, start, end, path } = req.body;

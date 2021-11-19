@@ -3,6 +3,7 @@ import App from './App';
 import router from './router/index';
 import store from './store/index';
 import 'leaflet/dist/leaflet.css';
+import 'leaflet-arrowheads'
 
 
 import { library } from '@fortawesome/fontawesome-svg-core'

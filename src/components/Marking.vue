@@ -15,6 +15,7 @@
           name="network"
           value="intersection"
           v-on:change="onChange"
+          checked
         />
         <label>Intersection</label>
       </div>
@@ -35,11 +36,11 @@
       <div class="coords">
         <div class="coord">
           <label class="coord-label">Start Coord</label>
-          <span class="start-coord">{{currentMark.startCoord}}</span>
+          <span class="start-coord">{{currentMark.start}}</span>
         </div>
         <div class="coord">
           <label class="coord-label">End Coord</label>
-          <span class="end-coord">{{currentMark.endCoord}}</span>
+          <span class="end-coord">{{currentMark.end}}</span>
         </div>
       </div>
       <div class="tags">
@@ -50,13 +51,15 @@
     </div>
     <div class="footer">
       <button type="button" v-on:click="addMark" class="add">Add</button>
-      <button type="button" class="post">Post All Marks</button>
+      <button type="button" v-on:click="postAllMarks" class="post">Post All Marks</button>
     </div>
   </div>
 </template>
 
 <script>
-import { eventBus } from "../main";
+import { eventBus } from '../main.js';
+
+import axios from "axios";
 
 export default {
   name: "Marking",
@@ -68,16 +71,23 @@ export default {
       currentMark: {
         caption: "",
         roadOption: "intersection",
-        tag: "",
-        startCoord: 0.00,
-        endCoord: 0.00,
+        tags: [],
+        start: [],
+        end: [],
+        path: []
       },
       blockedClass: "",
       busyClass: "",
       nsClass: ""
     };
   },
-
+  beforeCreate(){
+    eventBus.$on("path",(path)=>{
+      this.currentMark['path'] = path
+      this.currentMark["start"] = path[0]
+      this.currentMark["end"] = path[path.length-1]
+    })
+  },
   computed:{
     isLast: function (){
       return this.currentMarkIndex === this.marks.length
@@ -86,14 +96,14 @@ export default {
       return this.currentMarkIndex === 0;
     }
   },
+
   methods: {
     /**
      * handles intersection/path changes
      */
     onChange(e) {
-      this.currentMark.roadOption = e.target.value;
-      eventBus.$emit("changeRoadOption", this.roadOption);
-      // console.log(this.currentMark)
+      this.currentMark["roadOption"] = e.target.value;
+      eventBus.$emit("change",this.currentMark["roadOption"])
     },
 
     /**
@@ -109,9 +119,10 @@ export default {
       this.currentMark = {
         caption: "",
         roadOption: "intersection",
-        tag: "",
-        startCoord: "",
-        endCoord: "",
+        tags: [],
+        path: [],
+        start: [],
+        end: [],
       };
     },
     /**
@@ -120,20 +131,36 @@ export default {
     checkAllFields(){
       if (this.currentMark.caption===""){
         return false
-      }if (this.currentMark.tag===""){
+      }if (this.currentMark.tags===[]){
           return false
       }
-      if (this.currentMark.startCoord===0){
+      if (this.currentMark.start===[]){
           return false
       }
-
       return true;
     },
     /**
      * posts all marks
      */
-    postAllMarks() {},
-
+    postAllMarks() {
+      if (!this.checkAllFields()){return}
+      this.marks.push(this.currentMark);
+      this.marks.forEach((mark)=>{
+        axios.post("/api/mark",mark).then(()=>(this.doNothing())).catch((err)=>{
+          console.log(err);
+        })
+      })
+      this.marks = [];
+      this.currentMark = {
+        caption: "",
+        roadOption: "intersection",
+        tags: [],
+        path: [],
+        start: [],
+        end: [],
+      }
+      window.alert("Marks successfully posted")
+    },
     // /**
     //  *
     //  *
@@ -141,22 +168,26 @@ export default {
     addTag(num) {
       // console.log(num)
       if (num === 1) {
-        this.currentMark.tag = "blocked";
+        this.currentMark.tags = ["blocked"];
         this.blockedClass ="tagged"
         this.busyClass =""
         this.nsClass =""
       }
       else if (num === 2) {
-        this.currentMark.tag = "busy";
+        this.currentMark.tags = ["busy"];
         this.blockedClass =""
         this.busyClass ="tagged"
         this.nsClass =""
       } else if (num === 3) {
-        this.currentMark.tag = "not safe";
+        this.currentMark.tags = ["not safe"];
         this.blockedClass =""
         this.busyClass =""
         this.nsClass ="tagged"
       }
+    },
+
+    doNothing(){
+
     },
     // /**
     //  *

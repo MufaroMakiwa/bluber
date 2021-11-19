@@ -1,5 +1,7 @@
 const markModel = require("../models/mark");
-const BLUBER_DATA_SERVER_URL = "https://bluber-server.herokuapp.com"
+const BLUBER_DATA_SERVER_URL = "http://bluber-server.herokuapp.com/road"
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+
 
 /**
  * Convert to radians
@@ -92,9 +94,12 @@ function getMarksInSpannedArea(start, end) {
  */
 async function getPath(start, end) {
   const routeEndpoint = `${BLUBER_DATA_SERVER_URL}/${start.lat}/${start.lng}/${end.lat}/${end.lng}`;
+  console.log(routeEndpoint)
+  // const routeEndpoint = `${BLUBER_DATA_SERVER_URL}`
   const path = await fetch(routeEndpoint);
-  console.log(path);
-  return path;
+  // const data = await path.json();
+  const data = await path.json();
+  return data;
 }
 
 

@@ -10,7 +10,8 @@
         Toggle map
       </button>
     </div> -->
-    <l-map
+    <l-map 
+      ref="myMap"
       v-if="showMap"
       v-on:click="handleClick"
       :zoom="zoom"
@@ -51,11 +52,12 @@
 </template>
 
 <script>
-// import L from 'leaflet';
+import L from 'leaflet';
 import { latLng } from "leaflet";
 import { LMap, LTileLayer, LMarker, LPopup, LCircle } from "vue2-leaflet";
 import { Icon } from 'leaflet';
 import {eventBus} from '../main'
+import axios from 'axios'
 
 delete Icon.Default.prototype._getIconUrl;
 Icon.Default.mergeOptions({
@@ -77,6 +79,7 @@ export default {
   data() {
     return {
       zoom: 13,
+      map: null,
       center: latLng(42.373611, -71.110558),
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       attribution:
@@ -102,13 +105,21 @@ export default {
   beforeCreate() {
     // const map = new L.Map('map', { center: new L.LatLng(%.06f, %.06f), zoom: 13, doubleClickZoom: false });
     // map.on('dblclick', clickHandler);
-    $eventBus.on("changeRoadOption",this.changeMarkingState);
+    eventBus.$on("change",(state)=>{
+      if (this.markingState==="path"){
+        this.routing_state = this.routing_state.splice(1);
+        this.secondPopup =  undefined; //can we try to use null next time?
+        this.circleMarker = {}
+      }
+      this.markingState = state
+    });
   },
   methods: {
 
-    changeMarkingState(state){
-      this.markingState = state;
-    },
+    // changeMarkingState(state){
+    //   console.log("thus is the state")
+    //   // this.markingState = state;
+    // },
 
     zoomUpdate(zoom) {
       this.currentZoom = zoom;
@@ -122,6 +133,29 @@ export default {
     innerClick() {
       alert("Click!");
     },
+
+    isIntersectionState(){
+      return this.markingState==="intersection"
+    },
+
+    getPath(){
+
+      axios.get("/api/mark/path",{ params : { 
+        startLat :  this.popup.lat,
+       startLng : this.popup.lng,
+        endLat: this.secondPopup.lat, 
+        endLng: this.secondPopup.lng
+      }}).then((res)=>{
+        let coords = res.data
+        let myVector =  L.polyline([coords]).arrowheads( {frequency: 'endonly', size: '50%'} )
+        this.map = this.$refs.myMap.mapObject
+        myVector.addTo(this.map)
+        eventBus.$emit("path",coords)
+      }).catch((err)=>{
+        console.log("this is my err",err)
+      });
+    },
+
     getDistance(origin, destination) {
       // return distance in meters
       var lon1 = this.toRadian(origin[1]),
@@ -147,12 +181,14 @@ export default {
             this.popup = undefined;
             this.secondPopup = undefined;
             this.circleMarker = {};
+            // console.log("getting path")
+            // this.getPath()
          }
           this.routing_state.push([e.latlng.lat, e.latlng.lng]);
           this.popup = e.latlng;
           this.showParagraph = true;
           this.popupContent = "Starting Point for Routing: (" + Math.round(e.latlng.lat*10000)/10000 + ", " + Math.round(e.latlng.lng*10000)/10000 + ")<br/>Double-click somewhere else to find a route to that point.";
-      } else if (this.routing_state.length == 1) {
+      } else if (this.routing_state.length == 1 &&  !this.isIntersectionState()) {
           this.routing_state.push([e.latlng.lat, e.latlng.lng]);
           this.secondPopup = e.latlng;
           this.secondPopupContent = "Finding route";
@@ -160,9 +196,14 @@ export default {
           let area_y = (this.routing_state[0][1] + this.routing_state[1][1])/2;
           let distance = this.getDistance(this.routing_state[0], this.routing_state[1])
           this.circleMarker = {center: [area_x, area_y], radius: distance, color: 'blue'};
+          console.log("getting path")
+          this.getPath()
           // create post request 
           // draw connecting lines between points
-      } 
+      } else if (this.routing_state.length == 1 &&  this.isIntersectionState()){// change to another location
+          this.routing_state = [e.latlng.lat,e.latlng];
+          this.popup = e.latlng;
+      }
     }
   }
 };
