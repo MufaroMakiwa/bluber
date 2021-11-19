@@ -9,18 +9,18 @@
         </div>
 
         <div>
-            <button class="nav-button" @click="getBusyMarks" v-bind:class="{ buttonStatus: displayBusy }">
+            <button class="nav-button" @click="getMySaved" v-bind:class="{ buttonStatus: displayBusy }">
                My Saved Searches
             </button>
         </div>
 
         <div>
-            <button class="nav-button" @click="getBlockedMarks" v-bind:class="{ buttonStatus: displayBlocked}">
+            <button class="nav-button" @click="planTrip" v-bind:class="{ buttonStatus: displayBlocked}">
                 Plan Trip
             </button>
         </div>
         <div>
-            <button class="nav-button" @click="getNotSafeMarks" v-bind:class="{ buttonStatus: displayNotSafe}">
+            <button class="nav-button" @click="markArea" v-bind:class="{ buttonStatus: displayNotSafe}">
                 Mark Area
             </button>
         </div>
@@ -43,7 +43,22 @@ export default {
    beforeMount() {
    },
 
-   methods: {    
+   methods: {
+       getAllMarks() {
+
+       },
+
+       markArea() {
+
+       },
+
+       getMySaved() {
+           
+       },
+
+       planTrip(){
+
+       } 
    }
 }
 </script>
@@ -78,7 +93,8 @@ export default {
     font-weight: bold;
     background: #959090c4;
     border: none;
-    width: 90px;
+    width: 100px;
+    height: 60px;
     cursor: pointer;
 }
 
