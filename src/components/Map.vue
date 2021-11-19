@@ -1,6 +1,6 @@
 <template>
-    <div style="height: 500px; width: 100%" class="map-wrapper">
-    <div style="height: 200px; overflow: auto;">
+    <div style="height: 100vh; width: 100%" class="map-wrapper">
+    <!-- <div style="height: 200px; overflow: auto;">
       <p>First marker is placed at {{ popup }}</p>
       <p>Center is at {{ currentCenter }} and the zoom is: {{ currentZoom }}</p>
       <button @click="showLongText">
@@ -9,14 +9,14 @@
       <button @click="showMap = !showMap">
         Toggle map
       </button>
-    </div>
+    </div> -->
     <l-map
       v-if="showMap"
       v-on:click="handleClick"
       :zoom="zoom"
       :center="center"
       :options="mapOptions"
-      style="height: 100%"
+      style="height: 100%; width:100%;"
       @update:center="centerUpdate"
       @update:zoom="zoomUpdate"
     >
@@ -55,7 +55,7 @@
 import { latLng } from "leaflet";
 import { LMap, LTileLayer, LMarker, LPopup, LCircle } from "vue2-leaflet";
 import { Icon } from 'leaflet';
-
+import {eventBus} from '../main'
 
 delete Icon.Default.prototype._getIconUrl;
 Icon.Default.mergeOptions({
@@ -95,14 +95,21 @@ export default {
       showMap: true,
       routing_state: [],
       circleMarker: {},
+      markingState: "intersection"
       //latLng(42.373611,  -71.110558)
     };
   },
   beforeCreate() {
     // const map = new L.Map('map', { center: new L.LatLng(%.06f, %.06f), zoom: 13, doubleClickZoom: false });
     // map.on('dblclick', clickHandler);
+    $eventBus.on("changeRoadOption",this.changeMarkingState);
   },
   methods: {
+
+    changeMarkingState(state){
+      this.markingState = state;
+    },
+
     zoomUpdate(zoom) {
       this.currentZoom = zoom;
     },
@@ -163,8 +170,8 @@ export default {
 
 <style scoped>
 
-.map-wrapper {
+/* .map-wrapper {
     height: 50%;
     width: 100%;
-}
+} */
 </style>
