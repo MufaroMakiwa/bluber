@@ -21,19 +21,30 @@
 <script>
 
 import axios from "axios";
+import { eventBus } from "../main.js"
 
 export default {
    name: 'LogIn',
 
    data() {
        return {
-           usernameResponse: ""
+           usernameResponse: "",
+           username: "",
        }
    },
 
    methods: {
        signin() {
-           axios.post("")
+           let params = {"username": this.username}
+           axios.post("/api/user/", params)
+                .then((response) => {
+                    console.log("response", response.data);
+                    this.$cookie.set("username", response.data.user.name);
+                    eventBus.$emit("signIn")
+                })
+                .catch(() => {
+                    console.log("could not sign in")
+                })
        }
    }
 }

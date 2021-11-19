@@ -3,7 +3,7 @@
 <div class="wrapper">
     <div>
         <span class="username">
-            {{ username }}
+            {{ username.substring(0, 5) }}
         </span>
        <font-awesome-icon icon="bars" class="menu-icon"/>
     </div>
@@ -30,6 +30,10 @@ export default {
        }
    },
 
+   mounted() {
+       this.username = this.$cookie.get("username");
+   },
+
    methods: {
        
    }
@@ -41,7 +45,6 @@ export default {
 .wrapper {
     padding: 20px;
     background: rgb(236, 154, 168);
-    height: 50px;
     width: 150px;
     border-radius: 10px;
 }

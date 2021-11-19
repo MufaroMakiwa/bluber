@@ -27,7 +27,8 @@ const replyModel = require("../models/reply");
     ], 
     (req, res) => {
       const username = req.body.username;
-      const user = userModel.filter(user => user.username === username)[0];
+      const user = userModel.findOneByName(username);
+      console.log("user route", user)
       if (user) {
         req.session.userId = user.userId;
         res.status(201).json({

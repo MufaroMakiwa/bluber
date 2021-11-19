@@ -64,6 +64,10 @@ export default {
     eventBus.$on("toggle-marks", () => {
       this.showMarks = !this.showMarks;
     })
+
+    eventBus.$on("signIn", () => {
+      this.isLoggedIn = true;
+    })
   },
 
 }

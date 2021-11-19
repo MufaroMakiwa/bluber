@@ -3,6 +3,7 @@ import App from './App';
 import router from './router/index';
 import store from './store/index';
 import 'leaflet/dist/leaflet.css';
+import VueCookie from 'vue-cookie';
 
 
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -22,7 +23,7 @@ Vue.config.productionTip = false;
 // initialize event bus
 export const eventBus = new Vue();
 
-
+Vue.use(VueCookie);
 
 new Vue({
   el: '#app',
