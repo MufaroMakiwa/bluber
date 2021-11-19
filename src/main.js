@@ -5,6 +5,16 @@ import store from './store/index';
 import 'leaflet/dist/leaflet.css';
 
 
+import { library } from '@fortawesome/fontawesome-svg-core'
+import {  faBars, faComment, faStar } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+
+library.add(faStar)
+library.add(faComment)
+library.add(faBars)
+Vue.component('font-awesome-icon', FontAwesomeIcon)
+
 Vue.config.productionTip = false;
 
 // initialize event bus

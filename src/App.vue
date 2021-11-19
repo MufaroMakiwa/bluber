@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 500px; width: 100%" id="map">
+    <div style="height: 500px; width: 100%" id="map">
     <div style="height: 200px; overflow: auto;">
       <p>First marker is placed at {{ popup }}</p>
       <p>Center is at {{ currentCenter }} and the zoom is: {{ currentZoom }}</p>
@@ -16,7 +16,7 @@
       :zoom="zoom"
       :center="center"
       :options="mapOptions"
-      style="height: 80%"
+      style="height: 100%"
       @update:center="centerUpdate"
       @update:zoom="zoomUpdate"
     >
@@ -44,9 +44,24 @@
         :radius="circleMarker.radius"
         :color="circleMarker.color"
       />
-    </l-map>
-  </div>
-</template>
+    </l-map>  
+     
+    <div>
+      <Navigation/>
+    </div>
+
+    <div class="floating-box">
+      <MarksList v-bind:marks="marks"/>
+    </div> 
+
+    <div class="menu"> 
+      <Menu />  
+    </div>
+
+    
+  </div> 
+
+  </template>
 
 <script>
 
@@ -54,7 +69,9 @@
 import { latLng } from "leaflet";
 import { LMap, LTileLayer, LMarker, LPopup, LCircle } from "vue2-leaflet";
 import { Icon } from 'leaflet';
-// import { extend } from 'vue/types/umd';
+import MarksList from './components/MarksList.vue';
+import Menu from "./components/Menu.vue";
+import Navigation from "./components/Navigation.vue";
 
 delete Icon.Default.prototype._getIconUrl;
 Icon.Default.mergeOptions({
@@ -69,7 +86,10 @@ export default {
     LTileLayer,
     LMarker,
     LPopup,
-    LCircle
+    LCircle,
+    MarksList,
+    Menu,
+    Navigation
     // LTooltip
   },
   data() {
@@ -93,6 +113,12 @@ export default {
       showMap: true,
       routing_state: [],
       circleMarker: {},
+      marks: [
+         {markId: 1, caption: "There is a traffic jam", tag:"busy", time:"posted 30 minutes ago"},
+         {markId: 2, caption: "There is an accident and the road is blocked", tag:"blocked", time:"posted 1 hour ago"},
+         {markId: 3, caption: "Something is happening here", tag:"not safe", time:"posted yesterday"},
+         {markId: 4, caption: "There is a riot going on here", tag:"busy", time:"posted right now"},
+      ]
       //latLng(42.373611,  -71.110558)
     };
   },
