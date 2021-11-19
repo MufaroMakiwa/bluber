@@ -49,11 +49,20 @@
 <script>
 
 import Mark from "./Mark";
+import { eventBus } from '../main.js';
 
 export default {
    name: 'MarksList',
    components: { Mark },
    props: ["marks"],
+
+   mounted() {
+    eventBus.$on("get-my-marks", () => {
+        this.marksToDisplay = this.marks.filter((mark) => {
+            return mark.username === this.username;
+        })
+    });
+   },
 
    data() {
        return {
@@ -61,7 +70,8 @@ export default {
            displayBusy : false,
            displayBlocked: false,
            displayNotSafe: false,
-           marksToDisplay: []
+           marksToDisplay: [],
+           username: "Hillary"
        }
    },
 
