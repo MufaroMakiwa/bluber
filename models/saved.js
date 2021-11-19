@@ -8,8 +8,8 @@ let data = [];
  * @prop {string} userId - Id of the user who saved the object
  * @prop {Date} dateAdded - The date the saved object was added
  * @prop {Date} dateModified - The date the saved object was modified
- * @prop {Integer} start - The start node for the mark
- * @prop {Integer} end - The end node for the mark
+ * @prop {Object} start - The start (lat, lng) for the mark
+ * @prop {Object} end - The end (lat, lng) for the mark
  * @prop {string} name - The name associated with the saved object
  */
 
@@ -17,8 +17,8 @@ class Saved {
   /**
    * 
    * @param {string} userId - The id of user saving a marking
-   * @param {Integer} start - The start point of the marking
-   * @param {Integer} end - The end point of the marking (undefined if not exists)
+   * @param {Object} start - The start (lat, lng) of the marking
+   * @param {Object} end - The end (lat, lng) of the marking (undefined if not exists)
    * @param {string} name - The name of the saved place
    * @returns {Saved} - The newly created saved object
    */

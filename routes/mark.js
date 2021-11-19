@@ -1,13 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const validator = require("./middleware");
-const userModel = require("../models/user");
-const commentModel = require("../models/comment");
 const markModel = require("../models/mark");
-const ratingModel = require("../models/rating");
-const savedModel = require("../models/saved");
-const replyModel = require("../models/reply");
 
+
+const userId = "gangoffour";
 
 router.post(
   '/',
@@ -15,7 +12,9 @@ router.post(
     validator.isUserLoggedIn
   ],
   (req, res) => {
-
+    const { tags, caption, start, end } = req.body;
+    const mark = markModel.addOne(userId, tags, caption, start, end);
+    res.status(201).json(mark).end();
   }
 );
 
@@ -27,7 +26,8 @@ router.patch(
     validator.isValidMarkModifier
   ],
   (req, res) => {
-    
+    const mark = markModel.updateOne(req.params.markId, req.body);
+    res.status(200).json(mark).end();
   }
 );
 
@@ -39,7 +39,10 @@ router.delete(
     validator.isValidMarkModifier
   ],
   (req, res) => {
-
+    markModel.deleteOne(req.params.markId);
+    res.status(200).json({
+      message: "Mark deleted successfully"
+    }).end();
   }
 );
 

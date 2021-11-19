@@ -34,11 +34,12 @@ class Rating {
   /**
    * Find a rating by rating id
    * 
-   * @param {string} ratingId - The id of a rating
+   * @param {string} userId - The id of the user making the marking
+   * @param {string} markId - The id of the mark rated
    * @returns {Rating | undefined} - The rating object if it exists
    */
-  static findOne(ratingId) {
-    return data.filter(rating => rating.ratingId === ratingId)[0];
+  static findOne(userId, markId) {
+    return data.filter(rating => rating.markId === markId && rating.userId === userId)[0];
   }
 
   /**
@@ -78,8 +79,8 @@ class Rating {
    * @param {string} rating - The updated rating
    * @returns {Rating} - The updated rating
    */
-  static updateOne(ratingId, rating) {
-    const ratingObj = Rating.findOne(ratingId);
+  static updateOne(userId, markId, rating) {
+    const ratingObj = Rating.findOne(markId, userId);
     ratingObj.rating = rating;
     ratingObj.dateModified = new Date();
     return ratingObj;
@@ -88,10 +89,11 @@ class Rating {
   /**
    * Delete the given rating
    * 
-   * @param {string} ratingId - Id of a rating
+   * @param {string} userId - The id of the user who made the marking
+   * @param {string} markId - The id of the mark rated
    */
-  static deleteOne(ratingId) {
-    data = data.filter(rating => rating.ratingId !== ratingId);
+  static deleteOne(userId, markId) {
+    data = data.filter(rating => rating.markId !== markId && rating.userId !== userId);
   }
 }
 

@@ -11,8 +11,8 @@ let data = [];
  * @prop {Date} dateModified - The date the mark was last modified
  * @prop {string[]} tags - An array of tags associated with the mark
  * @prop {string} caption - The caption associated with the mark
- * @prop {Integer} start - The start node for the mark
- * @prop {Integer} end - The end node for the mark
+ * @prop {Object} start - The start (lat, lng) for the mark
+ * @prop {Object} end - The end (lat, lng) for the mark
  */
 
 class Mark {
@@ -22,8 +22,8 @@ class Mark {
    * @param {string} userId - The id of user adding a mark
    * @param {string[]} tags - The tags associated with the mark
    * @param {string} caption - The caption for the mark
-   * @param {Integer} start - the start point for the mark
-   * @param {Integer} end - The end point for the mark
+   * @param {Object} start - the start (lat, lng) for the mark
+   * @param {Object} end - The end (lat, lng) for the mark
    */
   static addOne(userId, tags, caption, start, end) {
     const date = new Date();
