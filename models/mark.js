@@ -32,6 +32,7 @@ class Mark {
     const markId = uuidv4();
     const mark = { markId, userId, dateAdded: date, dateModified: date, tags, caption, start, end, path };
     data.push(mark);
+    return mark;
   }
 
   /**

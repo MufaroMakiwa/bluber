@@ -27,7 +27,7 @@ router.patch(
   [
     validator.isUserLoggedIn,
     validator.isReplyIdInParamsExists,
-    validator.isValidCommentModifier
+    validator.isValidReplyModifier
   ],
   (req, res) => {
     const reply = replyModel.updateOne(req.params.replyId, req.body.content);
