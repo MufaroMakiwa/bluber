@@ -264,6 +264,31 @@ const isTargetUserIdExists = (req, res, next) => {
   next();
 }
 
+// checks if the format of username is valid
+const isValidUsername = (req, res, next) => {
+  let username = req.body.username.trim();
+  if (username.length < 4) {
+    res.status(403).json({
+      error: "Username must be at least 4 characters long"
+    }).end();
+    return;
+  }
+  next();
+}
+
+// checks if the target user id is valid (rating, comment, reply)
+const isUsernameAvailable = (req, res, next) => {
+  let username = req.body.username.trim();
+  const user = userModel.findOneByName(username);
+  if (user !== undefined) {
+    res.status(403).json({
+      error: "Username not available. Try a different one"
+    }).end();
+    return;
+  }
+  next();
+}
+
 
 module.exports = Object.freeze({
   isMarkIdInParamsExists,
@@ -280,5 +305,7 @@ module.exports = Object.freeze({
   isSavedIdInParamsExists,
   isValidSavedModifier,
   isSavedNameAlreadyExists,
-  isTargetUserIdExists
+  isTargetUserIdExists,
+  isValidUsername,
+  isUsernameAvailable
 });

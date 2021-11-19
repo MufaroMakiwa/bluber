@@ -37,6 +37,15 @@ class User {
   }
 
   /**
+   * 
+   * @param {string} name - The name of the a user
+   * @returns {User | undefined} - The user object if one exists
+   */
+     static findOneByName(name) {
+      return data.filter(user => user.name === name)[0];
+    }
+
+  /**
    * Delete a users account
    * 
    * @param {string} userId - The of user whose account is to be deleted
