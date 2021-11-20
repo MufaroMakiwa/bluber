@@ -27,21 +27,10 @@ then you will find the application at `localhost:8080` in the browser
 
 - **Jianna Liu**:
   - src
-    - HomePage.vue
-    - Test.vue
-  - models:
-    - Model1.js
-    - Model2.js
-    - Users.js
-  - routes:
-    - route1.js
-    - route2.js
-    - users.js
-    - index.js
+    - Map.vue
 - **Hophin Kibona**:
   - src
-    - HomePage.vue
-    - Test.vue
+    - Map.vue
   - models:
     - Model1.js
     - Model2.js
@@ -66,16 +55,20 @@ then you will find the application at `localhost:8080` in the browser
     - users.js
     - index.js
 - **Mufaro Makiwa**:
-  - src
-    - HomePage.vue
-    - Test.vue
   - models:
-    - Model1.js
-    - Model2.js
-    - Users.js
+    - comment.js
+    - mark.js
+    - rating.js
+    - reply.js
+    - saved.js
+    - user.js
   - routes:
-    - route1.js
-    - route2.js
-    - users.js
-    - index.js
-  - App.vue/router.js
+    - comment.js
+    - mark-controller.js
+    - rating.js
+    - mark.js
+    - reply.js
+    - user.js
+    - saved.js
+    - middleware.js
+    - rating.js
