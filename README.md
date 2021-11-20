@@ -1,4 +1,4 @@
-# [Bluber](https://www.bluber.herokuapp.com/)
+# [Bluber](https://bluber.herokuapp.com/)
 
 ## GangOfFour
 
