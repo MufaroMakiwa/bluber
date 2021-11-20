@@ -98,7 +98,6 @@ function getMarksInSpannedArea(start, end) {
  */
 async function getPath(start, end) {
   const routeEndpoint = `${BLUBER_DATA_SERVER_URL}/${start.lat}/${start.lng}/${end.lat}/${end.lng}`;
-  console.log(routeEndpoint)
   // const routeEndpoint = `${BLUBER_DATA_SERVER_URL}`
   const path = await fetch(routeEndpoint);
   // const data = await path.json();

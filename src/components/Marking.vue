@@ -150,6 +150,10 @@ export default {
         end: [],
       };
       window.alert("Marks successfully posted");
+      eventBus.$emit("clearMarks");
+      this.blockedClass = "";
+      this.busyClass = "";
+      this.nsClass = "";
     },
     // /**
     //  *
