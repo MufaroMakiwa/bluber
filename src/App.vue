@@ -44,7 +44,6 @@ export default {
     // MarksList,
     Menu,
     // Navigation,
-    Map,
     // Marker,
     Marking,
     Navigation,
