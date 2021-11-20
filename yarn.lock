@@ -9084,6 +9084,11 @@
   "resolved" "https://registry.npmjs.org/timsort/-/timsort-0.3.0.tgz"
   "version" "0.3.0"
 
+"tiny-cookie@^1.0":
+  "integrity" "sha1-dTeGB5xkKjw9CyrMrWAPjeEZrCo="
+  "resolved" "https://registry.npmjs.org/tiny-cookie/-/tiny-cookie-1.0.1.tgz"
+  "version" "1.0.1"
+
 "tmp@^0.0.33":
   "integrity" "sha512-jRCJlojKnZ3addtTOjdIqoRuPEKBvNXcGYqzO6zWZX8KfKEpnGY5jfggJQ3EjKuu8D4bJRr0y+cYJFmYbImXGw=="
   "resolved" "https://registry.npmjs.org/tmp/-/tmp-0.0.33.tgz"
@@ -9540,6 +9545,13 @@
   "integrity" "sha512-2ham8XPWTONajOR0ohOKOHXkm3+gaBmGut3SRuu75xLd/RRaY6vqgh8NBYYk7+RW3u5AtzPQZG8F10LHkl0lAQ=="
   "resolved" "https://registry.npmjs.org/vm-browserify/-/vm-browserify-1.1.2.tgz"
   "version" "1.1.2"
+
+"vue-cookie@^1.1.4":
+  "integrity" "sha1-uLRtESvan5Oi9HAXwu1SgtIGT9o="
+  "resolved" "https://registry.npmjs.org/vue-cookie/-/vue-cookie-1.1.4.tgz"
+  "version" "1.1.4"
+  dependencies:
+    "tiny-cookie" "^1.0"
 
 "vue-eslint-parser@^2.0.3":
   "integrity" "sha512-ZezcU71Owm84xVF6gfurBQUGg8WQ+WZGxgDEQu1IHFBZNx7BFZg3L1yHxrCBNNwbwFtE1GuvfJKMtb6Xuwc/Bw=="

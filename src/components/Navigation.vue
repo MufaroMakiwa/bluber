@@ -3,24 +3,24 @@
  <div class="wrapper">
     <div class="header">
         <div>
-            <button class="nav-button" @click="getAllMarks" v-bind:class="{ buttonStatus: displayAll }">
+            <button class="nav-button" @click="getMyMarks" v-bind:class="{ buttonStatus: getMyMarksTab }">
                 My Marks
             </button>
         </div>
 
         <div>
-            <button class="nav-button" @click="getMySaved" v-bind:class="{ buttonStatus: displayBusy }">
+            <button class="nav-button" @click="getMySaved" v-bind:class="{ buttonStatus: getMySavedTab }">
                My Saved Searches
             </button>
         </div>
 
         <div>
-            <button class="nav-button" @click="planTrip" v-bind:class="{ buttonStatus: displayBlocked}">
+            <button class="nav-button" @click="planTrip" v-bind:class="{ buttonStatus: planTripTab}">
                 Plan Trip
             </button>
         </div>
         <div>
-            <button class="nav-button" @click="markArea" v-bind:class="{ buttonStatus: displayNotSafe}">
+            <button class="nav-button" @click="markArea" v-bind:class="{ buttonStatus: markAreaTab}">
                 Mark Area
             </button>
         </div>
@@ -30,13 +30,18 @@
 </template>
 <script>
 
+import { eventBus } from "../main.js";
 
 export default {
    name: 'Navigation',
 
+
    data() {
        return {
-
+           markAreaTab: false,
+           planTripTab: false,
+           getMySavedTab: false,
+           getMyMarksTab: false
        }
    },
 
@@ -44,19 +49,22 @@ export default {
    },
 
    methods: {
-       getAllMarks() {
-
+       getMyMarks() {
+           this.getMyMarksTab = !this.getMyMarksTab;
+           eventBus.$emit("get-my-marks");
        },
 
        markArea() {
-
-       },
-
-       getMySaved() {
            
        },
 
+       getMySaved() {
+
+       },
+
        planTrip(){
+           this.planTripTab = !this.planTripTab;
+           eventBus.$emit("toggle-marks");
 
        } 
    }
@@ -110,8 +118,7 @@ export default {
 .MarkList{
     display: flex;
     flex-direction: column;
-    /* align-items: center; */
-    
+    /* align-items: center; */  
 }
 
 .list-enter {
@@ -122,6 +129,12 @@ export default {
     transition: all 0.3s;
     position: absolute;
     opacity: 0;
+}
+
+.buttonStatus {
+    color: white;
+    font-weight: bold;
+    background: black !important;
 }
 
   

@@ -1,33 +1,42 @@
 <template>
   <div class="app-wrapper">
-    <div class="map">
-      <Map />
-    </div>
-    <div class="overlay">
-      <div class="nav">
-        <!-- <Navigation /> -->
+    <div v-if="isLoggedIn" class="">
+      <div class="map">
+        <Map />
       </div>
-      <div class="menu">
-        <Menu />
+      <div class="overlay">
+        <div class="nav">
+          <Navigation />
+        </div>
+        <div class="menu">
+          <Menu />
+        </div>
+        <!-- <div class="floating-markslist" v-if="showMarks">
+          <MarksList v-bind:marks="marks" />
+        </div> -->
+        <!-- <div class="floating-marker"> -->
+          <Marking />
+        <!-- </div> -->
       </div>
-      <!-- <div class="floating-markslist">
-        <MarksList v-bind:marks="marks" />
-      </div> -->
-      <!-- <div class="floating-marker"> -->
-        <Marking />
-      <!-- </div> -->
     </div>
-
+    <div v-else> 
+      <LogIn />
+      </div>
   </div>
 </template>
 
 <script>
 // import MarksList from "./components/MarksList.vue";
 import Menu from "./components/Menu.vue";
-// import Navigation from "./components/Navigation.vue"; 
-import Map from "./components/Map.vue";
+
+
 // import Marker from "./components/Marker.vue";
 import Marking from "./components/Marking.vue";
+import Navigation from "./components/Navigation.vue";
+import Map from './components/Map.vue';
+import LogIn from './components/LogIn.vue';
+import { eventBus } from './main.js';
+
 
 export default {
   name: "App",
@@ -37,11 +46,15 @@ export default {
     // Navigation,
     Map,
     // Marker,
-    Marking
+    Marking,
+    Navigation,
+    Map,
+    LogIn
   },
 
   data() {
     return {
+      username: "Hillary",
       marks: [
         {
           markId: 1,
@@ -68,44 +81,51 @@ export default {
           time: "posted right now",
         },
       ],
+      showMarks:false,
+      isLoggedIn: false,
     };
   },
-};
+
+  mounted() {
+    eventBus.$on("toggle-marks", () => {
+      this.showMarks = !this.showMarks;
+    })
+
+    eventBus.$on("signIn", () => {
+      this.isLoggedIn = true;
+    })
+  },
+
+}
+
 </script>
 
 <style scoped>
- .nav
- {
-   /* position: ; */
+.nav {
+  /* position: ; */
 
-   position: absolute;
-    top:2vw;
-    left: 4vw
+  position: absolute;
+  top: 2vw;
+  left: 4vw;
+}
+.map {
+  z-index: 0;
+}
+.app-wrapper {
+  width: 100%;
+  height: 100%;
+}
 
- }
-  .map
-  {
-    z-index: 0;
-  }
- .app-wrapper
- {
-   width: 100%;
-   height: 100%;
- }
-  
-  .overlay
-  {
-    z-index: 999;
-    position: absolute;
-    top: 0;
-    width: 100%;
-  }
+.overlay {
+  z-index: 999;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
 
-  .floating-markslist
-  {
-    position: absolute;
-    top:2vw;
-    right: 2vw
-  }
-
+.floating-markslist {
+  position: absolute;
+  top: 2vw;
+  right: 2vw;
+}
 </style>
