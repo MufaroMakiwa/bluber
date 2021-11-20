@@ -51,11 +51,17 @@ export default {
    methods: {
        getMyMarks() {
            this.getMyMarksTab = !this.getMyMarksTab;
+           this.markAreaTab = false;
+           this.planTripTab  = false;
            eventBus.$emit("get-my-marks");
        },
 
        markArea() {
-           
+           this.markAreaTab = !this.markAreaTab;
+           this.getMyMarksTab= false;
+           this.planTripTab  = false;
+           eventBus.$emit("toggle-marker");
+           eventBus.$emit("changeMapState","marking");
        },
 
        getMySaved() {
@@ -64,8 +70,10 @@ export default {
 
        planTrip(){
            this.planTripTab = !this.planTripTab;
+           this.getMyMarksTab= false;
+           this.markAreaTab = false;
            eventBus.$emit("toggle-marks");
-
+           eventBus.$emit("changeMapState","planning");
        } 
    }
 }

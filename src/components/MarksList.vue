@@ -1,5 +1,4 @@
 <template>
-
  <div class="wrapper">
     <div class="header">
         <div>
@@ -27,12 +26,15 @@
         </div>
     </div>
     <div class="MarkList" v-if="this.marksToDisplay.length">
-       <transition-group name="list" tag="div">
+       <transition-group name="list" class="transition-group" tag="div">
        <Mark v-for="mark in this.marksToDisplay"
              v-bind:key="mark.markId"
              v-bind:caption="mark.caption"
-             v-bind:tag="mark.tag"
-             v-bind:time="mark.time"
+             v-bind:tags="mark.tags"
+             v-bind:time="mark.dateAdded"
+             v-bind:userId="mark.userId"
+             v-bind:path="mark.path"
+             v-bind:markId="mark.markId"
              />
         </transition-group>
 
@@ -90,7 +92,7 @@ export default {
        },
 
        getNotSafeMarks() {
-           this.marksToDisplay = this.marks.filter((mark) => mark.tag === "not safe");
+           this.marksToDisplay = this.marks.filter((mark) => mark.tags[0] === "not safe");
            this.displayAll = false;
            this.displayBusy = false;
            this.displayBlocked = false,
@@ -99,7 +101,7 @@ export default {
        },
 
        getBusyMarks() {
-           this.marksToDisplay = this.marks.filter((mark) => mark.tag === "busy");
+           this.marksToDisplay = this.marks.filter((mark) => mark.tags[0] === "busy");
 
            this.displayAll = false;
            this.displayBusy = true;
@@ -109,12 +111,16 @@ export default {
        },
 
        getBlockedMarks() {
-           this.marksToDisplay = this.marks.filter((mark) => mark.tag === "blocked");
+           this.marksToDisplay = this.marks.filter((mark) => mark.tags[0] === "blocked");
            this.displayAll = false;
            this.displayBusy = false;
            this.displayBlocked = true,
            this.displayNotSafe = false
-
+       }
+   },
+   watch:{
+       marks: function(){
+           this.marksToDisplay = this.marks; 
        }
    }
 }
@@ -157,7 +163,6 @@ export default {
 .wrapper {
     border: solid 1px red;
     background: rgb(238, 235, 235);
-    width: 600px;
     padding: 16px 16px 8px 16px;
     margin: 10px;
     overflow-y: scroll;
@@ -179,6 +184,10 @@ export default {
     position: absolute;
     opacity: 0;
 }
-
+.transition-group
+{
+    display: flex;
+    flex-direction: column;
+}
   
 </style>

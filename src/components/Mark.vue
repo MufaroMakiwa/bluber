@@ -1,109 +1,124 @@
 <template>
+  <button :class="postClass" v-on:click="displayPath">
+    <div class="header">
+      <div class="caption">
+        {{ caption }}
+      </div>
 
-    <div class="post">
+      <div class="time">
+        {{ time }}
+      </div>
+    </div>
 
-        <div class="header">
-             <div class="caption">
-               {{ caption }}
-            </div>
+    <div class="body">
+      <div v-bind:key="tag" v-for="tag in tags" class="tag">
+        {{ tag }}
+      </div>
+      <div class="author">
+        {{ userId }}
+      </div>
+    </div>
 
-            <div class="time">
-                {{ time }}
-            </div>
+    <div class="footer">
+      <div class="comment-section">
+        <div class="comment-icon">
+          <font-awesome-icon icon="comment" />
         </div>
 
-      <div class="body">
-        <div class="tag">
-            {{ tag }}
+        <div class="comment-count tooltip">
+          <span>
+            {{ commentCount }}
+          </span>
         </div>
 
-        <div class="author">
-            {{ author }}
+        <div>
+          <button class="comment">comment</button>
         </div>
       </div>
 
-
-    <div class="footer">
-        <div class="comment-section">
-            <div class="comment-icon" >
-                <font-awesome-icon icon="comment" />
-            </div>
-
-            <div class="comment-count tooltip">
-                <span>
-                    {{ commentCount }}
-                </span>
-            </div>
-
-            <div>
-                <button class="comment">
-                comment
-                </button>
-            </div>
-        </div>
-
-
-       <div class="rate tooltip" >
-           <font-awesome-icon v-for="index in 5"  :key="index" class="star" icon="star" :class="{ starStatus: index+1 <= rating}" @click="rateMark(index+1)" />
-           <span class="tooltiptext">rate</span>
-       </div>
+      <div class="rate tooltip">
+        <font-awesome-icon
+          v-for="index in 5"
+          :key="index"
+          class="star"
+          icon="star"
+          :class="{ starStatus: index + 1 <= rating }"
+          @click="rateMark(index + 1)"
+        />
+        <span class="tooltiptext">rate</span>
+      </div>
     </div>
-    </div>
-
-
-  
+  </button>
 </template>
 
 <script>
 
+import {eventBus} from "../main"
+
 export default {
   name: "Mark",
-  props: ["caption", "tag", "time"],
+  props: ["markId","caption", "tags", "time", "userId","path"],
 
   data() {
     return {
-        author: "by Hillary",
-        commentCount: 0,
-        stars: [1, 2, 3, 4, 5],
-        rating: 0
+      commentCount: 0,
+      stars: [1, 2, 3, 4, 5],
+      rating: 0,
+      postClass: "post"
     };
   },
 
   methods: {
-      rateMark(rating) {
-          this.rating = rating;
+    rateMark(rating) {
+      this.rating = rating;
+    },
+    displayPath(){
+      if (this.postClass==="post"){
+        this.postClass = "post select"
+        eventBus.$emit("render-path",this.path,this.markId)
+      }else
+      {
+        this.postClass = "post"
+        eventBus.$emit("deRender-path",this.markId)
       }
-  }
-
-
+      
+      
+    }
+  },
 };
 </script>
 
 <style scoped>
 
+.select
+{
+  background-color:#6DD978 !important;
+}
+
 .comment-section {
-    display: flex;
+  display: flex;
 }
 
-.comment-count{
-    border: none;
-    margin-right: 10px;
+.comment-count {
+  border: none;
+  margin-right: 10px;
 }
 
-.comment{
-    background: #1DA1F2;
-    border: none;
-    margin-right: 10px;
+.comment {
+  background: #1da1f2;
+  border: none;
+  margin-right: 10px;
+
 }
 
-.comment-icon{
-    margin-right: 10px;
+.comment-icon {
+  margin-right: 10px;
 }
 
 .body {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
 }
 
 .post {
@@ -112,10 +127,12 @@ export default {
   margin: 10px;
   box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
     rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
-  width: 500px;
+  width: 350px;
   border: 2px solid #242222c4;
-  background:  #959090c4;
-  border: 1px solid #8590AA;
+  background-color: #a7a2a2c4;
+  border: 1px solid #8590aa;
+  outline: none;
+  cursor: pointer;
 }
 
 .caption {
@@ -123,7 +140,7 @@ export default {
   margin: 8px;
   font-size: 18px;
   font-weight: lighter;
-  word-wrap:break-word;
+  word-wrap: break-word;
 }
 
 .header {
@@ -148,14 +165,14 @@ export default {
 }
 
 .time {
-  flex-wrap: wrap; 
+  flex-wrap: wrap;
   cursor: pointer;
   font-weight: light;
   font-size: 15px;
 }
 
 .star {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .footer {
@@ -163,7 +180,6 @@ export default {
   justify-content: space-between;
   font-size: 16px;
 }
-
 
 .tooltip {
   position: relative;
@@ -188,11 +204,10 @@ export default {
 }
 
 .star:hover {
-    color: gold;
+  color: gold;
 }
 
 .starStatus {
-    color: gold;
+  color: gold;
 }
-
 </style>

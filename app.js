@@ -13,7 +13,7 @@ require('dotenv').config();
 // require routers
 const userRouter = require("./routes/user");
 // const commentRouter = require("./routes/comment");
-// const markRouter = require("./routes/mark");
+const markRouter = require("./routes/mark");
 // const ratingRouter = require("./routes/rating");
 // const replyRouter = require("./routes/reply");
 // const savedRouter = require("./routes/reply");
@@ -54,7 +54,7 @@ app.use(express.static(path.join(__dirname, isProduction ? 'dist' : 'public')));
 
 // connect url hierarchies to our routers
 app.use("/api/user", userRouter);
-// app.use("/api/mark", markRouter);
+app.use("/api/mark", markRouter);
 // app.use("/api/comment", commentRouter);
 // app.use("/api/rating", ratingRouter);
 // app.use("/api/reply", replyRouter);

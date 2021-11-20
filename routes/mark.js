@@ -15,13 +15,13 @@ router.get(
   ],
   (req, res) => {
     const start = {
-      lat: req.query.startLat, 
-      lng: req.query.startLng
+      lat: parseFloat(req.query.startLat), 
+      lng: parseFloat(req.query.startLng)
     };
 
     const end = {
-      lat: req.query.endLat,
-      lng: req.query.endLng
+      lat: parseFloat(req.query.endLat),
+      lng: parseFloat(req.query.endLng)
     }
 
     const response = markController.getMarksInSpannedArea(start, end);
@@ -38,13 +38,13 @@ router.get(
   async(req, res) => {
     // console.log(req)
     const start = {
-      lat: req.query.startLat, 
-      lng: req.query.startLng
+      lat: parseFloat(req.query.startLat), 
+      lng: parseFloat(req.query.startLng)
     };
 
     const end = {
-      lat: req.query.endLat,
-      lng: req.query.endLng
+      lat: parseFloat(req.query.endLat),
+      lng: parseFloat(req.query.endLng)
     }
     const path = await markController.getPath(start, end);
     res.status(200).json(path).end();
@@ -59,7 +59,17 @@ router.post(
   ],
   (req, res) => {
     const { tags, caption, start, end, path } = req.body;
-    const mark = markModel.addOne(userId, tags, caption, start, end, path);
+    // console.log(start,end)
+    const st = {
+      lat: start[0],
+      lng: start[1]
+    };
+
+    const en = {
+      lat: end[0],
+      lng: end[1]
+    }
+    const mark = markModel.addOne(userId, tags, caption, st, en, path);
     res.status(201).json(mark).end();
   }
 );

@@ -1,6 +1,6 @@
 <template>
   <div class="app-wrapper">
-    <div v-if="isLoggedIn" class="">
+    <div class="">
       <div class="map">
         <Map />
       </div>
@@ -11,22 +11,24 @@
         <div class="menu">
           <Menu />
         </div>
-        <!-- <div class="floating-markslist" v-if="showMarks">
-          <MarksList v-bind:marks="marks" />
-        </div> -->
-        <!-- <div class="floating-marker"> -->
-          <Marking />
-        <!-- </div> -->
+        <div class="side-render">
+          <div class="floating-markslist" v-if="showMarks">
+            <MarksList v-bind:marks="marks" />
+          </div>
+          <div v-if="showMarker" class="floating-marker">
+            <Marking />
+          </div>
+        </div>
       </div>
     </div>
-    <div v-else> 
+    <!-- <div v-else> 
       <LogIn />
-      </div>
+      </div> -->
   </div>
 </template>
 
 <script>
-// import MarksList from "./components/MarksList.vue";
+import MarksList from "./components/MarksList.vue";
 import Menu from "./components/Menu.vue";
 
 
@@ -34,64 +36,57 @@ import Menu from "./components/Menu.vue";
 import Marking from "./components/Marking.vue";
 import Navigation from "./components/Navigation.vue";
 import Map from './components/Map.vue';
-import LogIn from './components/LogIn.vue';
+// import LogIn from './components/LogIn.vue';
 import { eventBus } from './main.js';
+import axios from 'axios';
 
 
 export default {
   name: "App",
   components: {
-    // MarksList,
+    MarksList,
     Menu,
     // Navigation,
     // Marker,
     Marking,
     Navigation,
     Map,
-    LogIn
+    // LogIn
   },
 
   data() {
     return {
       username: "Hillary",
-      marks: [
-        {
-          markId: 1,
-          caption: "There is a traffic jam",
-          tag: "busy",
-          time: "posted 30 minutes ago",
-        },
-        {
-          markId: 2,
-          caption: "There is an accident and the road is blocked",
-          tag: "blocked",
-          time: "posted 1 hour ago",
-        },
-        {
-          markId: 3,
-          caption: "Something is happening here",
-          tag: "not safe",
-          time: "posted yesterday",
-        },
-        {
-          markId: 4,
-          caption: "There is a riot going on here",
-          tag: "busy",
-          time: "posted right now",
-        },
-      ],
       showMarks:false,
       isLoggedIn: false,
+      showMarker: false,
+      marks: [],
     };
   },
 
   mounted() {
     eventBus.$on("toggle-marks", () => {
       this.showMarks = !this.showMarks;
+      this.showMarker = false;
     })
-
+    eventBus.$on("toggle-marker", () => {
+      this.showMarker = !this.showMarker;
+      this.showMarks = false;
+    })
     eventBus.$on("signIn", () => {
       this.isLoggedIn = true;
+    })
+    eventBus.$on("get-marks", (params) => {
+        axios.get("/api/mark",{params:params}).then((res)=>{
+          console.log(res)
+          let {marksInSpannedArea, radius, center } = res.data
+          this.marks = marksInSpannedArea;
+
+          // console.log(radius,center)
+          eventBus.$emit("get-plan-radius",center,radius)
+      }).catch((err)=>{
+        console.log("this is my err",err)
+      });
     })
   },
 

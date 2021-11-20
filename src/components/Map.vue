@@ -98,7 +98,10 @@ export default {
       showMap: true,
       routing_state: [],
       circleMarker: {},
-      markingState: "intersection"
+      markingState: "intersection",
+      mapState: "marking", //planning
+      mapVectors: {}
+
       //latLng(42.373611,  -71.110558)
     };
   },
@@ -113,6 +116,27 @@ export default {
       }
       this.markingState = state
     });
+  
+    eventBus.$on("changeMapState",(state)=>{
+      this.mapState= state
+    });
+
+    eventBus.$on("get-plan-radius",(center,radius)=>{
+      console.log(center)
+      this.circleMarker = {center: [center.lat,center.lng], radius: radius, color: 'blue'};
+    });
+
+    eventBus.$on("render-path",(path,markId)=>{
+        let myVector =  L.polyline([path]).arrowheads( {frequency: 'endonly', size: '50%'} )
+        this.mapVectors[markId] = myVector
+        this.map = this.$refs.myMap.mapObject
+        myVector.addTo(this.map)
+    })
+    eventBus.$on("deRender-path",(markId)=>{
+        let myVector = this.mapVectors[markId]
+        myVector.remove()
+        delete this.mapVectors[markId]
+    })
   },
   methods: {
 
@@ -138,8 +162,16 @@ export default {
       return this.markingState==="intersection"
     },
 
-    getPath(){
+    getMarks(){
+      eventBus.$emit("get-marks",{
+                startLat :  this.popup.lat,
+                startLng : this.popup.lng,
+                endLat: this.secondPopup.lat, 
+                endLng: this.secondPopup.lng
+      })
+    },
 
+    getPath(){
       axios.get("/api/mark/path",{ params : { 
         startLat :  this.popup.lat,
        startLng : this.popup.lng,
@@ -175,34 +207,61 @@ export default {
     },
     
     handleClick(e) {
-      if (this.routing_state.length == 0 || this.routing_state.length == 2) {
-         if (this.routing_state.length == 2) {
-            this.routing_state = [];
-            this.popup = undefined;
-            this.secondPopup = undefined;
-            this.circleMarker = {};
-            // console.log("getting path")
-            // this.getPath()
-         }
-          this.routing_state.push([e.latlng.lat, e.latlng.lng]);
-          this.popup = e.latlng;
-          this.showParagraph = true;
-          this.popupContent = "Starting Point for Routing: (" + Math.round(e.latlng.lat*10000)/10000 + ", " + Math.round(e.latlng.lng*10000)/10000 + ")<br/>Double-click somewhere else to find a route to that point.";
-      } else if (this.routing_state.length == 1 &&  !this.isIntersectionState()) {
-          this.routing_state.push([e.latlng.lat, e.latlng.lng]);
-          this.secondPopup = e.latlng;
-          this.secondPopupContent = "Finding route";
-          let area_x = (this.routing_state[0][0] + this.routing_state[1][0])/2;
-          let area_y = (this.routing_state[0][1] + this.routing_state[1][1])/2;
-          let distance = this.getDistance(this.routing_state[0], this.routing_state[1])
-          this.circleMarker = {center: [area_x, area_y], radius: distance, color: 'blue'};
-          console.log("getting path")
-          this.getPath()
-          // create post request 
-          // draw connecting lines between points
-      } else if (this.routing_state.length == 1 &&  this.isIntersectionState()){// change to another location
-          this.routing_state = [e.latlng.lat,e.latlng];
-          this.popup = e.latlng;
+      if (this.mapState==="marking"){
+        if (this.routing_state.length == 0 || this.routing_state.length == 2) {
+          if (this.routing_state.length == 2) {
+              this.routing_state = [];
+              this.popup = undefined;
+              this.secondPopup = undefined;
+              this.circleMarker = {};
+              // console.log("getting path")
+              // this.getPath()
+          }
+            this.routing_state.push([e.latlng.lat, e.latlng.lng]);
+            this.popup = e.latlng;
+            this.showParagraph = true;
+            this.popupContent = "Starting Point for Routing: (" + Math.round(e.latlng.lat*10000)/10000 + ", " + Math.round(e.latlng.lng*10000)/10000 + ")<br/>Double-click somewhere else to find a route to that point.";
+        } else if (this.routing_state.length == 1 &&  !this.isIntersectionState()) {
+            this.routing_state.push([e.latlng.lat, e.latlng.lng]);
+            this.secondPopup = e.latlng;
+            this.secondPopupContent = "Finding route";
+            let area_x = (this.routing_state[0][0] + this.routing_state[1][0])/2;
+            let area_y = (this.routing_state[0][1] + this.routing_state[1][1])/2;
+            let distance = this.getDistance(this.routing_state[0], this.routing_state[1])
+            this.circleMarker = {center: [area_x, area_y], radius: distance, color: 'blue'};
+
+            this.getPath()
+            // create post request 
+            // draw connecting lines between points
+        } else if (this.routing_state.length == 1 &&  this.isIntersectionState()){// change to another location
+            this.routing_state = [e.latlng.lat,e.latlng];
+            this.popup = e.latlng;
+        }
+      }else{
+ 
+        if (this.routing_state.length == 0 || this.routing_state.length == 2) {
+          if (this.routing_state.length == 2) {
+              this.routing_state = [];
+              this.popup = undefined;
+              this.secondPopup = undefined;
+              this.circleMarker = {};
+          }
+            this.routing_state.push([e.latlng.lat, e.latlng.lng]);
+            this.popup = e.latlng;
+            this.showParagraph = true;
+            this.popupContent = "Starting Point for Routing: (" + Math.round(e.latlng.lat*10000)/10000 + ", " + Math.round(e.latlng.lng*10000)/10000 + ")<br/>Double-click somewhere else to find a route to that point.";
+        } else if (this.routing_state.length == 1) {
+            this.routing_state.push([e.latlng.lat, e.latlng.lng]);
+            this.secondPopup = e.latlng;
+            this.getMarks();
+            // this.secondPopupContent = "Finding route";
+            // let area_x = (this.routing_state[0][0] + this.routing_state[1][0])/2;
+            // let area_y = (this.routing_state[0][1] + this.routing_state[1][1])/2;
+            // let distance = this.getDistance(this.routing_state[0], this.routing_state[1])
+            // this.circleMarker = {center: [area_x, area_y], radius: distance, color: 'blue'};
+            // create post request 
+            // draw connecting lines between points
+        }
       }
     }
   }
