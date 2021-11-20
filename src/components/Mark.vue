@@ -21,22 +21,22 @@
 
     <div class="footer">
       <div class="comment-section">
-        <div class="comment-icon">
+        <!-- <div class="comment-icon">
           <font-awesome-icon icon="comment" />
-        </div>
-
+        </div> -->
+        <!-- 
         <div class="comment-count tooltip">
           <span>
             {{ commentCount }}
           </span>
-        </div>
+        </div> -->
 
-        <div>
+        <!-- <div>
           <button class="comment">comment</button>
-        </div>
+        </div> -->
       </div>
 
-      <div class="rate tooltip">
+      <!-- <div class="rate tooltip">
         <font-awesome-icon
           v-for="index in 5"
           :key="index"
@@ -46,25 +46,24 @@
           @click="rateMark(index + 1)"
         />
         <span class="tooltiptext">rate</span>
-      </div>
+      </div> -->
     </div>
   </button>
 </template>
 
 <script>
-
-import {eventBus} from "../main"
+import { eventBus } from "../main";
 
 export default {
   name: "Mark",
-  props: ["markId","caption", "tags", "time", "userId","path"],
+  props: ["markId", "caption", "tags", "time", "userId", "path"],
 
   data() {
     return {
       commentCount: 0,
       stars: [1, 2, 3, 4, 5],
       rating: 0,
-      postClass: "post"
+      postClass: "post",
     };
   },
 
@@ -72,27 +71,22 @@ export default {
     rateMark(rating) {
       this.rating = rating;
     },
-    displayPath(){
-      if (this.postClass==="post"){
-        this.postClass = "post select"
-        eventBus.$emit("render-path",this.path,this.markId)
-      }else
-      {
-        this.postClass = "post"
-        eventBus.$emit("deRender-path",this.markId)
+    displayPath() {
+      if (this.postClass === "post") {
+        this.postClass = "post select";
+        eventBus.$emit("render-path", this.path, this.markId);
+      } else {
+        this.postClass = "post";
+        eventBus.$emit("deRender-path", this.markId);
       }
-      
-      
-    }
+    },
   },
 };
 </script>
 
 <style scoped>
-
-.select
-{
-  background-color:#6DD978 !important;
+.select {
+  background-color: #6dd978 !important;
 }
 
 .comment-section {
@@ -108,7 +102,6 @@ export default {
   background: #1da1f2;
   border: none;
   margin-right: 10px;
-
 }
 
 .comment-icon {

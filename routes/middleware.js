@@ -5,6 +5,7 @@ const ratingModel = require("../models/rating");
 const savedModel = require("../models/saved");
 const replyModel = require("../models/reply");
 
+// TODO add a middleware for mark fields 
 
 // checks if the markId in params is valid
 const isMarkIdInParamsExists = (req, res, next) => {

@@ -8,9 +8,6 @@
         <div class="nav">
           <Navigation />
         </div>
-        <div class="menu">
-          <Menu />
-        </div>
         <div class="side-render">
           <div class="floating-markslist" v-if="showMarks">
             <MarksList v-bind:marks="marks" />
@@ -21,22 +18,16 @@
         </div>
       </div>
     </div>
-    <!-- <div v-else> 
-      <LogIn />
-      </div> -->
   </div>
 </template>
 
 <script>
+
+
 import MarksList from "./components/MarksList.vue";
-import Menu from "./components/Menu.vue";
-
-
-// import Marker from "./components/Marker.vue";
 import Marking from "./components/Marking.vue";
 import Navigation from "./components/Navigation.vue";
 import Map from './components/Map.vue';
-// import LogIn from './components/LogIn.vue';
 import { eventBus } from './main.js';
 import axios from 'axios';
 
@@ -45,13 +36,9 @@ export default {
   name: "App",
   components: {
     MarksList,
-    Menu,
-    // Navigation,
-    // Marker,
     Marking,
     Navigation,
     Map,
-    // LogIn
   },
 
   data() {
@@ -81,8 +68,6 @@ export default {
           console.log(res)
           let {marksInSpannedArea, radius, center } = res.data
           this.marks = marksInSpannedArea;
-
-          // console.log(radius,center)
           eventBus.$emit("get-plan-radius",center,radius)
       }).catch((err)=>{
         console.log("this is my err",err)
