@@ -72,7 +72,6 @@ function getMarksInSpannedArea(start, end) {
 
   const radius = getDistance(start, end);
 
-  // console.log(start,end,"start end here")
   // get the center of the spanned area
   const center = getCenter(start, end);
 

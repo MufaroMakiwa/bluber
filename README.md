@@ -29,33 +29,35 @@ then you will find the application at `localhost:8080` in the browser
   - src
     - Map.vue
 - **Hophin Kibona**:
-  - src
-    - Map.vue
-  - models:
-    - Model1.js
-    - Model2.js
-    - Users.js
-  - routes:
-    - route1.js
-    - route2.js
-    - users.js
-    - index.js
-  - Boilerplate code (main.js, babel.config.js, router.js, etc.)
+  - components
+    - LogIn.vue
+    - Mark.vue
+    - MarksList.vue
+    - Menu.vue
+    - Navigation.vue
+  - routes
+    -  user.js 
+  - models
+    - user.js
+
+  - bluber-server/
+
 - **Hillary Tamirepi**:
-  - src
-    - HomePage.vue
-    - Test.vue
-  - models:
-    - Model1.js
-    - Model2.js
-    - Users.js
+  - components
+    - Map.vue
+    - Mark.vue
+    - Marking.vue
+    - MarksList.vue
+    - Navigation.vue
+
   - routes:
-    - route1.js
-    - route2.js
-    - users.js
-    - index.js
+    - mark-controller.js
+    - mark.js
+
+  - bluber-server/
+
 - **Mufaro Makiwa**:
-  - models:
+  - components:
     - comment.js
     - mark.js
     - rating.js
@@ -72,3 +74,4 @@ then you will find the application at `localhost:8080` in the browser
     - saved.js
     - middleware.js
     - rating.js
+  - bluber-server/
