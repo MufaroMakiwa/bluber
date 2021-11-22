@@ -11,7 +11,19 @@
       @update:center="centerUpdate"
       @update:zoom="zoomUpdate"
     >
-      <l-tile-layer :url="url" :attribution="attribution" />
+      <l-control-layers position="topright"></l-control-layers>
+      <!-- <l-tile-layer :url="url" :attribution="attribution" /> -->
+      <l-tile-layer
+
+      v-for="tileProvider in tileProviders"
+      :key="tileProvider.name"
+      :name="tileProvider.name"
+      :visible="tileProvider.visible"
+      :url="tileProvider.url"
+      :attribution="tileProvider.attribution"
+      layer-type="base"/>
+      
+      >
       <l-marker v-if="popup !== undefined" :lat-lng="popup">
         <l-popup>
           <div @click="innerClick">
@@ -39,7 +51,7 @@
 <script>
 import L from "leaflet";
 import { latLng } from "leaflet";
-import { LMap, LTileLayer, LMarker, LPopup, LCircle } from "vue2-leaflet";
+import { LMap, LTileLayer, LMarker, LPopup, LCircle, LControlLayers} from "vue2-leaflet";
 import { Icon } from "leaflet";
 import { eventBus } from "../main";
 import axios from "axios";
@@ -59,6 +71,7 @@ export default {
     LMarker,
     LPopup,
     LCircle,
+    LControlLayers,
   },
 
   data() {
@@ -66,9 +79,6 @@ export default {
       zoom: 13,
       map: null,
       center: latLng(42.373611, -71.110558),
-      url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-      attribution:
-        '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       popup: undefined,
       popupContent: "",
       secondPopup: undefined,
@@ -87,9 +97,52 @@ export default {
       mapState: "marking", //planning
       mapVectors: {},
       planningVectors: [],
+      tileProviders: [
+        {
+          name: "Street Maps",
+          url: 'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiaGlsbHp5dGFwcyIsImEiOiJja2MxZ3dtankxNThpMnpsbXo1MG4zdHkzIn0.mxO9d6EI9Xcr6d9RmmR3Jg',
+          attribution:
+            '© <a href="https://apps.mapbox.com/feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+          visible: true
+        },
+        { 
+        name: 'Mapbox Light',
+        visible: false,
+        attribution:
+          '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+         url: 'https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiaGlsbHp5dGFwcyIsImEiOiJja2MxZ3dtankxNThpMnpsbXo1MG4zdHkzIn0.mxO9d6EI9Xcr6d9RmmR3Jg',
+      },
+      { 
+        name: 'Mapbox Outdoors',
+        visible: false,
+        attribution:
+          '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+         url: 'https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiaGlsbHp5dGFwcyIsImEiOiJja2MxZ3dtankxNThpMnpsbXo1MG4zdHkzIn0.mxO9d6EI9Xcr6d9RmmR3Jg',
+      },
+      { 
+        name: 'Mapbox Satellite',
+        visible: false,
+        attribution:
+          '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+         url: 'https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiaGlsbHp5dGFwcyIsImEiOiJja2MxZ3dtankxNThpMnpsbXo1MG4zdHkzIn0.mxO9d6EI9Xcr6d9RmmR3Jg',
+      },
+    ],
     };
   },
+
+  beforeMount(){
+
+    // L.mapbox.accessToken = 'pk.eyJ1IjoiaGlsbHp5dGFwcyIsImEiOiJja2MxZ3dtankxNThpMnpsbXo1MG4zdHkzIn0.mxO9d6EI9Xcr6d9RmmR3Jg';
+    }
+    ,
+
   beforeCreate() {
+    let mapRef = this.$refs.myMap;
+    if (mapRef){
+      console.log("finally")
+      this.map = mapRef.mapObject;
+    }
+
     eventBus.$on("change", (state) => {
       if (this.markingState === "path") {
         this.routing_state = this.routing_state.splice(1);
@@ -138,6 +191,8 @@ export default {
       });
       this.planningVectors = [];
     });
+
+
   },
   methods: {
     zoomUpdate(zoom) {

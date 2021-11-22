@@ -6,16 +6,18 @@
 
     <div class="body">
       <div class="caption">
-        <textarea v-model="currentMark.caption" placeholder="Caption..." />
+        <textarea class="text-area" v-model="currentMark.caption" placeholder="Caption..." />
       </div>
       <div class="coords">
         <div class="coord">
           <label class="coord-label">Start Coord</label>
-          <span class="start-coord">{{ currentMark.start }}</span>
+          <input class="start-coord" :value="currentMark.start[0]" readonly>
+          <input class="start-coord" :value="currentMark.start[1]" readonly>
         </div>
         <div class="coord">
           <label class="coord-label">End Coord</label>
-          <span class="end-coord">{{ currentMark.end }}</span>
+          <input class="end-coord" :value="currentMark.end[0]" readonly>
+          <input class="end-coord" :value="currentMark.end[1]" readonly>
         </div>
       </div>
       <div class="tags">
@@ -259,4 +261,25 @@ export default {
 .coord {
   margin-top: 8px;
 }
+
+.text-area {
+  width: 300px;
+  height: 80px;
+  font-family: sans-serif;
+  margin: 8px 16px;
+  font-weight: 200;
+  font-size: 16px;
+  position: relative;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  border-top: none;
+  border-bottom: 1px solid #DDD;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.39), 0 -1px 1px #FFF, 0 1px 0 #FFF;
+  outline: 0;
+  padding: 8px 6px;
+  /*https://gist.github.com/nrrrdcore/3309046
+  /* https://stackoverflow.com/questions/16156594/how-to-change-border-color-of-textarea-on-focus */
+  outline-color: #719ece;
+}
+
 </style>
