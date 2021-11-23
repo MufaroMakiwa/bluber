@@ -5,6 +5,8 @@ import store from './store/index';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-arrowheads'
 import VueCookie from 'vue-cookie';
+import vuetify from './plugins/vuetify'
+
 
 
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -14,11 +16,12 @@ import {
   faStar, 
   faMapMarked,
   faPlus,
+  faExchangeAlt,
   faUserCircle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 
-library.add(faStar, faComment, faBars, faUserCircle, faPlus, faMapMarked);
+library.add(faStar, faComment, faBars, faUserCircle, faPlus, faMapMarked, faExchangeAlt);
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 Vue.config.productionTip = false;
@@ -32,5 +35,6 @@ new Vue({
   el: '#app',
   router,
   store,
+  vuetify,
   render: h => h(App)
 });

@@ -4,15 +4,23 @@
       <font-awesome-icon icon="user-circle" class="user-icon"/>
     </div>
 
-    <button class="nav-button shadow" @click="planTrip">
+    <v-btn 
+      rounded
+      class="nav-button" 
+      color="white"
+      @click="planTrip">
       <font-awesome-icon icon="map-marked" class="button-icon"/>
       Plan Trip
-    </button>
+    </v-btn>
 
-    <button class="nav-button shadow" @click="addMark">
+    <v-btn 
+      rounded
+      class="nav-button" 
+      color="white"
+      @click="addMark">
       <font-awesome-icon icon="plus" class="button-icon"/>
       Add Mark
-    </button>
+    </v-btn>
   </nav>
 </template>
 
@@ -71,18 +79,9 @@ export default {
 
 .nav-button {
   margin-left: 1rem;
-  height: 38px;
-  border-radius: 19px;
-  outline: none;
-  border: none;
-  background-color: var(--theme-color);
   padding: 0 1rem;
   text-align: center;
   transition: all 0.3s;
-  display: inline-flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
 }
 
 .button-icon {

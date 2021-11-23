@@ -1,11 +1,12 @@
 <template>
-  <input
-    class="input"
+  <v-text-field
+    :label="label"
     :value="value"
+    color="primary"
+    outlined
     :placeholder="placeholder"
-    type="text"
-    autocomplete="off"
-    @input="$emit('input', $event.target.value)"/>
+    hide-details="true"
+    @input="$emit('input', $event.target.value)"></v-text-field>
 </template>
 
 <script>
@@ -14,7 +15,8 @@ export default {
 
   props: {
     value: String,
-    placeholder: String
+    label: String,
+    placeholder: String,
   }
 }
 </script>

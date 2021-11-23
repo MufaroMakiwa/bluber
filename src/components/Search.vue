@@ -12,20 +12,26 @@
       <div class="input-container start">
         <SearchInputField 
           v-model="start.query"
-          :placeholder="start.placeholder"/>
-        <div class="side-icon-container">
-
-        </div>
+          :label="start.label"/>
+        <v-btn
+          icon
+          color="primary"
+          class="side-icon">
+          <font-awesome-icon icon="plus" class="button-icon"/>
+        </v-btn>
       </div>
 
       <div class="input-container end">
         <SearchInputField 
           v-model="end.query"
-          :placeholder="end.placeholder"/>
+          :label="end.label"/>
 
-        <div class="side-icon-container">
-
-        </div>
+        <v-btn
+          icon
+          color="primary"
+          class="side-icon fa-rotate-90">
+          <font-awesome-icon icon="exchange-alt" class="button-icon"/>
+        </v-btn>
       </div>
     </div>
   </div>
@@ -45,12 +51,12 @@ export default {
     return {
       start: {
         query: "",
-        placeholder: "Choose start point, or double click on the map"
+        label: "Choose start point, or double click on the map",
       },
 
       end: {
         query: "",
-        placeholder: "Choose end point"
+        label: "Choose end point"
       }
     }
   }
@@ -63,7 +69,7 @@ export default {
   right: 1rem;
   background-color: white;
   padding: 1rem;
-  max-width: 400px;
+  max-width: 450px;
   width: 100%;
   bottom: 1rem;
   overflow: scroll;
@@ -98,7 +104,11 @@ export default {
   margin-top: 1rem;
 }
 
-.side-icon-container {
-  
+.side-icon {
+  margin-left: 1rem;
+}
+
+.button-icon {
+  font-size: 1.1rem;
 }
 </style>
