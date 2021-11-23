@@ -1,29 +1,16 @@
 <template>
   <div class="app-wrapper">  
-    <Map class="map"/>
-
-    <div class="overlay"> 
-      <Navigation class="nav"/>
-
-      <div class="side-render">
-        <div class="floating-markslist" v-if="showMarks">
-          <MarksList v-bind:marks="marks" />
-        </div>
-
-        <div v-if="showMarker" class="floating-marker">
-          <Marking />
-        </div>
-      </div>
-    </div>
+    <Map class="map"/>  
+    <Navigator class="overlay"/>     
+    <Search class="overlay"/>
   </div>
 </template>
 
 <script>
 
-import MarksList from "../components/MarksList.vue";
-import Marking from "../components/Marking.vue";
-import Navigation from "../components/Navigation.vue";
-import Map from '../components/Map.vue';
+import Navigator from "../components/Navigator";
+import Search from "../components/Search";
+import Map from '../components/Map';
 import { eventBus } from '../main.js';
 import axios from 'axios';
 
@@ -31,10 +18,9 @@ import axios from 'axios';
 export default {
   name: "App",
   components: {
-    MarksList,
-    Marking,
-    Navigation,
+    Navigator,
     Map,
+    Search
   },
 
   data() {
@@ -82,21 +68,13 @@ export default {
   height: 100%;
 }
 
-.nav {
-  position: absolute;
-  top: 2rem;
-  left: 2rem;
-}
-
 .map {
   z-index: 0;
 }
 
 .overlay {
-  z-index: 999;
+  z-index: var(--overlay-z-index);
   position: absolute;
-  top: 0;
-  width: 100%;
 }
 
 .floating-markslist {

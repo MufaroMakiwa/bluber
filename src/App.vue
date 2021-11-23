@@ -13,10 +13,51 @@ export default {
  box-sizing: border-box;
 }
 
+html {
+  --border-radius: 8px;
+  --theme-color: #5adef0;
+  --button-color-hover: #dfecee; 
+  --input-color-hover: #dfecee;
+  --overlay-z-index: 999;
+  font: 16px sans-serif;
+}
+
 body {
   margin: 0;
   padding: 0;
   width: 100vw;
   height: 100vh;
+}
+
+button {
+  cursor: pointer;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  padding: 0;
+}
+
+input, textarea {
+  transition: all 0.3s;
+  border: none;
+  outline: none;
+}
+
+textarea:hover:not(:focus) {
+  background-color: var(--input-color-hover);
+}
+
+.shadow {
+  background-color: white;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+  border: 1px solid lightgray;
+  border-radius: var(--border-radius);
+}
+
+.overflow-text {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 </style>

@@ -32,7 +32,7 @@
         :radius="circleMarker.radius"
         :color="circleMarker.color"
       />
-      <l-control-zoom position="bottomright"></l-control-zoom>
+      <l-control-zoom position="bottomleft"></l-control-zoom>
     </l-map>
   </div>
 </template>
