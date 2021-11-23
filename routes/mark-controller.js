@@ -1,5 +1,6 @@
 const markModel = require("../models/mark");
-const BLUBER_DATA_SERVER_URL = "http://bluber-server.herokuapp.com/road"
+// const BLUBER_DATA_SERVER_URL = "http://bluber-server.herokuapp.com/road"
+const BLUBER_DATA_SERVER_URL = "http://127.0.0.1:5000/road";
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 

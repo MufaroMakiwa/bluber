@@ -1,18 +1,107 @@
 <template>
+  <div class="app-wrapper">  
+    <Map class="map"/>
 
-<div>
-  <h1>BLUBER</h1>
-  <Mark />
-</div>
+    <div class="overlay"> 
+      <Navigation class="nav"/>
 
+      <div class="side-render">
+        <div class="floating-markslist" v-if="showMarks">
+          <MarksList v-bind:marks="marks" />
+        </div>
 
+        <div v-if="showMarker" class="floating-marker">
+          <Marking />
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-import Mark from "../components/Mark.vue"
+
+import MarksList from "../components/MarksList.vue";
+import Marking from "../components/Marking.vue";
+import Navigation from "../components/Navigation.vue";
+import Map from '../components/Map.vue';
+import { eventBus } from '../main.js';
+import axios from 'axios';
+
+
 export default {
-  name: "Home",
-  components: { Mark }
+  name: "App",
+  components: {
+    MarksList,
+    Marking,
+    Navigation,
+    Map,
+  },
+
+  data() {
+    return {
+      username: "Hillary",
+      showMarks:false,
+      isLoggedIn: false,
+      showMarker: false,
+      marks: [],
+    };
+  },
+
+  mounted() {
+    eventBus.$on("toggle-marks", () => {
+      this.showMarks = !this.showMarks;
+      this.showMarker = false;
+    })
+    eventBus.$on("toggle-marker", () => {
+      this.showMarker = !this.showMarker;
+      this.showMarks = false;
+    })
+    eventBus.$on("signIn", () => {
+      this.isLoggedIn = true;
+    })
+    eventBus.$on("get-marks", (params) => {
+        axios.get("/api/mark",{params:params}).then((res)=>{
+          console.log(res)
+          let {marksInSpannedArea, radius, center } = res.data
+          this.marks = marksInSpannedArea;
+          eventBus.$emit("get-plan-radius",center,radius)
+      }).catch((err)=>{
+        console.log("this is my err",err)
+      });
+    })
+  },
+
 }
+
 </script>
 
+<style scoped>
+
+.app-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+.nav {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+}
+
+.map {
+  z-index: 0;
+}
+
+.overlay {
+  z-index: 999;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.floating-markslist {
+  position: absolute;
+  top: 2vw;
+  right: 2vw;
+}
+</style>

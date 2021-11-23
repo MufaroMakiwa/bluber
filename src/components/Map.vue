@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 100vh; width: 100%" class="map-wrapper">
+  <div class="map-wrapper">
     <l-map
       ref="myMap"
       v-if="showMap"
@@ -32,6 +32,7 @@
         :radius="circleMarker.radius"
         :color="circleMarker.color"
       />
+      <l-control-zoom position="bottomright"></l-control-zoom>
     </l-map>
   </div>
 </template>
@@ -39,7 +40,7 @@
 <script>
 import L from "leaflet";
 import { latLng } from "leaflet";
-import { LMap, LTileLayer, LMarker, LPopup, LCircle } from "vue2-leaflet";
+import { LMap, LTileLayer, LMarker, LPopup, LCircle, LControlZoom } from "vue2-leaflet";
 import { Icon } from "leaflet";
 import { eventBus } from "../main";
 import axios from "axios";
@@ -59,6 +60,7 @@ export default {
     LMarker,
     LPopup,
     LCircle,
+    LControlZoom
   },
 
   data() {
@@ -79,6 +81,7 @@ export default {
       showParagraph: false,
       mapOptions: {
         zoomSnap: 0.5,
+        zoomControl: false
       },
       showMap: true,
       routing_state: [],
@@ -288,8 +291,8 @@ export default {
 </script>
 
 <style scoped>
-/* .map-wrapper {
-    height: 50%;
-    width: 100%;
-} */
+.map-wrapper {
+  height: 100%;
+  width: 100%;
+}
 </style>
