@@ -9,7 +9,7 @@ import vuetify from './plugins/vuetify'
 
 
 
-import { library } from '@fortawesome/fontawesome-svg-core'
+import { library } from '@fortawesome/fontawesome-svg-core';
 import { 
   faBars, 
   faComment, 
@@ -17,11 +17,17 @@ import {
   faMapMarked,
   faPlus,
   faExchangeAlt,
-  faUserCircle } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+  faUserCircle,
+  faMinus,
+  faStarHalf,
+  faBell,
+  faMapMarker,
+  faMap } from '@fortawesome/free-solid-svg-icons';
+import { faStar as faStarRegular } from '@fortawesome/free-regular-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 
-library.add(faStar, faComment, faBars, faUserCircle, faPlus, faMapMarked, faExchangeAlt);
+library.add(faStar, faComment, faBars, faUserCircle, faPlus, faMapMarked, faExchangeAlt, faMinus, faStarHalf, faStarRegular, faBell, faMapMarker, faMap);
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 Vue.config.productionTip = false;

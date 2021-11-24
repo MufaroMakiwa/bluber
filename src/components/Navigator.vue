@@ -1,8 +1,6 @@
 <template>
   <nav class="navbar">
-    <div class="user-container shadow" @click="toggleUserOptions">
-      <font-awesome-icon icon="user-circle" class="user-icon"/>
-    </div>
+    <ProfileMenu />
 
     <v-btn 
       rounded
@@ -25,8 +23,14 @@
 </template>
 
 <script>
+import ProfileMenu from './ProfileMenu.vue';
+
 export default {
   name: "Navigator",
+
+  components: {
+    ProfileMenu
+  },
 
   methods: {
     toggleUserOptions() {
@@ -72,16 +76,8 @@ export default {
   margin-right: 0.5rem;
 }
 
-.user-icon {
-  font-size: 2.5rem;
-  color: gray;
-}
-
 .nav-button {
   margin-left: 1rem;
-  padding: 0 1rem;
-  text-align: center;
-  transition: all 0.3s;
 }
 
 .button-icon {
@@ -89,8 +85,4 @@ export default {
   margin-right: 0.75rem;
 }
 
-.nav-button:hover, 
-.user-container:hover {
-  background-color: var(--button-color-hover);
-}
 </style>

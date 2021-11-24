@@ -1,12 +1,12 @@
 <template>
   <v-text-field
+    outlined
+    color="primary"
+    hide-details="true"
     :label="label"
     :value="value"
-    color="primary"
-    outlined
     :placeholder="placeholder"
-    hide-details="true"
-    @input="$emit('input', $event.target.value)"></v-text-field>
+    @input="handleInput($event)"></v-text-field>
 </template>
 
 <script>
@@ -17,15 +17,16 @@ export default {
     value: String,
     label: String,
     placeholder: String,
+  },
+
+  methods: {
+    handleInput(input) {
+      this.$emit('input', input);
+    }
   }
 }
 </script>
 
 <style scoped>
-.input {
-  flex-grow: 1;
-  border: 1px solid lightgray;
-  border-radius: 8px;
-  padding: 1rem;
-}
+
 </style>
