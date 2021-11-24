@@ -1,11 +1,13 @@
 <template>
   <v-text-field
     outlined
+    clearable
     color="primary"
     hide-details="true"
     :label="label"
     :value="value"
     :placeholder="placeholder"
+
     @input="handleInput($event)"></v-text-field>
 </template>
 

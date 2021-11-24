@@ -17,9 +17,6 @@ export default {
 
 html {
   --border-radius: 8px;
-  --theme-color: #5adef0;
-  --button-color-hover: #dfecee; 
-  --input-color-hover: #dfecee;
   --overlay-z-index: 999;
   font: 16px sans-serif;
 }

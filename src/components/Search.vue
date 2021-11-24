@@ -86,11 +86,11 @@ export default {
 
     startLabel() {
       const directive = this.searchType === "intersection" ? "intersection" : "start";
-      return `Enter ${directive} point, or click on the map`;
+      return `Enter ${directive} point, or double click on the map`;
     },
 
     endLabel() {
-      return "Enter end point";
+      return "Enter end point...";
     },
 
     isSwitchButtonDisabled() {
@@ -133,7 +133,7 @@ export default {
   right: 1rem;
   bottom: 1rem;
   background-color: white;
-  width: 450px;
+  width: 500px;
 }
 
 .search-outer {

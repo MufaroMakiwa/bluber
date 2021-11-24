@@ -8,6 +8,8 @@ export default new Vuetify({
     iconfont: 'faSvg',
   },
 
+  
+
   theme: {
     themes: {
       light: {
