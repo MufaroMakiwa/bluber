@@ -1,15 +1,22 @@
 <template>
   <div class="app-wrapper">  
     <Map class="map"/>  
-    <Navigator class="overlay"/>     
-    <Search class="overlay"/>
+    <Navigator />   
+
+    <div class="main-app-section shadow">
+      <PlanTrip />
+      <!-- <CreateMark /> -->
+    </div>   
+    
+    <!-- <Marking />     -->
   </div>
 </template>
 
 <script>
 
 import Navigator from "../components/Navigator";
-import Search from "../components/Search";
+import Marking from "../components/Marking";
+import PlanTrip from "../components/PlanTrip";
 import Map from '../components/Map';
 import { eventBus } from '../main.js';
 import axios from 'axios';
@@ -20,7 +27,8 @@ export default {
   components: {
     Navigator,
     Map,
-    Search
+    Marking, 
+    PlanTrip
   },
 
   data() {
@@ -72,14 +80,14 @@ export default {
   z-index: 0;
 }
 
-.overlay {
+.main-app-section {
   z-index: var(--overlay-z-index);
   position: absolute;
+  top: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  width: 500px;
+  background-color: white;
 }
 
-.floating-markslist {
-  position: absolute;
-  top: 2vw;
-  right: 2vw;
-}
 </style>

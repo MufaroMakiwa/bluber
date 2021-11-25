@@ -23,7 +23,8 @@ export default {
 
   methods: {
     handleInput(input) {
-      this.$emit('input', input);
+      const emitValue = input === null ? '' : input;
+      this.$emit('input', emitValue);
     }
   }
 }

@@ -24,12 +24,18 @@ import {
   faMapMarker,
   faMap, 
   faTimesCircle,
-  faTimes } from '@fortawesome/free-solid-svg-icons';
+  faTimes,
+  faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { faStar as faStarRegular } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 
-library.add(faStar, faComment, faBars, faUserCircle, faPlus, faMapMarked, faExchangeAlt, faMinus, faStarHalf, faStarRegular, faBell, faMapMarker, faMap, faTimesCircle, faTimes);
+library.add(
+  faStar, faComment, faBars, faUserCircle, faPlus, 
+  faMapMarked, faExchangeAlt, faMinus, faStarHalf, 
+  faStarRegular, faBell, faMapMarker, faMap, 
+  faTimesCircle, faTimes, faArrowLeft
+);
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 Vue.config.productionTip = false;

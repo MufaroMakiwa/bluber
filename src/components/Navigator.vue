@@ -50,6 +50,8 @@ export default {
 
 <style scoped>
 .navbar {
+  position: absolute;
+  z-index: var(--overlay-z-index);
   top: 1rem;
   left: 1rem;
   display: flex;

@@ -1,61 +1,54 @@
 <template>
-  <div class="search-container shadow">
-    <div class="search-outer">
-      <div class="search-inner">
-        <span class="search-greeting">
-          Hello, Mufaro
-        </span>
+  <div class="search-container">
+    <div class="search-inner">
+      <span class="search-greeting">
+        Hello, Mufaro
+      </span>
 
-        <h2 class="search-heading">
-          {{ heading }}
-        </h2>
+      <h2 class="search-heading">
+        <slot name="heading"></slot>
+      </h2>
 
-        <div class="input-container start">
-          <SearchInputField 
-            v-model="start"
-            :label="startLabel"
-            :placeholder="placeholder"/>
-          <v-btn
-            icon
-            color="primary"
-            class="side-icon"
-            @click="setSearchType">
-            <font-awesome-icon 
-              :icon="searchType === 'path' ? 'minus' : 'plus'" 
-              class="button-icon"/>
-          </v-btn>
-        </div>
+      <div class="input-container start">
+        <SearchInputField 
+          v-model="start"
+          :label="startLabel"
+          :placeholder="placeholder"/>
 
-        <div class="input-container end" v-if="searchType === 'path'">
-          <SearchInputField 
-            v-model="end"
-            :label="endLabel"
-            :placeholder="placeholder"/>
-
-          <v-btn
-            icon
-            :disabled="isSwitchButtonDisabled"
-            color="primary"
-            class="side-icon fa-rotate-90"
-            @click="switchStartEnd">
-            <font-awesome-icon icon="exchange-alt" class="button-icon"/>
-          </v-btn>
-        </div>
-
-        <div class="suggestions">
-          
-        </div>
-      </div>
-      <div class="submit-container">
         <v-btn
-          depressed
-          rounded
+          :disabled="mode === 'plan'"
+          icon
           color="primary"
-          class="submit-button font-weight-bold"
-          @click="handleSubmit"> 
-          {{ mode }}
+          class="side-icon"
+          @click="setSearchType">
+          <font-awesome-icon 
+            :icon="searchType === 'path' ? 'minus' : 'plus'" 
+            class="button-icon"/>
         </v-btn>
       </div>
+
+      <div class="input-container end" v-if="displayEndPointInput">
+        <SearchInputField 
+          v-model="end"
+          :label="endLabel"
+          :placeholder="placeholder"/>
+
+        <v-btn
+          icon
+          :disabled="isSwitchButtonDisabled"
+          color="primary"
+          class="side-icon fa-rotate-90"
+          @click="switchStartEnd">
+          <font-awesome-icon icon="exchange-alt" class="button-icon"/>
+        </v-btn>
+      </div>
+
+      <div class="suggestions">
+          
+      </div>
+    </div>
+    <div class="submit-container">
+      <slot name="submit"></slot>
     </div>
   </div>
 </template>
@@ -71,26 +64,31 @@ export default {
   },
 
   props: {
-    mode: {
-      default: "Add Mark",
-      type: String
-    }
+    mode: String  
   },
 
   computed: {
-    heading() {
-      return this.mode === "Plan Trip" 
-              ? "Where are you going?"
-              : "Where do you want to mark?"
-    },
-
     startLabel() {
-      const directive = this.searchType === "intersection" ? "intersection" : "start";
+      let directive;
+
+      if (this.mode === "plan") {
+        directive = "start";
+      } else {
+        directive = this.searchType === "intersection" ? "intersection" : "start";
+      } 
       return `Enter ${directive} point, or double click on the map`;
     },
 
     endLabel() {
       return "Enter end point...";
+    },
+
+    displayEndPointInput() {
+      if (this.mode === "plan") {
+        return true;
+      } else {
+        return this.searchType === "path";
+      }
     },
 
     isSwitchButtonDisabled() {
@@ -118,10 +116,6 @@ export default {
       const previousStart = this.start;
       this.start = this.end;
       this.end = previousStart;
-    },
-
-    handleSubmit() {
-      alert('To hanlde submit');
     }
   }
 }
@@ -129,14 +123,6 @@ export default {
 
 <style scoped>
 .search-container {
-  top: 1rem;
-  right: 1rem;
-  bottom: 1rem;
-  background-color: white;
-  width: 500px;
-}
-
-.search-outer {
   display: flex;
   width: 100%;
   height: 100%;
