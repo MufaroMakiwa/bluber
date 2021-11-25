@@ -4,8 +4,8 @@
     <Navigator />   
 
     <div class="main-app-section shadow">
-      <PlanTrip />
-      <!-- <CreateMark /> -->
+      <AddMark v-if="template === 'mark'"/>
+      <PlanTrip v-if="template === 'plan'"/>
     </div>   
     
     <!-- <Marking />     -->
@@ -15,8 +15,8 @@
 <script>
 
 import Navigator from "../components/Navigator";
-import Marking from "../components/Marking";
 import PlanTrip from "../components/PlanTrip";
+import AddMark from "../components/AddMark";
 import Map from '../components/Map';
 import { eventBus } from '../main.js';
 import axios from 'axios';
@@ -27,12 +27,15 @@ export default {
   components: {
     Navigator,
     Map,
-    Marking, 
-    PlanTrip
+    PlanTrip,
+    AddMark,
   },
 
   data() {
     return {
+      template: "mark",
+
+
       username: "Hillary",
       showMarks:false,
       isLoggedIn: false,

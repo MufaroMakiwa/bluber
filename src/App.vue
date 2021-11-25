@@ -55,4 +55,21 @@ textarea:hover:not(:focus) {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+
+.fade-enter-active {
+  animation: fade-in .2s linear;
+}
+
+.fade-leave-active {
+  animation: fade-in .2s linear reverse;
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
 </style>

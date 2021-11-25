@@ -76,7 +76,7 @@ export default {
       } else {
         directive = this.searchType === "intersection" ? "intersection" : "start";
       } 
-      return `Enter ${directive} point, or double click on the map`;
+      return `Enter ${directive} point, or click on the map`;
     },
 
     endLabel() {

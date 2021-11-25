@@ -1,11 +1,11 @@
 <template>
-  <div class="create-mark-container shadow">
+  <div class="create-mark-container">
     <div class="header-container">
       <v-btn
         icon
         color="gray"
         class="side-icon"
-        @click="handleBack">
+        @click="$emit('back')">
         <font-awesome-icon icon="arrow-left" class="back-icon"/>
       </v-btn>
 
@@ -28,12 +28,6 @@
 <script>
 export default {
   name: "CreateMark",
-
-  methods: {
-    handleBack() {
-      alert("Handle the back arrow");
-    }
-  },
 
   data() {
     return {
