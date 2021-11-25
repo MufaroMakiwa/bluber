@@ -5,7 +5,7 @@
     <v-btn 
       rounded
       class="nav-button" 
-      color="white"
+      :color="template === 'plan' ? 'secondary' : 'white'"
       @click="planTrip">
       <font-awesome-icon icon="map-marked" class="button-icon"/>
       Plan Trip
@@ -14,7 +14,7 @@
     <v-btn 
       rounded
       class="nav-button" 
-      color="white"
+      :color="template === 'mark' ? 'secondary' : 'white'"
       @click="addMark">
       <font-awesome-icon icon="plus" class="button-icon"/>
       Add Mark
@@ -32,17 +32,19 @@ export default {
     ProfileMenu
   },
 
-  methods: {
-    toggleUserOptions() {
-      alert("Toggle user menu");
-    },
+  computed: {
+    template() {
+      return this.$store.getters.template;
+    }
+  },
 
+  methods: {
     addMark() {
-      alert("Toggle add marks");
+      this.$store.dispatch('setTemplate', 'mark');
     },
 
     planTrip() {
-      alert("Toggle planning trip");
+      this.$store.dispatch('setTemplate', 'plan');
     }
   }
 }

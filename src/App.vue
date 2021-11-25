@@ -72,4 +72,9 @@ textarea:hover:not(:focus) {
     opacity: 1;
   }
 }
+
+.back-icon {
+  color: gray;
+  font-size: 1.15rem;
+}
 </style>

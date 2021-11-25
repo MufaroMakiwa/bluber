@@ -94,7 +94,7 @@ export default {
 
   methods: {
     handleSubmit() {
-      console.log("Handle create mark");
+      alert("Handle create mark");
     },
 
     tagClick(tag) {
@@ -132,11 +132,6 @@ export default {
 
 .section-heading {
   margin-left: 1rem;
-}
-
-.back-icon {
-  color: gray;
-  font-size: 1.25rem;
 }
 
 .point-container {

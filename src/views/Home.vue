@@ -7,8 +7,6 @@
       <AddMark v-if="template === 'mark'"/>
       <PlanTrip v-if="template === 'plan'"/>
     </div>   
-    
-    <!-- <Marking />     -->
   </div>
 </template>
 
@@ -33,9 +31,6 @@ export default {
 
   data() {
     return {
-      template: "mark",
-
-
       username: "Hillary",
       showMarks:false,
       isLoggedIn: false,
@@ -44,7 +39,14 @@ export default {
     };
   },
 
-  mounted() {
+  computed: {
+    template() {
+      return this.$store.getters.template;
+    },
+  },
+
+
+  created() {
     eventBus.$on("toggle-marks", () => {
       this.showMarks = !this.showMarks;
       this.showMarker = false;
