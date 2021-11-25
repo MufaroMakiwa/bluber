@@ -84,4 +84,17 @@ const replyModel = require("../models/reply");
       }).end();
   });
 
+router.get('/bluebikes',(req,res)=>{
+    console.log("cant hit route")
+    // const bluebikesData = process_bluebike_data();
+    // res.status(200).json(bluebikesData).end();
+});
+
+router.get('/',(req,res)=>{
+  console.log("cant hit route")
+  // const bluebikesData = process_bluebike_data();
+  // res.status(200).json(bluebikesData).end();
+});
+
+
 module.exports = router;

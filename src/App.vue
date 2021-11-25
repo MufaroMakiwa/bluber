@@ -6,7 +6,7 @@
       </div>
       <div class="overlay">
         <div class="nav">
-          <Navigation />
+          <!-- <Navigation /> -->
         </div>
         <div class="side-render">
           <div class="floating-markslist" v-if="showMarks">
@@ -26,7 +26,7 @@
 
 import MarksList from "./components/MarksList.vue";
 import Marking from "./components/Marking.vue";
-import Navigation from "./components/Navigation.vue";
+// import Navigation from "./components/Navigation.vue";
 import Map from './components/Map.vue';
 import { eventBus } from './main.js';
 import axios from 'axios';
@@ -37,7 +37,7 @@ export default {
   components: {
     MarksList,
     Marking,
-    Navigation,
+    // Navigation,
     Map,
   },
 

@@ -75,7 +75,6 @@ function getMarksInSpannedArea(start, end) {
   // get the center of the spanned area
   const center = getCenter(start, end);
 
-  console.log(start,end,center)
 
   // loop through all the marks and get the ones with the start or end in the spanned area
   const marksInSpannedArea = 

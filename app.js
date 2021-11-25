@@ -12,6 +12,7 @@ require('dotenv').config();
 
 // require routers
 const userRouter = require("./routes/user");
+const bluebikeRouter = require("./routes/bluebikes");
 // const commentRouter = require("./routes/comment");
 const markRouter = require("./routes/mark");
 // const ratingRouter = require("./routes/rating");
@@ -53,8 +54,10 @@ const isProduction = process.env.NODE_ENV === 'production';
 app.use(express.static(path.join(__dirname, isProduction ? 'dist' : 'public')));
 
 // connect url hierarchies to our routers
+app.use("/api/bluebike", bluebikeRouter);
 app.use("/api/user", userRouter);
 app.use("/api/mark", markRouter);
+
 // app.use("/api/comment", commentRouter);
 // app.use("/api/rating", ratingRouter);
 // app.use("/api/reply", replyRouter);
