@@ -37,7 +37,10 @@
         <v-divider></v-divider>
 
         <v-list>
-          <v-list-item @click="displayNotifications">
+          <v-list-item 
+            @click="displayNotifications"
+            color="secondary"
+            :input-value="template === 'notifications'">
             <v-list-item-avatar class="avatar">
               <font-awesome-icon icon="bell" class="menu-icon"/> 
             </v-list-item-avatar>
@@ -49,14 +52,20 @@
             </span>         
           </v-list-item>
 
-          <v-list-item @click="displayMarks">
+          <v-list-item 
+            @click="displayMarks"
+            color="secondary"
+            :input-value="template === 'user-marks'">
             <v-list-item-avatar class="avatar">
               <font-awesome-icon icon="map-marker" class="menu-icon"/> 
             </v-list-item-avatar>
             <v-list-item-title>My marks</v-list-item-title>
           </v-list-item>
 
-          <v-list-item @click="displaySaved">
+          <v-list-item 
+            @click="displaySaved"
+            color="secondary"
+            :input-value="template === 'user-saved'">
             <v-list-item-avatar class="avatar">
               <font-awesome-icon icon="map" class="menu-icon"/> 
             </v-list-item-avatar>
@@ -103,20 +112,24 @@ export default {
 
     isDisplayNotificationsCount() {
       return this.notificationCount > 0;
+    },
+
+    template() {
+      return this.$store.getters.template;
     }
   },
 
   methods: {
     displayNotifications() {
-      alert("Display notifications");
+      this.$store.dispatch('setTemplate', 'notifications');
     },
 
     displaySaved() {
-      alert("Display saved");
+      this.$store.dispatch('setTemplate', 'user-saved');
     },
 
     displayMarks() {
-      alert("Display marks");
+      this.$store.dispatch('setTemplate', 'user-marks');
     }
   }
 }

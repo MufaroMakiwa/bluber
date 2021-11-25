@@ -99,7 +99,7 @@ export default {
 
     tagClick(tag) {
       const tagIndex = this.selectedTags.indexOf(tag);
-      tagIndex > -1 ? this.selectedTags.splice(tagIndex) : this.selectedTags.push(tag);    
+      tagIndex > -1 ? this.selectedTags.splice(tagIndex, 1) : this.selectedTags.push(tag);    
     }
   }
 }

@@ -6,6 +6,9 @@
     <div class="main-app-section shadow">
       <AddMark v-if="template === 'mark'"/>
       <PlanTrip v-if="template === 'plan'"/>
+      <UserMarks v-if="template === 'user-marks'"/>
+      <UserSaved v-if="template === 'user-saved'"/>
+      <Notifications v-if="template === 'notifications'"/>
     </div>   
   </div>
 </template>
@@ -14,6 +17,9 @@
 
 import Navigator from "../components/Navigator";
 import PlanTrip from "../components/PlanTrip";
+import Notifications from "../components/Notifications";
+import UserMarks from "../components/UserMarks";
+import UserSaved from "../components/UserSaved";
 import AddMark from "../components/AddMark";
 import Map from '../components/Map';
 import { eventBus } from '../main.js';
@@ -27,6 +33,9 @@ export default {
     Map,
     PlanTrip,
     AddMark,
+    Notifications,
+    UserMarks,
+    UserSaved
   },
 
   data() {
