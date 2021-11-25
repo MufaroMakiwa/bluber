@@ -195,12 +195,9 @@ export default {
   padding-bottom: 2rem;
 }
 
-.filter-container h3 {
-  margin-bottom: 1rem;
-}
-
 .filter-container .padded {
-  margin-right: 1rem
+  margin-right: 1rem;
+  margin-top: 1rem;
 }
 
 
