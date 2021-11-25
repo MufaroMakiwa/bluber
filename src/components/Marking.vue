@@ -227,7 +227,7 @@ export default {
   margin: 8px;
   text-align: center;
   font-size: 24px;
-  color: #1da1f2;
+  color: #74adb6;
 }
 
 .tagged {

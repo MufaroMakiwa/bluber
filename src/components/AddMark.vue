@@ -19,28 +19,29 @@
       </Search>
     </transition>
     
-    <CreateMark v-if="addingMarkDetails" @back="addingMarkDetails=false"/>
-    
+    <CreateMarkDetails 
+      v-if="addingMarkDetails" 
+      start="189 Vassar Street"
+      end="77 Massachusetts Avenue"
+      @back="addingMarkDetails=false"/>   
   </div>
-
-  
 </template>
 
 <script>
 import Search from "./Search";
-import CreateMark from "./CreateMark";
+import CreateMarkDetails from "./CreateMarkDetails";
 
 
 export default {
   name: "AddMark",
 
   components: {
-    Search, CreateMark
+    Search, CreateMarkDetails
   },
 
   data() {
     return {
-      addingMarkDetails: false
+      addingMarkDetails: false,
     }
   },
 
