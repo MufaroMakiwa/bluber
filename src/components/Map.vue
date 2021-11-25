@@ -1,6 +1,7 @@
 <template>
   <div style="height: 100vh; width: 100%" class="map-wrapper">
     <div id="mapContainer" class="basemap"></div>
+    <div id="cl" ref="control" class="control-class"></div>
     <!-- <MglMap :accessToken="accessToken"  mapStyle="mapbox://styles/mapbox/streets-v11" @load="onMapLoad"/> -->
   </div>
 </template>
@@ -79,13 +80,15 @@ export default {
       antialias: true
     });
 
+    
+    console.log(this.$refs["control"])
     this.map.addControl(
       new MapboxDirections({
         accessToken: this.accessToken,
         unit: "metric",
         profile: "mapbox/cycling",
       }),
-      "top-right"
+      'top-right'
     );
 
     this.map.on("load", () => {
