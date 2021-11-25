@@ -6,7 +6,7 @@
     <div class="main-app-section shadow">
       <AddMark v-if="template === 'mark'"/>
       <PlanTrip v-if="template === 'plan'"/>
-      <UserMarks v-if="template === 'user-marks'"/>
+      <MarksList v-if="template === 'user-marks'" title="My marks"/>
       <UserSaved v-if="template === 'user-saved'"/>
       <Notifications v-if="template === 'notifications'"/>
     </div>   
@@ -18,7 +18,7 @@
 import Navigator from "../components/Navigator";
 import PlanTrip from "../components/PlanTrip";
 import Notifications from "../components/Notifications";
-import UserMarks from "../components/UserMarks";
+import MarksList from "../components/MarksList";
 import UserSaved from "../components/UserSaved";
 import AddMark from "../components/AddMark";
 import Map from '../components/Map';
@@ -34,7 +34,7 @@ export default {
     PlanTrip,
     AddMark,
     Notifications,
-    UserMarks,
+    MarksList,
     UserSaved
   },
 

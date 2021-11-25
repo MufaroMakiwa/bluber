@@ -39,7 +39,7 @@
         <v-list>
           <v-list-item 
             @click="displayNotifications"
-            color="secondary"
+            color="primary"
             :input-value="template === 'notifications'">
             <v-list-item-avatar class="avatar">
               <font-awesome-icon icon="bell" class="menu-icon"/> 
@@ -54,7 +54,7 @@
 
           <v-list-item 
             @click="displayMarks"
-            color="secondary"
+            color="primary"
             :input-value="template === 'user-marks'">
             <v-list-item-avatar class="avatar">
               <font-awesome-icon icon="map-marker" class="menu-icon"/> 
@@ -64,7 +64,7 @@
 
           <v-list-item 
             @click="displaySaved"
-            color="secondary"
+            color="primary"
             :input-value="template === 'user-saved'">
             <v-list-item-avatar class="avatar">
               <font-awesome-icon icon="map" class="menu-icon"/> 

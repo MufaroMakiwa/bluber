@@ -7,7 +7,7 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
   state: {
-    template: "plan"
+    template: "user-marks"
   },
 
   mutations: {

@@ -1,20 +1,19 @@
 <template>
-  <div class="saved-container">
-    <h2>Saved searches</h2>
+  <div class="mark-container">
+
   </div>
 </template>
 
 <script>
 export default {
-  name: "UserSaved"
+  name: "MarkCard"
 }
 </script>
 
 <style scoped>
-.saved-container {
+.mark-container {
   width: 100%;
-  height: 100%;
-  padding: 1rem;
+  display: flex;
   flex-direction: column;
 }
 </style>

@@ -2,13 +2,7 @@
   <div class="create-mark-container">
     <div class="create-mark-inner">
       <div class="header-container">
-        <v-btn
-          icon
-          color="gray"
-          class="side-icon"
-          @click="$emit('back')">
-          <font-awesome-icon icon="arrow-left" class="back-icon"/>
-        </v-btn>
+        <BackButton @click.native="$emit('back')"/>
 
         <h2 class="section-heading">Create Mark</h2>
       </div>
@@ -64,11 +58,18 @@
 </template>
 
 <script>
+import BackButton from "./BackButton.vue";
+
 export default {
   name: "CreateMarkDetails",
 
+  components: {
+    BackButton
+  },
+
   props: {
     start: String,
+
     end: {
       default: "",
       type: String,

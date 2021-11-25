@@ -1,193 +1,109 @@
 <template>
- <div class="wrapper">
-    <div class="header">
-        <div>
-            <button class="header-button" @click="getAllMarks" v-bind:class="{ buttonStatus: displayAll }">
-                All
-            </button>
+  <div class="outer">
+    <transition name="fade">
+      <div class="marks-container" v-if="!displayFilters">
+        <div class="header-container">
+          <div class="header-inner">
+            <h2>{{ title }}</h2>
+            <v-btn
+              icon
+              :color="hasFilters ? 'primary' : 'gray'"
+              class="side-icon"
+              @click="displayFilters=true">
+              <font-awesome-icon icon="filter" class="filter-icon"/>
+            </v-btn>
+          </div>
+          
+          <v-btn
+            v-if="hasFilters"
+            rounded
+            outlined
+            x-small
+            color="primary"
+            class="clear-filter"
+            @click="clearFilters">
+            <font-awesome-icon icon="times" class="clear-icon"/>
+            Clear Filters
+          </v-btn>
         </div>
+      </div>
+    </transition>
 
-        <div>
-            <button class="header-button" @click="getBusyMarks" v-bind:class="{ buttonStatus: displayBusy }">
-                Busy
-            </button>
-        </div>
-
-        <div>
-            <button class="header-button" @click="getBlockedMarks" v-bind:class="{ buttonStatus: displayBlocked}">
-                Blocked
-            </button>
-        </div>
-
-        <div>
-            <button class="header-button" @click="getNotSafeMarks" v-bind:class="{ buttonStatus: displayNotSafe}">
-                Not Safe
-            </button>
-        </div>
-    </div>
-    <div class="MarkList" v-if="this.marksToDisplay.length">
-       <transition-group name="list" class="transition-group" tag="div">
-       <Mark v-for="mark in this.marksToDisplay"
-             v-bind:key="mark.markId"
-             v-bind:caption="mark.caption"
-             v-bind:tags="mark.tags"
-             v-bind:time="mark.dateAdded"
-             v-bind:userId="mark.userId"
-             v-bind:path="mark.path"
-             v-bind:markId="mark.markId"
-             />
-        </transition-group>
-
-     </div>
-
-     <div v-else class="empty-mark-list">
-         <span class="empty-message">
-             No marks on this area
-         </span>
-     </div>
- </div>
-
+    <Filters v-if="displayFilters" @back="displayFilters=false"/>
+  </div>
 </template>
-<script>
 
-import Mark from "./Mark";
-import { eventBus } from '../main.js';
+<script>
+import Filters from "./Filters.vue";
+
 
 export default {
-   name: 'MarksList',
-   components: { Mark },
-   props: ["marks"],
+  name: "MarksList",
 
-   mounted() {
-    eventBus.$on("get-my-marks", () => {
-        this.marksToDisplay = this.marks.filter((mark) => {
-            return mark.username === this.username;
-        })
-    });
-   },
+  components: {
+    Filters
+  },
 
-   data() {
-       return {
-           displayAll : true,
-           displayBusy : false,
-           displayBlocked: false,
-           displayNotSafe: false,
-           marksToDisplay: [],
-           username: "Hillary"
-       }
-   },
+  props: {
+    title: String
+  },
 
-   beforeMount() {
-       this.marksToDisplay = this.marks; 
-   },
-
-   methods: {
-       getAllMarks() {
-           this.marksToDisplay = this.marks;
-           this.displayAll = true;
-           this.displayBusy = false;
-           this.displayBlocked = false,
-           this.displayNotSafe = false
-
-       },
-
-       getNotSafeMarks() {
-           this.marksToDisplay = this.marks.filter((mark) => mark.tags[0] === "not safe");
-           this.displayAll = false;
-           this.displayBusy = false;
-           this.displayBlocked = false,
-           this.displayNotSafe = true
-
-       },
-
-       getBusyMarks() {
-           this.marksToDisplay = this.marks.filter((mark) => mark.tags[0] === "busy");
-
-           this.displayAll = false;
-           this.displayBusy = true;
-           this.displayBlocked = false,
-           this.displayNotSafe = false
-
-       },
-
-       getBlockedMarks() {
-           this.marksToDisplay = this.marks.filter((mark) => mark.tags[0] === "blocked");
-           this.displayAll = false;
-           this.displayBusy = false;
-           this.displayBlocked = true,
-           this.displayNotSafe = false
-       }
-   },
-   watch:{
-       marks: function(){
-           this.marksToDisplay = this.marks; 
-       }
-   }
+  data() {
+    return {
+      hasFilters: true,
+      displayFilters: false,
+      marks: [],
+      filteredMarks: [],
+      filters: []
+    }
+  },
+  
+  methods: {
+    clearFilters() {
+      this.hasFilters = false;
+    }
+  }
 }
 </script>
 
 <style scoped>
-
-.empty-mark-list {
-    display: flex;
-    justify-content: center;
-    padding: 20px;
+.outer {
+  width: 100%;
+  height: 100%;
 }
 
-.empty-message{
-    font-weight: bold;
-    font-size: 20px;
-    text-align: center;
-}
-.header {
-    display: flex;
-    justify-content: space-evenly;
-    margin: 10px;
+.marks-container {
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+  flex-direction: column;
 }
 
-.buttonStatus {
-    color: white;
-    font-weight: bold;
-    background: black !important;
+.header-container {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
 }
 
-.header-button {
-    font-size: 15px;
-    font-weight: bold;
-    background: #959090c4;
-    border: none;
-    width: 90px;
-    cursor: pointer;
+.header-inner {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.wrapper {
-    border: solid 1px red;
-    background: rgb(238, 235, 235);
-    padding: 16px 16px 8px 16px;
-    margin: 10px;
-    overflow-y: scroll;
+.clear-filter {
+  margin-top: 0.5rem;
 }
 
-.MarkList{
-    display: flex;
-    flex-direction: column;
-    /* align-items: center; */
-    
+.filter-icon {
+  font-size: 1.15rem;
 }
 
-.list-enter {
-    transition: all 0.3s;
+.clear-icon {
+  margin-right: 0.75rem;
 }
-
-.list-leave-active {
-    transition: all 0.3s;
-    position: absolute;
-    opacity: 0;
-}
-.transition-group
-{
-    display: flex;
-    flex-direction: column;
-}
-  
 </style>
