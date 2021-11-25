@@ -29,7 +29,11 @@
       </div>
     </transition>
 
-    <Filters v-if="displayFilters" @back="displayFilters=false"/>
+    <Filters 
+      v-if="displayFilters" 
+      :currentFilters="filters"
+      @back="displayFilters=false"
+      @update-filters="handleUpdateFilters"/>
   </div>
 </template>
 
@@ -48,19 +52,43 @@ export default {
     title: String
   },
 
+  computed: {
+    hasFilters() {
+      const noFilters = this.filters.sortBy === "dateAdded"
+                        && this.filters.tags.length === 0
+                        && this.filters.sortOrder === "descending"
+                        && this.filters.minimumRating === 0
+      return !noFilters;
+    }
+  },
+
   data() {
     return {
-      hasFilters: true,
       displayFilters: false,
       marks: [],
       filteredMarks: [],
-      filters: []
+      filters: {
+        sortBy: "dateAdded",
+        tags: [],
+        sortOrder: "descending",
+        minimumRating: 0
+      }
     }
   },
   
   methods: {
     clearFilters() {
-      this.hasFilters = false;
+      this.filters = {
+        sortBy: "dateAdded",
+        tags: [],
+        sortOrder: "descending",
+        minimumRating: 0
+      }
+    },
+
+    handleUpdateFilters(filters) {
+      this.displayFilters = false;
+      this.filters = filters;
     }
   }
 }
@@ -70,6 +98,7 @@ export default {
 .outer {
   width: 100%;
   height: 100%;
+  overflow: scroll;
 }
 
 .marks-container {

@@ -45,7 +45,7 @@ textarea:hover:not(:focus) {
 
 .shadow {
   background-color: white;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
   border: 1px solid lightgray;
   border-radius: var(--border-radius);
 }

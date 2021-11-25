@@ -35,11 +35,12 @@
             v-for="tag in tags"
             :key="tag"
             depressed
-            :color="selectedTags.includes(tag) ? 'secondary' : 'gray'"
+            :outlined="!selectedTags.includes(tag)"
+            color="secondary"
             class="tag"
             @click="tagClick(tag)">
             {{ tag }}
-            </v-btn>
+          </v-btn>
         </div>
       </div>
     </div>

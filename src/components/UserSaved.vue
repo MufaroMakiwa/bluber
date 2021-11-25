@@ -16,5 +16,6 @@ export default {
   height: 100%;
   padding: 1rem;
   flex-direction: column;
+  overflow: scroll;
 }
 </style>
