@@ -89,4 +89,4 @@ const UserSchema = new Schema(
 );
 
 // mongoose will automatically create the collection for our DB
-module.exports = mongoose.model("User", UserSchema);
+module.exports = mongoose.model("users", UserSchema);

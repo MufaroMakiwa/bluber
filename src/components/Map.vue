@@ -158,6 +158,7 @@ export default {
     },
 
     getMarks() {
+      console.log('in get marks')
       eventBus.$emit("get-marks", {
         startLat: this.popup.lat,
         startLng: this.popup.lng,
@@ -177,7 +178,6 @@ export default {
           },
         })
         .then((res) => {
-          console.log("IM IN RES")
           let coords = res.data;
           let myVector = L.polyline([coords]).arrowheads({
             frequency: "endonly",

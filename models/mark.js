@@ -97,27 +97,16 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const MarkSchema = new Schema(
-  //  * @prop {string} markId - The id for the mark
-//  * @prop {string} userId - Id of the user who created the mark
-//  * @prop {Date} dateAdded - The date the mark was added
-//  * @prop {Date} dateModified - The date the mark was last modified
-//  * @prop {string[]} tags - An array of tags associated with the mark
-//  * @prop {string} caption - The caption associated with the mark
-//  * @prop {Object} start - The start (lat, lng) for the mark
-//  * @prop {Object} end - The end (lat, lng) for the mark
-//  * @prop {Object[]} path - The path associated with the start and end if end is defined
   {
       // reference to _id field in the User collection
       "mark_id": {
-        type: Schema.Types.ObjectId, 
-        ref: "Mark",
+        type: String, 
         required: false,
     },
       // reference to _id field in the User collection
       "user_id": {
-        type: Schema.Types.ObjectId, 
-        ref: "User",
-        required: false,
+        type: String, 
+        required: true,
     },
       // we set a default value here to be 0
       "date_added": {
@@ -155,4 +144,4 @@ const MarkSchema = new Schema(
 );
 
 // mongoose will automatically create the collection for our DB
-module.exports = mongoose.model("Mark", MarkSchema);
+module.exports = mongoose.model("marks", MarkSchema);

@@ -3,6 +3,25 @@ const { v4: uuidv4 } = require("uuid");
 const BLUBER_DATA_SERVER_URL = "http://bluber-server.herokuapp.com/road"
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
+async function findAll(){
+  try{
+    //perform a join on the Short and User collections: Short.short_creator_id corresponds to User._id
+    const marks = await markModel.aggregate([
+      {$lookup:
+        {
+          from: 'marks',
+          localField: 'user_id',
+          foreignField: '_id',
+          as: 'markwithusers' //create a new field 'markwithusers' in this aggregated collection: embeds documents from lookup collection into Short collection
+        }
+      }
+    ]);
+    return marks;
+  } catch(err) {
+    return false;
+  }
+}
+
 async function findOne(markId){
   try{
     const mark = await markModel.find({mark_id: markId});
@@ -120,7 +139,7 @@ function isPointInSpannedArea(point, center, radius) {
 }
 
 
-function getMarksInSpannedArea(start, end) {
+async function getMarksInSpannedArea(start, end) {
   // get the radius between the two points
 
 
@@ -130,12 +149,11 @@ function getMarksInSpannedArea(start, end) {
   const center = getCenter(start, end);
 
   console.log(start,end,center)
+  const all_marks = await findAll();
 
   // loop through all the marks and get the ones with the start or end in the spanned area
   const marksInSpannedArea = 
-      markModel
-        .findAll()
-        .filter(mark => {
+    all_marks.filter(mark => {
           return isPointInSpannedArea(mark.start, center, radius) || isPointInSpannedArea(mark.end, center, radius)
         });
   // add is intersection
@@ -152,13 +170,9 @@ function getMarksInSpannedArea(start, end) {
  */
 async function getPath(start, end) {
   const routeEndpoint = `${BLUBER_DATA_SERVER_URL}/${start.lat}/${start.lng}/${end.lat}/${end.lng}`;
-  // const routeEndpoint = `${BLUBER_DATA_SERVER_URL}`
   const path = await fetch(routeEndpoint);
-  console.log(path, 'data')
-  // const data = await path.json();
-  // const data = await path.json();
-  console.log('data', start, end)
-  return "hi";
+  const data = await path.json();
+  return data;
 }
 
 
