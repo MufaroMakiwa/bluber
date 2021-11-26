@@ -177,6 +177,7 @@ export default {
           },
         })
         .then((res) => {
+          console.log("IM IN RES")
           let coords = res.data;
           let myVector = L.polyline([coords]).arrowheads({
             frequency: "endonly",

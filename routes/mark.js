@@ -41,13 +41,18 @@ router.get(
       lat: parseFloat(req.query.startLat), 
       lng: parseFloat(req.query.startLng)
     };
-
+    console.log('in marks start', start)
     const end = {
       lat: parseFloat(req.query.endLat),
       lng: parseFloat(req.query.endLng)
     }
-    const path = await markController.getPath(start, end);
-    res.status(200).json(path).end();
+    try {
+      const path = await markController.getPath(start, end);
+      console.log(path, 'apth');
+      res.status(200).json(path).end();
+    } catch (err) {
+      console.log(err, 'error in makrs')
+    }
   }
 );
 
@@ -57,7 +62,7 @@ router.post(
   [
     // validator.isUserLoggedIn
   ],
-  (req, res) => {
+  async (req, res) => {
     const { tags, caption, start, end, path } = req.body;
     // console.log(start,end)
     const st = {
@@ -69,7 +74,7 @@ router.post(
       lat: end[0],
       lng: end[1]
     }
-    const mark = markModel.addOne(userId, tags, caption, st, en, path);
+    const mark = await markModel.addOne(userId, tags, caption, st, en, path);
     res.status(201).json(mark).end();
   }
 );
@@ -82,8 +87,8 @@ router.patch(
     validator.isMarkIdInParamsExists,
     validator.isValidMarkModifier
   ],
-  (req, res) => {
-    const mark = markModel.updateOne(req.params.markId, req.body);
+  async (req, res) => {
+    const mark = await markModel.updateOne(req.params.markId, req.body);
     res.status(200).json(mark).end();
   }
 );
@@ -96,8 +101,8 @@ router.delete(
     validator.isMarkIdInParamsExists,
     validator.isValidMarkModifier
   ],
-  (req, res) => {
-    markModel.deleteOne(req.params.markId);
+  async (req, res) => {
+    await markModel.deleteOne(req.params.markId);
     res.status(200).json({
       message: "Mark deleted successfully"
     }).end();

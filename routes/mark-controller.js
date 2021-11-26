@@ -1,7 +1,61 @@
 const markModel = require("../models/mark");
+const { v4: uuidv4 } = require("uuid");
 const BLUBER_DATA_SERVER_URL = "http://bluber-server.herokuapp.com/road"
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
+async function findOne(markId){
+  try{
+    const mark = await markModel.find({mark_id: markId});
+    return mark;
+  } catch(err){
+    return false;
+  }
+}
+
+async function addOne(userId, tags, caption, start, end, path){
+  const date = new Date();
+  const markId = uuidv4();
+  const mark = new markModel({mark_id: markId, user_id: userId, date_added: date, tags: tags, caption: caption, start: start, end: end, path: path});
+  try {
+      await mark.save();
+      return mark;
+  } catch(err) {
+      return false;
+  }
+}
+
+async function findAllByUserId(userId){
+  try{
+    const marks = await markModel.find({user_id: userId});
+    return marks;
+  } catch(err){
+    return false;
+  }
+}
+
+async function updateOne(markId, body){
+  try{
+    const mark = await markModel.find({mark_id: markId});
+    body.caption && (mark.caption = body.caption);
+    body.tags && (mark.tags = body.tags);
+    body.start && (mark.start = body.start);
+    body.end && (mark.end = body.end);
+    mark.dateModified = new Date();
+    await mark.save();
+    return mark;
+  } catch(err){
+    return false;
+  }
+}
+
+async function deleteOne(markId){
+  try{
+    const mark = await markModel.remove({mark_id: markId});
+    return mark;
+  } catch(err){
+    return false;
+  }
+}
 
 /**
  * Convert to radians
@@ -100,13 +154,20 @@ async function getPath(start, end) {
   const routeEndpoint = `${BLUBER_DATA_SERVER_URL}/${start.lat}/${start.lng}/${end.lat}/${end.lng}`;
   // const routeEndpoint = `${BLUBER_DATA_SERVER_URL}`
   const path = await fetch(routeEndpoint);
+  console.log(path, 'data')
   // const data = await path.json();
-  const data = await path.json();
-  return data;
+  // const data = await path.json();
+  console.log('data', start, end)
+  return "hi";
 }
 
 
 module.exports = Object.freeze({
   getMarksInSpannedArea,
-  getPath
+  getPath,
+  findOne,
+  addOne,
+  findAllByUserId,
+  updateOne,
+  deleteOne
 })

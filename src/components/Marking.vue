@@ -63,6 +63,7 @@ export default {
   },
   beforeCreate() {
     eventBus.$on("path", (path) => {
+      console.log(path , "IN PATH")
       this.currentMark["path"] = path;
       this.currentMark["start"] = path[0];
       this.currentMark["end"] = path[path.length - 1];
