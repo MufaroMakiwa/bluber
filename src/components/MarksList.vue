@@ -5,13 +5,20 @@
         <div class="header-container">
           <div class="header-inner">
             <h2>{{ title }}</h2>
-            <v-btn
-              icon
-              :color="hasFilters ? 'primary' : 'gray'"
-              class="side-icon"
-              @click="displayFilters=true">
-              <font-awesome-icon icon="filter" class="filter-icon"/>
-            </v-btn>
+            <v-tooltip left>
+               <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  icon
+                  :color="hasFilters ? 'primary' : 'gray'"
+                  class="side-icon"
+                  @click="displayFilters=true"
+                  v-on="on"
+                  v-bind="attrs">
+                  <font-awesome-icon icon="filter" class="filter-icon"/>
+                </v-btn>
+               </template>
+               <span>Filter</span>
+            </v-tooltip>
           </div>
           
           <v-btn

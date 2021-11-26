@@ -6,7 +6,7 @@
     <div class="main-app-section shadow">
       <AddMark v-if="template === 'mark'"/>
       <PlanTrip v-if="template === 'plan'"/>
-      <MarksList v-if="template === 'user-marks'" title="My marks"/>
+      <MarksList v-if="template === 'user-marks'" title="Marks in area"/>
       <UserSaved v-if="template === 'user-saved'"/>
       <Notifications v-if="template === 'notifications'"/>
     </div>   
