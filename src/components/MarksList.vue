@@ -26,6 +26,14 @@
             Clear Filters
           </v-btn>
         </div>
+
+        <div class="marks">
+          <MarkCard 
+            v-for="mark in marks"
+            :key="mark.markId"
+            :mark="mark" 
+            @click.native="handleMarkClick(mark)"/>
+        </div>
       </div>
     </transition>
 
@@ -39,13 +47,13 @@
 
 <script>
 import Filters from "./Filters.vue";
-
+import MarkCard from "./MarkCard.vue";
 
 export default {
   name: "MarksList",
 
   components: {
-    Filters
+    Filters, MarkCard
   },
 
   props: {
@@ -65,7 +73,27 @@ export default {
   data() {
     return {
       displayFilters: false,
-      marks: [],
+      marks: [
+        { 
+          markId: 0,
+          username: "Mufaro Makiwa",
+          dateAdded: "Nov 8",
+          comments: 2,
+          rating: 2.1,
+          caption: "I hate this place because I cannot navigate well",
+          tags: ["Blocked"]
+        },
+
+        {
+          markId: 1,
+          username: "Hillary Tamirepi",
+          dateAdded: "Dec 1",
+          comments: 17,
+          rating: 4,
+          caption: "I do not know why this has not been fixed yet",
+          tags: ["Busy", "Not Safe"]
+        }
+      ],
       filteredMarks: [],
       filters: {
         sortBy: "dateAdded",
@@ -89,6 +117,10 @@ export default {
     handleUpdateFilters(filters) {
       this.displayFilters = false;
       this.filters = filters;
+    },
+
+    handleMarkClick(mark) {
+      alert(`Clicking ${mark.toString()}`);
     }
   }
 }
@@ -98,7 +130,6 @@ export default {
 .outer {
   width: 100%;
   height: 100%;
-  overflow: scroll;
 }
 
 .marks-container {
@@ -106,6 +137,8 @@ export default {
   height: 100%;
   padding: 1rem;
   flex-direction: column;
+  display: flex;
+  overflow: scroll;
 }
 
 .header-container {
@@ -134,5 +167,12 @@ export default {
 
 .clear-icon {
   margin-right: 0.75rem;
+}
+
+.marks {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  margin-top: 2rem;
 }
 </style>

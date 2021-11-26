@@ -2,7 +2,7 @@
   <div class="rating-container">
     <v-rating
       class="rating"
-      :value="4.9"
+      :value="rating"
       color="yellow darken-3"
       background-color="grey darken-1"
       empty-icon="$ratingFull"
@@ -12,7 +12,7 @@
       half-icon="$ratingHalf"
       size="16"></v-rating>
 
-    <span class="rating-count">(4.9)</span>
+    <span class="rating-count">({{ rating }})</span>
   </div>
 </template>
 
@@ -29,7 +29,9 @@ export default {
     readonly: {
       default: true,
       type: Boolean
-    }
+    },
+
+    rating: Number
   }
 }
 </script>

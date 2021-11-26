@@ -31,7 +31,7 @@
           <font-awesome-icon icon="user-circle" class="user-icon-menu"/> 
           <span class="name">Mufaro Makiwa</span>
           <span class="email">mufaroemakiwa@gmail.com</span>
-          <Rating class="rating-margin"/>
+          <Rating class="rating-margin" :rating="0"/>
         </div>
           
         <v-divider></v-divider>
