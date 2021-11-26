@@ -1,105 +1,106 @@
 <template>
-  <div class="filters-container">
-    <div class="heading-container">
-      <BackButton @click.native="$emit('back')"/>
-      <h2 class="heading">Filters</h2>
-    </div>
+  <ViewTemplate :backButton="true" @back="$emit('back')">
+    <template v-slot:heading>
+      Filters
+    </template>
 
-    <div class="filter-container sort-by">
-      <h3>Sort by</h3>
-      <v-btn 
-        v-for="sort in sortBy"
-        :outlined="sort !== selectedSortBy"
-        depressed
-        color="secondary"
-        class="padded"
-        :key="sort"
-        @click="updateSortBy(sort)">
-        {{ sort }}
-      </v-btn> 
-    </div>
-    <v-divider></v-divider>
+    <template v-slot:content>
+      <div class="filter-container sort-by">
+        <h3>Sort by</h3>
+        <v-btn 
+          v-for="sort in sortBy"
+          :outlined="sort !== selectedSortBy"
+          depressed
+          color="secondary"
+          class="padded"
+          :key="sort"
+          @click="updateSortBy(sort)">
+          {{ sort }}
+        </v-btn> 
+      </div>
+      <v-divider></v-divider>
 
-    <div class="filter-container sort-order">
-      <h3>Sort order</h3>
-      <v-btn 
-        v-for="order in sortOrder"
-        :outlined="order !== selectedSortOrder"
-        depressed
-        color="secondary"
-        class="padded"
-        :key="order"
-        @click="updateSortOrder(order)">
-        {{ order }}
-      </v-btn>  
-    </div>
-    <v-divider></v-divider>
+      <div class="filter-container sort-order">
+        <h3>Sort order</h3>
+        <v-btn 
+          v-for="order in sortOrder"
+          :outlined="order !== selectedSortOrder"
+          depressed
+          color="secondary"
+          class="padded"
+          :key="order"
+          @click="updateSortOrder(order)">
+          {{ order }}
+        </v-btn>  
+      </div>
+      <v-divider></v-divider>
 
-    <div class="filter-container tags">
-      <h3>Tags</h3>
-      <v-btn
-        v-for="tag in tags"
-        :key="tag"
-        depressed
-        :outlined="!filterTags.includes(tag)"
-        color="secondary"
-        class="padded"
-        @click="addFilterTag(tag)">
-        {{ tag }}
-      </v-btn>
-    </div>
-    <v-divider></v-divider>
+      <div class="filter-container tags">
+        <h3>Tags</h3>
+        <v-btn
+          v-for="tag in tags"
+          :key="tag"
+          depressed
+          :outlined="!filterTags.includes(tag)"
+          color="secondary"
+          class="padded"
+          @click="addFilterTag(tag)">
+          {{ tag }}
+        </v-btn>
+      </div>
+      <v-divider></v-divider>
 
-    <div class="filter-container rating">
-      <h3>Minimum rating</h3>
-     
-      <v-btn 
-        v-for="rating in ratings"
-        fab
-        :input-value="minimumRating === rating"
-        :outlined="minimumRating !== rating"
-        depressed
-        small
-        color="secondary"
-        class="padded"
-        :key="rating"
-        @click="updateRating(rating)">
-        {{ rating }}
-      </v-btn>  
-    </div>
-    <v-divider></v-divider>
+      <div class="filter-container rating">
+        <h3>Minimum rating</h3>
+      
+        <v-btn 
+          v-for="rating in ratings"
+          fab
+          :input-value="minimumRating === rating"
+          :outlined="minimumRating !== rating"
+          depressed
+          small
+          color="secondary"
+          class="padded"
+          :key="rating"
+          @click="updateRating(rating)">
+          {{ rating }}
+        </v-btn>  
+      </div>
+      <v-divider></v-divider>
 
-    <div class="filter-actions">
-      <v-btn
-        rounded
-        depressed
-        outlined
-        class="action-button left"
-        color="primary"
-        @click="$emit('back')">
-        Cancel
-      </v-btn>
+      <div class="filter-actions">
+        <v-btn
+          rounded
+          depressed
+          outlined
+          class="action-button left"
+          color="primary"
+          @click="$emit('back')">
+          Cancel
+        </v-btn>
 
-      <v-btn
-        rounded
-        depressed
-        class="action-button right"
-        @click="applyFilters"
-        color="primary">
-        Apply
-      </v-btn>
-    </div>
-  </div>
+        <v-btn
+          rounded
+          depressed
+          class="action-button right"
+          @click="applyFilters"
+          color="primary">
+          Apply
+        </v-btn>
+      </div>
+    </template>
+  </ViewTemplate>
 </template>
 
 <script>
-import BackButton from "./BackButton.vue";
+import ViewTemplate from "./ViewTemplate.vue";
 
 export default {
   name: "Filters",
 
   components: {
-    BackButton
+    ViewTemplate
   },
 
   props: {
@@ -163,32 +164,6 @@ export default {
 </script>
 
 <style scoped>
-.filters-container {
-  width: 100%;
-  height: 100%;
-  padding: 1rem;
-  overflow: scroll;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-}
-
-.filters-container > * {
-  width: 100%;
-}
-
-.heading-container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-.heading {
-  margin-left: 1rem;
-}
-
 .action-button.left {
   margin-right: 0.5rem;
 }

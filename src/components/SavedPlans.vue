@@ -1,11 +1,7 @@
 <template>
-  <ViewTemplate :backButton="true" @back="$emit('back')">
+  <ViewTemplate>
     <template v-slot:heading>
-      Mark
-    </template>
-
-    <template v-slot:content>
-
+      Saved Plans
     </template>
   </ViewTemplate>
 </template>
@@ -15,10 +11,10 @@ import ViewTemplate from "./ViewTemplate.vue";
 
 
 export default {
-  name: "MarkDetailsContainer",
+  name: "SavedPlans",
 
   components: {
-    ViewTemplate,
+    ViewTemplate
   }
 }
 </script>

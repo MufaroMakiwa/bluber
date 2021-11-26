@@ -59,7 +59,7 @@
             <v-list-item-avatar class="avatar">
               <font-awesome-icon icon="map-marker" class="menu-icon"/> 
             </v-list-item-avatar>
-            <v-list-item-title>My marks</v-list-item-title>
+            <v-list-item-title>My Marks</v-list-item-title>
           </v-list-item>
 
           <v-list-item 
@@ -69,7 +69,7 @@
             <v-list-item-avatar class="avatar">
               <font-awesome-icon icon="map" class="menu-icon"/> 
             </v-list-item-avatar>
-            <v-list-item-title>Saved searches</v-list-item-title>
+            <v-list-item-title>Saved Plans</v-list-item-title>
           </v-list-item>
         </v-list>
       </v-card>

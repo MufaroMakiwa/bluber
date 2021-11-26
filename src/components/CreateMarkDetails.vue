@@ -1,50 +1,50 @@
 <template>
   <div class="create-mark-container">
-    <div class="create-mark-inner">
-      <div class="header-container">
-        <BackButton @click.native="$emit('back')"/>
+    <ViewTemplate :backButton="true" @back="$emit('back')" class="create-inner">
+      <template v-slot:heading>
+        Create Mark
+      </template>
 
-        <h2 class="section-heading">Create Mark</h2>
-      </div>
-
-      <div class="point-container start">
-        <span class="point-label">{{ startLabel }}:</span>
-        <span class="point-details">{{ start }}</span>
-      </div>
-
-      <div class="point-container end" v-if="displayEnd">
-        <span class="point-label">End:</span>
-        <span class="point-details">{{ end }}</span>
-      </div>
-
-      <div class="mark-details">
-        <h3>Mark details</h3>
-
-        <v-textarea
-          :auto-grow="true"
-          outlined
-          rows="2"
-          row-height="28"
-          label="Caption"
-          placeholder="e.g Restaurant expanded into street"
-          class="caption-input">
-        </v-textarea>
-
-        <div class="tags-container">
-          <v-btn
-            v-for="tag in tags"
-            :key="tag"
-            depressed
-            :outlined="!selectedTags.includes(tag)"
-            color="secondary"
-            class="tag"
-            @click="tagClick(tag)">
-            {{ tag }}
-          </v-btn>
+      <template v-slot:content>
+        <div class="point-container start">
+          <span class="point-label">{{ startLabel }}:</span>
+          <span class="point-details">{{ start }}</span>
         </div>
-      </div>
-    </div>
 
+        <div class="point-container end" v-if="displayEnd">
+          <span class="point-label">End:</span>
+          <span class="point-details">{{ end }}</span>
+        </div>
+
+        <div class="mark-details">
+          <h3>Mark details</h3>
+
+          <v-textarea
+            :auto-grow="true"
+            outlined
+            rows="2"
+            row-height="28"
+            label="Caption"
+            placeholder="e.g Restaurant expanded into street"
+            class="caption-input">
+          </v-textarea>
+
+          <div class="tags-container">
+            <v-btn
+              v-for="tag in tags"
+              :key="tag"
+              depressed
+              :outlined="!selectedTags.includes(tag)"
+              color="secondary"
+              class="tag"
+              @click="tagClick(tag)">
+              {{ tag }}
+            </v-btn>
+          </div>
+        </div>
+      </template>
+    </ViewTemplate>
+  
     <div class="submit-container">
       <v-btn
         depressed
@@ -59,13 +59,14 @@
 </template>
 
 <script>
-import BackButton from "./BackButton.vue";
+import ViewTemplate from "./ViewTemplate.vue";
+
 
 export default {
   name: "CreateMarkDetails",
 
   components: {
-    BackButton
+    ViewTemplate
   },
 
   props: {
@@ -116,24 +117,8 @@ export default {
   position: relative;
 }
 
-.create-mark-inner {
-  width: 100%;
-  flex-grow: 1;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  overflow: scroll;
+.create-inner {
   margin-bottom: 80px;
-}
-
-.header-container {
-  display: flex;
-  flex-direction: row;
-}
-
-.section-heading {
-  margin-left: 1rem;
 }
 
 .point-container {

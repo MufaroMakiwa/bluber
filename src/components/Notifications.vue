@@ -1,21 +1,23 @@
 <template>
-  <div class="notifications-container">
-    <h2>Notifications</h2>
-  </div>
+  <ViewTemplate>
+    <template v-slot:heading>
+      Notifications
+    </template>
+  </ViewTemplate>
 </template>
 
 <script>
+import ViewTemplate from "./ViewTemplate.vue";
+
+
 export default {
-  name: "Notifications"
+  name: "Notifications",
+
+  components: {
+    ViewTemplate
+  }
 }
 </script>
 
 <style scoped>
-.notifications-container {
-  width: 100%;
-  height: 100%;
-  padding: 1rem;
-  flex-direction: column;
-  overflow: scroll;
-}
 </style>
