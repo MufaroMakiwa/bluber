@@ -9,6 +9,7 @@
       <MarksList v-if="template === 'user-marks'" title="Marks in area"/>
       <UserSaved v-if="template === 'user-saved'"/>
       <Notifications v-if="template === 'notifications'"/>
+      <Locator v-if="template === 'locator'"/>
     </div>   
   </div>
 </template>
@@ -22,6 +23,7 @@ import MarksList from "../components/MarksList";
 import UserSaved from "../components/UserSaved";
 import AddMark from "../components/AddMark";
 import Map from '../components/Map';
+import Locator from '../components/Locator'
 import { eventBus } from '../main.js';
 import axios from 'axios';
 
@@ -35,7 +37,8 @@ export default {
     AddMark,
     Notifications,
     MarksList,
-    UserSaved
+    UserSaved,
+    Locator
   },
 
   data() {
@@ -102,6 +105,7 @@ export default {
   bottom: 1rem;
   width: 500px;
   background-color: white;
+  overflow-y: scroll;
 }
 
 </style>

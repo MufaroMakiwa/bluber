@@ -19,11 +19,22 @@
       <font-awesome-icon icon="plus" class="button-icon"/>
       Add Mark
     </v-btn>
+    
+    <v-btn 
+      rounded
+      class="nav-button" 
+      :color="template === 'locator' ? 'secondary' : 'white'"
+      @click="getBluebikes">
+      <img class="button-bike-icon" alt="" src="https://img.icons8.com/external-wanicon-lineal-color-wanicon/64/000000/external-bike-healthy-wanicon-lineal-color-wanicon.png">
+      Bluebikes
+    </v-btn>
   </nav>
 </template>
 
 <script>
 import ProfileMenu from './ProfileMenu.vue';
+import axios from 'axios';
+import {eventBus} from '../main';
 
 export default {
   name: "Navigator",
@@ -45,9 +56,19 @@ export default {
 
     planTrip() {
       this.$store.dispatch('setTemplate', 'plan');
+    },
+
+    getBluebikes() {
+      this.$store.dispatch('setTemplate', 'locator');
+      axios
+            .get("/api/bluebikes")
+            .then((res) => { eventBus.$emit("mark-stations",res.data)})
+            .catch((err) => {
+                console.log(err);
+            });
+      }
     }
   }
-}
 </script>
 
 <style scoped>
@@ -87,6 +108,14 @@ export default {
 .button-icon {
   color: black;
   margin-right: 0.75rem;
+}
+
+.button-bike-icon
+{
+  margin-right: 0.75rem;
+  width: 30px;
+  height: 30px;
+  padding-bottom: 4px;
 }
 
 </style>

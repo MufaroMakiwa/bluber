@@ -1,23 +1,21 @@
 <template>
   <div style="height: 100vh; width: 100%" class="map-wrapper">
     <div id="mapContainer" class="basemap"></div>
-    <div id="cl" ref="control" class="control-class"></div>
-    <!-- <MglMap :accessToken="accessToken"  mapStyle="mapbox://styles/mapbox/streets-v11" @load="onMapLoad"/> -->
   </div>
 </template>
 
 <script>
 import mapboxgl from "mapbox-gl";
-// import { MglMap } from "vue-mapbox";
 import MapboxDirections from "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions";
 // import "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions.css";
 
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
-import * as turf from '@turf/turf'
+import * as turf from "@turf/turf";
 // import L from "leaflet";
 import { latLng } from "leaflet";
 import { eventBus } from "../main";
+import { formatDate, toPrecision } from "../utils";
 // import { LMap, LTileLayer, LMarker, LPopup, LCircle, LControlLayers} from "vue2-leaflet";
 // import { Icon } from "leaflet";
 // import { eventBus } from "../main";
@@ -50,7 +48,7 @@ export default {
       showParagraph: false,
       mapOptions: {
         zoomSnap: 0.5,
-        zoomControl: false
+        zoomControl: false,
       },
       showMap: true,
       routing_state: [],
@@ -71,6 +69,7 @@ export default {
   created() {},
   beforeDestroy() {
     eventBus.$off("mark-stations");
+    eventBus.$off("fly-to");
   },
 
   beforeCreate() {},
@@ -88,6 +87,13 @@ export default {
       antialias: true,
     });
 
+    eventBus.$on("fly-to", (coords) => {
+      this.map.flyTo({
+        center: coords,
+        zoom: 20,
+        essential: true, // this animation is considered essential with respect to prefers-reduced-motion
+      });
+    });
     eventBus.$on("mark-stations", (stations) => {
       let layer = {
         type: "geojson",
@@ -101,6 +107,11 @@ export default {
             },
             properties: {
               featureId: station.stationId,
+              name: station.name,
+              numBikesAvailable: station.numBikesAvailable,
+              numDocksAvailable: station.numDocksAvailable,
+              lastReported: station.lastReported,
+              active: station.active,
             },
           })),
         },
@@ -110,7 +121,7 @@ export default {
       };
 
       this.map.addSource("places", layer);
-      // <img src="https://img.icons8.com/external-vitaliy-gorbachev-lineal-color-vitaly-gorbachev/60/000000/external-bike-vacation-vitaliy-gorbachev-lineal-color-vitaly-gorbachev.png"/>
+
       this.map.addLayer({
         id: "clusters",
         type: "circle",
@@ -174,109 +185,179 @@ export default {
         }
       );
 
-      this.map.on("click", "unclustered-point", (e) => {
-        // console.log(e);
+      
+      let popUp = new mapboxgl.Popup({
+          closeButton: false,
+          closeOnClick: false
+      });
 
+
+      this.map.on('mouseenter',"unclustered-point", (e)=>{
+
+        const coordinates = e.features[0].geometry.coordinates.slice();
+        // Ensure that if the map is zoomed out such that
+        // multiple copies of the feature are visible, the
+        // popup appears over the copy being pointed to.
+        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+          coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        }
+          popUp
+          .setLngLat(coordinates)
+          .setHTML(
+            `
+            <div
+              class="popup-locator-card"
+            >
+              <span class="popup-date">
+                ${formatDate(e.features[0].properties.lastReported) }</span
+              >
+              <div class="card-header">
+                <span class="name">${e.features[0].properties.name }</span>
+              </div>
+              <div class="card-body">
+                <div class="bikes">
+                  <span class="bikes-num">${
+                    e.features[0].properties.numBikesAvailable
+                  }</span>
+                  <span class="bikes-text">Bikes</span>
+                </div>
+                <div class="docks">
+                  <span class="docks-num">${
+                    e.features[0].properties.numDocksAvailable
+                  }</span>
+                  <span class="docks-text">Docks</span>
+                </div>
+              </div>
+            </div>  
+        `
+          )
+          .addTo(this.map);
+      });
+
+      this.map.on('mouseleave', 'unclustered-point', () => {
+        this.map.getCanvas().style.cursor = '';
+        popUp.remove();
+      });
+
+      this.map.on("click", "unclustered-point", (e) => {
         this.map.flyTo({
           center: [e.lngLat.lng, e.lngLat.lat],
           zoom: 20,
           essential: true, // this animation is considered essential with respect to prefers-reduced-motion
-        });
-
-        // const coordinates = e.features[0].geometry.coordinates.slice();
-        // const mag = e.features[0].properties.mag;
-        // const tsunami =e.features[0].properties.tsunami === 1 ? 'yes' : 'no';
-
-        // // console.log(e)
-        // // Ensure that if the map is zoomed out such that
-        // // multiple copies of the feature are visible, the
-        // // popup appears over the copy being pointed to.
-        // while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-        // coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-        // }
-        // new mapboxgl.Popup()
-        // .setLngLat(coordinates)
-        // .setHTML(
-        // `magnitude: ${mag}<br>Was there a tsunami?: ${tsunami}`
-        // )
-        // .addTo(this.map);
       });
 
+        const coordinates = e.features[0].geometry.coordinates.slice();
 
+        // console.log(e)
+        // Ensure that if the map is zoomed out such that
+        // multiple copies of the feature are visible, the
+        // popup appears over the copy being pointed to.
+        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+          coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        }
+
+        // console.log(e)
+        new mapboxgl.Popup()
+          .setLngLat(coordinates)
+          .setHTML(
+            `
+            <div
+              class="popup-locator-card"
+            >
+              <span class="popup-date">
+                ${formatDate(e.features[0].properties.lastReported) }</span
+              >
+              <div class="card-header">
+                <span class="name">${e.features[0].properties.name }</span>
+              </div>
+              <div class="card-body">
+                <div class="bikes">
+                  <span class="bikes-num">${
+                    e.features[0].properties.numBikesAvailable
+                  }</span>
+                  <span class="bikes-text">Bikes</span>
+                </div>
+                <div class="docks">
+                  <span class="docks-num">${
+                    e.features[0].properties.numDocksAvailable
+                  }</span>
+                  <span class="docks-text">Docks</span>
+                </div>
+              </div>
+            </div>  
+        `
+          )
+          .addTo(this.map);
+      });
+
+      /**
+       * Listen for when a geocoder result is returned. When one is returned:
+       * - Calculate distances
+       * - Sort stores by distance
+       * - Rebuild the listings
+       * - Adjust the map camera
+       * - Open a popup for the closest store
+       * - Highlight the listing for the closest store.
+       */
+      this.geocoderControl.on("result", (event) => {
+        /* Get the coordinate of the search result */
+        const searchResult = event.result.geometry;
+
+        /* Get the coordinate of the search result */
 
         /**
-         * Listen for when a geocoder result is returned. When one is returned:
-         * - Calculate distances
-         * - Sort stores by distance
-         * - Rebuild the listings
-         * - Adjust the map camera
-         * - Open a popup for the closest store
-         * - Highlight the listing for the closest store.
+         * Calculate distances:
+         * For each store, use turf.disance to calculate the distance
+         * in miles between the searchResult and the store. Assign the
+         * calculated value to a property called `distance`.
          */
-        this.geocoderControl.on("result", (event) => {
-          /* Get the coordinate of the search result */
-          const searchResult = event.result.geometry;
+        const options = { units: "miles" };
 
-          /* Get the coordinate of the search result */
-
-          /**
-           * Calculate distances:
-           * For each store, use turf.disance to calculate the distance
-           * in miles between the searchResult and the store. Assign the
-           * calculated value to a property called `distance`.
-           */
-          const options = { units: "miles" };
-
-          layer.data.features.forEach((station)=>{
-            station.properties.distance = turf.distance(
-                searchResult,
-                station.geometry,
-                options
-            );
-          })
-
-          /**
-           * Sort stores by distance from closest to the `searchResult`
-           * to furthest.
-           */
-          layer.data.features.sort((a, b) => {
-            if (a.properties.distance > b.properties.distance) {
-              return 1;
-            }
-            if (a.properties.distance < b.properties.distance) {
-              return -1;
-            }
-            return 0; // a must be equal to b
-          });
-          // console.log(layer.data.features)
-          // console.log(searchResult)
-
-          //   // console.log(e.result.center);
-          // this.geocoderControl.clear();
-          // new mapboxgl.Marker({ draggable: true, color: "blue" })
-          //   .setLngLat(event.result.center)
-          //   .addTo(this.map)
+        layer.data.features.forEach((station) => {
+          station.properties.distance = turf.distance(
+            searchResult,
+            station.geometry,
+            options
+          );
         });
-          
+
+        /**
+         * Sort stores by distance from closest to the `searchResult`
+         * to furthest.
+         */
+        layer.data.features.sort((a, b) => {
+          if (a.properties.distance > b.properties.distance) {
+            return 1;
+          }
+          if (a.properties.distance < b.properties.distance) {
+            return -1;
+          }
+          return 0; // a must be equal to b
+        });
+
+        eventBus.$emit(
+          "bikes-result",
+          event.result.place_name,
+          layer.data.features.slice(0, 10)
+        );
+      });
     });
 
     this.navigationControl = new MapboxDirections({
-        accessToken: this.accessToken,
-        unit: "metric",
-        profile: "mapbox/cycling",
-      });
+      accessToken: this.accessToken,
+      unit: "metric",
+      profile: "mapbox/cycling",
+    });
 
-      //https://anthonylouisdagostino.com/bounding-boxes-for-all-us-states/ bounding box for us
+    this.geocoderControl = new MapboxGeocoder({
+      accessToken: mapboxgl.accessToken,
+      mapboxgl: mapboxgl,
+      marker: true,
+      placeholder: "77 Massachusetts Avenue",
+    });
 
-      this.geocoderControl = new MapboxGeocoder({
-        accessToken: mapboxgl.accessToken,
-        mapboxgl: mapboxgl,
-        marker: true,
-      });
-
-      // this.map.addControl(this.navigationControl, "top-right");
-      this.map.addControl(this.geocoderControl, "top-left");
- 
+    // this.map.addControl(this.navigationControl, "top-right");
+    this.map.addControl(this.geocoderControl, "top-left");
 
     this.map.on("load", () => {
       // Insert the layer beneath any symbol layer.
@@ -328,7 +409,15 @@ export default {
     });
   },
 
-  methods: {},
+  methods: {
+
+    formatDate(d) {
+      return formatDate(d);
+    },
+    toPrecision(d) {
+      return toPrecision(d);
+    },
+  },
 };
 </script>
 
@@ -341,4 +430,13 @@ export default {
     height: 50%;
     width: 100%;
 } */
+
+/* .mapboxgl-control-container
+{
+  position: absolute;
+  top: 64px;
+  left: 24px;
+  background-color: white;
+} */
+
 </style>
