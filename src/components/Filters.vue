@@ -1,7 +1,7 @@
 <template>
   <div class="filters-container">
     <div class="heading-container">
-       <BackButton @click.native="$emit('back')"/>
+      <BackButton @click.native="$emit('back')"/>
       <h2 class="heading">Filters</h2>
     </div>
 
@@ -168,10 +168,17 @@ export default {
   height: 100%;
   padding: 1rem;
   overflow: scroll;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.filters-container > * {
+  width: 100%;
 }
 
 .heading-container {
-  width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -207,7 +214,6 @@ export default {
   justify-content: center;
   align-items: center;
   margin-top: 2rem;
-  width: 100%;
 }
 
 .action-button {

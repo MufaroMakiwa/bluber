@@ -1,7 +1,7 @@
 <template>
   <div class="outer">
     <transition name="fade">
-      <div class="marks-container" v-if="!displayFilters">
+      <div class="marks-container" v-if="displayAllMarks">
         <div class="header-container">
           <div class="header-inner">
             <h2>{{ title }}</h2>
@@ -34,13 +34,15 @@
           </v-btn>
         </div>
 
-        <div class="marks">
+        <div class="marks" v-if="hasDisplayedMarks">
           <MarkCard 
-            v-for="mark in marks"
+            v-for="mark in filteredMarks"
             :key="mark.markId"
             :mark="mark" 
             @click.native="handleMarkClick(mark)"/>
         </div>
+
+        <span v-else class="no-marks">{{ emptyMessage }}</span>
       </div>
     </transition>
 
@@ -49,22 +51,65 @@
       :currentFilters="filters"
       @back="displayFilters=false"
       @update-filters="handleUpdateFilters"/>
+
+    <MarkDetails 
+      v-if="displayedMark !== null"
+      :mark="displayedMark"
+      @back="displayedMark=null"/>
   </div>
 </template>
 
 <script>
 import Filters from "./Filters.vue";
 import MarkCard from "./MarkCard.vue";
+import MarkDetails from "./MarkDetails.vue";
 
 export default {
   name: "MarksList",
 
   components: {
-    Filters, MarkCard
+    Filters, MarkCard, MarkDetails
   },
 
   props: {
     title: String
+  },
+
+  data() {
+    const dummyMarks = [
+      { 
+        markId: 0,
+        username: "Mufaro Makiwa",
+        dateAdded: "Nov 8",
+        comments: 2,
+        rating: 2.1,
+        caption: "I hate this place because I cannot navigate well",
+        tags: ["Blocked"]
+      },
+
+      {
+        markId: 1,
+        username: "Hillary Tamirepi",
+        dateAdded: "Dec 1",
+        comments: 17,
+        rating: 4,
+        caption: "I do not know why this has not been fixed yet",
+        tags: ["Busy", "Not Safe"]
+      }
+    ];
+    
+    return {
+      displayFilters: false,
+      displayedMark: null,   
+      marks: [...dummyMarks],
+      filteredMarks: [...dummyMarks],
+      filters: {
+        sortBy: "dateAdded",
+        tags: [],
+        sortOrder: "descending",
+        minimumRating: 0
+      }
+    }    
   },
 
   computed: {
@@ -74,40 +119,18 @@ export default {
                         && this.filters.sortOrder === "descending"
                         && this.filters.minimumRating === 0
       return !noFilters;
-    }
-  },
+    },
 
-  data() {
-    return {
-      displayFilters: false,
-      marks: [
-        { 
-          markId: 0,
-          username: "Mufaro Makiwa",
-          dateAdded: "Nov 8",
-          comments: 2,
-          rating: 2.1,
-          caption: "I hate this place because I cannot navigate well",
-          tags: ["Blocked"]
-        },
+    hasDisplayedMarks() {
+      return this.filteredMarks.length > 0;
+    },
 
-        {
-          markId: 1,
-          username: "Hillary Tamirepi",
-          dateAdded: "Dec 1",
-          comments: 17,
-          rating: 4,
-          caption: "I do not know why this has not been fixed yet",
-          tags: ["Busy", "Not Safe"]
-        }
-      ],
-      filteredMarks: [],
-      filters: {
-        sortBy: "dateAdded",
-        tags: [],
-        sortOrder: "descending",
-        minimumRating: 0
-      }
+    emptyMessage() {
+      return this.hasFilters ? 'There are marks with these filters in area.' : 'There are no marks in this area.'
+    },
+
+    displayAllMarks() {
+      return !this.displayFilters && this.displayedMark === null;
     }
   },
   
@@ -127,7 +150,7 @@ export default {
     },
 
     handleMarkClick(mark) {
-      alert(`Clicking ${mark.toString()}`);
+      this.displayedMark = mark;
     }
   }
 }
@@ -181,5 +204,11 @@ export default {
   flex-direction: column;
   flex-grow: 1;
   margin-top: 2rem;
+}
+
+.no-marks {
+  margin-top: 1rem;
+  font-weight: bold;
+  color: gray;
 }
 </style>

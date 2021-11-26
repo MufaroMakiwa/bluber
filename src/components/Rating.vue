@@ -12,7 +12,9 @@
       half-icon="$ratingHalf"
       size="16"></v-rating>
 
-    <span class="rating-count">({{ rating }})</span>
+    <span class="rating-count" v-if="ratingCount === null">({{ rating }})</span>
+    <span class="rating-count" v-else>{{ rating }}</span>
+    <span class="rating-count" v-if="ratingCount !== null">({{ ratingCountLabel }})</span>
   </div>
 </template>
 
@@ -31,7 +33,20 @@ export default {
       type: Boolean
     },
 
-    rating: Number
+    rating: Number,
+
+    ratingCount: {
+      default: null,
+      type: Number
+    }
+  },
+
+  computed: {
+    ratingCountLabel() {
+      if (this.ratingCount === null) return "";
+      if (this.ratingCount === 1) return `${this.ratingCount} rating`;
+      return `${this.ratingCount} ratings`;
+    }
   }
 }
 </script>
@@ -47,6 +62,7 @@ export default {
 .rating {
   margin: 0;
   padding: 0;
+  display: flex;
 }
 
 .rating-count {
