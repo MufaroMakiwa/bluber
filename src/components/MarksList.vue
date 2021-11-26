@@ -12,7 +12,6 @@
             <v-btn
               icon
               :color="hasFilters ? 'primary' : 'gray'"
-              class="side-icon"
               @click="displayFilters=true"
               v-on="on"
               v-bind="attrs">
@@ -88,7 +87,8 @@ export default {
         username: "Mufaro Makiwa",
         dateAdded: "Nov 8",
         comments: 2,
-        rating: 2.1,
+        rating: 2,
+        ratingCount: 1,
         caption: "I hate this place because I cannot navigate well",
         tags: ["Blocked"]
       },
@@ -99,6 +99,7 @@ export default {
         dateAdded: "Dec 1",
         comments: 17,
         rating: 4,
+        ratingCount: 10,
         caption: "I do not know why this has not been fixed yet",
         tags: ["Busy", "Not Safe"]
       }

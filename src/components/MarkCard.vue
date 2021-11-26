@@ -1,31 +1,13 @@
 <template>
   <div class="mark-container">
-    <div class="user-details-container">
-      <div class="user-icon">
-        <span class="icon">{{ userIcon }}</span>
-      </div>
-
-      <div class="details-inner">
-        <span class="username">{{ mark.username }}</span>
-        <span class="date-posted">{{ mark.dateAdded }}</span>
-      </div>
-    </div>
+    <MarkUserDetails 
+      :username="mark.username"
+      :dateAdded="mark.dateAdded"/>
 
     <div class="mark-details">
-      <span class="mark-caption">{{ mark.caption }}</span>
-
-      <div class="tags-container">
-        <v-btn
-          disabled
-          rounded
-          small
-          color="secondary"
-          v-for="tag in mark.tags"
-          :key="tag"
-          class="padded">
-          {{ tag }}
-        </v-btn>
-      </div>
+      <MarkDescription 
+        :caption="mark.caption"
+        :tags="mark.tags"/>
 
       <div class="interaction-details">
        <div class="comment-summary">
@@ -40,13 +22,14 @@
 
 <script>
 import Rating from "./Rating.vue"
-
+import MarkUserDetails from "./MarkUserDetails.vue";
+import MarkDescription from "./MarkDescription.vue"
 
 export default {
   name: "MarkCard",
 
   components: {
-    Rating
+    Rating, MarkUserDetails, MarkDescription
   },
 
   props: {
@@ -90,48 +73,6 @@ export default {
   margin-top: 0;
 }
 
-.user-details-container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  width: 100%;
-}
-
-.user-icon {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background-color: lightgray;
-  margin-right: 1rem;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-}
-
-.user-icon .icon {
-  font-size: 1.5rem;
-  color: white;
-  font-weight: bold;
-}
-
-.details-inner {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  justify-content: flex-start;
-  align-items: flex-start;
-}
-
-.username {
-  font-weight: bold;
-}
-
-.date-posted {
-  color: gray;
-}
-
 .mark-details {
   display: flex;
   flex-direction: column;
@@ -139,22 +80,6 @@ export default {
   align-items: flex-start;
   justify-content: flex-start;
   margin-top: 1.5rem;
-}
-
-.mark-caption {
-  word-break: break-all;
-}
-
-.tags-container {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  flex-wrap: wrap;
-}
-
-.tags-container .padded {
-  margin-top: 0.5rem;
-  margin-right: 1rem;
 }
 
 .interaction-details {
