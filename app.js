@@ -31,7 +31,7 @@ app.use(session({
 }));
 
 // allow express to reroute umatched urls to Vue frontend
-app.use(history());
+// app.use(history());
 
 // allows us to make requests from POSTMAN
 app.use(cors());
@@ -54,7 +54,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 app.use(express.static(path.join(__dirname, isProduction ? 'dist' : 'public')));
 
 // connect url hierarchies to our routers
-app.use("/api/bluebike", bluebikeRouter);
+app.use("/api/bluebikes", bluebikeRouter);
 app.use("/api/user", userRouter);
 app.use("/api/mark", markRouter);
 

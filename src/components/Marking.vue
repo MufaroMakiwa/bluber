@@ -130,32 +130,39 @@ export default {
      * posts all marks
      */
     postAllMarks() {
-      if (!this.checkAllFields()) {
-        return;
-      }
-      this.marks.push(this.currentMark);
-      this.marks.forEach((mark) => {
         axios
-          .post("/api/mark", mark)
-          .then((mark) => eventBus.$emit("addVector", mark.markId, mark.path))
+          .get("/api/user")
+          .then(() => console.log("hello"))
           .catch((err) => {
             console.log(err);
           });
-      });
-      this.marks = [];
-      this.currentMark = {
-        caption: "",
-        roadOption: "path",
-        tags: [],
-        path: [],
-        start: [],
-        end: [],
-      };
-      window.alert("Marks successfully posted");
-      eventBus.$emit("clearMarks");
-      this.blockedClass = "";
-      this.busyClass = "";
-      this.nsClass = "";
+      // if (!this.checkAllFields()) {
+      //   return;
+      // }
+      // this.marks.push(this.currentMark);
+      // this.marks.forEach((mark) => {
+      //   axios
+      //     .post("/api/mark", mark)
+      //     .then((mark) => eventBus.$emit("addVector", mark.markId, mark.path))
+      //     .catch((err) => {
+      //       console.log(err);
+      //     });
+      // });
+
+      // this.marks = [];
+      // this.currentMark = {
+      //   caption: "",
+      //   roadOption: "path",
+      //   tags: [],
+      //   path: [],
+      //   start: [],
+      //   end: [],
+      // };
+      // window.alert("Marks successfully posted");
+      // eventBus.$emit("clearMarks");
+      // this.blockedClass = "";
+      // this.busyClass = "";
+      // this.nsClass = "";
     },
     // /**
     //  *

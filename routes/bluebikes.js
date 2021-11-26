@@ -36,11 +36,12 @@ async function process_bluebike_data(){
     const stationStatusData = await get_station_status();
 
     const processedData = {}
-    stationInfoData.forEach((station)=>{
-        processedData[station.station_id] = { lat: station.lat , lng: station.lon, name: station.name }
+    stationInfoData.data.stations.forEach((station)=>{
+        // console.log(station)
+        processedData[station.station_id] = { stationId: station.station_id,lat: station.lat , lng: station.lon, name: station.name }
     })
-
-    stationStatusData.forEach((station)=>{
+    // console.log(processedData)
+    stationStatusData.data.stations.forEach((station)=>{
         if (stationStatusData.station_status==='active'){
             processedData[station.station_id].active = true
         }else{
@@ -50,7 +51,6 @@ async function process_bluebike_data(){
         processedData[station.station_id].numDocksAvailable = station.num_docks_available;
         processedData[station.station_id].lastReported = new Date(station.last_reported*1000) ;
     });
-
     return processedData;
 }
 
@@ -63,10 +63,9 @@ async function process_bluebike_data(){
  * @return {Bluebike data} an object that maps each station id to its metadata and current status
  *
  */
-router.get('/',(req,res)=>{
-    console.log("cant hit route")
-    const bluebikesData = process_bluebike_data();
-    res.status(200).json(bluebikesData).end();
+router.get('/',async (req,res)=>{
+    const bluebikesData = await process_bluebike_data();
+    res.status(200).json(Object.values(bluebikesData)).end();
 });
 
 module.exports = router;

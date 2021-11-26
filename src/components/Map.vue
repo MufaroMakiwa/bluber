@@ -12,11 +12,12 @@ import mapboxgl from "mapbox-gl";
 import MapboxDirections from "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions";
 // import "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions.css";
 
-import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
-import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
-
+import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
+import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
+import * as turf from '@turf/turf'
 // import L from "leaflet";
 import { latLng } from "leaflet";
+import { eventBus } from "../main";
 // import { LMap, LTileLayer, LMarker, LPopup, LCircle, LControlLayers} from "vue2-leaflet";
 // import { Icon } from "leaflet";
 // import { eventBus } from "../main";
@@ -61,12 +62,16 @@ export default {
       mapStyle: "mapbox://styles/mapbox/streets-v11",
       planningVectors: [],
       navigationControl: null,
-      geocoderControl: null
+      geocoderControl: null,
     };
   },
 
   beforeMount() {},
   created() {},
+  beforeDestroy() {
+    eventBus.$off("mark-stations");
+  },
+
   beforeCreate() {},
 
   mounted() {
@@ -82,20 +87,195 @@ export default {
       antialias: true,
     });
 
-    this.navigationControl = new MapboxDirections({
-      accessToken: this.accessToken,
-      unit: "metric",
-      profile: "mapbox/cycling",
+    eventBus.$on("mark-stations", (stations) => {
+      let layer = {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features: stations.map((station) => ({
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [station.lng, station.lat],
+            },
+            properties: {
+              featureId: station.stationId,
+            },
+          })),
+        },
+        cluster: true,
+        clusterMaxZoom: 14,
+        clusterRadius: 50,
+      };
+
+      this.map.addSource("places", layer);
+      // <img src="https://img.icons8.com/external-vitaliy-gorbachev-lineal-color-vitaly-gorbachev/60/000000/external-bike-vacation-vitaliy-gorbachev-lineal-color-vitaly-gorbachev.png"/>
+      this.map.addLayer({
+        id: "clusters",
+        type: "circle",
+        source: "places",
+        filter: ["has", "point_count"],
+        paint: {
+          // Use step expressions (https://docs.mapbox.com/mapbox-gl-js/style-spec/#expressions-step)
+          // with three steps to implement three types of circles:
+          //   * Blue, 20px circles when point count is less than 100
+          //   * Yellow, 30px circles when point count is between 100 and 750
+          //   * Pink, 40px circles when point count is greater than or equal to 750
+          "circle-color": [
+            "step",
+            ["get", "point_count"],
+            "#51bbd6",
+            100,
+            "#f1f075",
+            750,
+            "#f28cb1",
+          ],
+          "circle-radius": [
+            "step",
+            ["get", "point_count"],
+            20,
+            100,
+            30,
+            750,
+            40,
+          ],
+        },
+      });
+
+      this.map.addLayer({
+        id: "cluster-count",
+        type: "symbol",
+        source: "places",
+        filter: ["has", "point_count"],
+        layout: {
+          "text-field": "{point_count_abbreviated}",
+          "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
+          "text-size": 12,
+        },
+      });
+
+      this.map.loadImage(
+        "https://img.icons8.com/external-wanicon-lineal-color-wanicon/64/000000/external-bike-healthy-wanicon-lineal-color-wanicon.png",
+        (error, image) => {
+          if (error) throw error;
+          // Add the image to the map style.
+          this.map.addImage("bicycle", image);
+          this.map.addLayer({
+            id: "unclustered-point",
+            type: "symbol",
+            source: "places",
+            layout: {
+              "icon-image": "bicycle", // reference the image
+              "icon-size": 0.5,
+            },
+            filter: ["!", ["has", "point_count"]],
+          });
+        }
+      );
+
+      this.map.on("click", "unclustered-point", (e) => {
+        // console.log(e);
+
+        this.map.flyTo({
+          center: [e.lngLat.lng, e.lngLat.lat],
+          zoom: 20,
+          essential: true, // this animation is considered essential with respect to prefers-reduced-motion
+        });
+
+        // const coordinates = e.features[0].geometry.coordinates.slice();
+        // const mag = e.features[0].properties.mag;
+        // const tsunami =e.features[0].properties.tsunami === 1 ? 'yes' : 'no';
+
+        // // console.log(e)
+        // // Ensure that if the map is zoomed out such that
+        // // multiple copies of the feature are visible, the
+        // // popup appears over the copy being pointed to.
+        // while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+        // coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        // }
+        // new mapboxgl.Popup()
+        // .setLngLat(coordinates)
+        // .setHTML(
+        // `magnitude: ${mag}<br>Was there a tsunami?: ${tsunami}`
+        // )
+        // .addTo(this.map);
+      });
+
+
+
+        /**
+         * Listen for when a geocoder result is returned. When one is returned:
+         * - Calculate distances
+         * - Sort stores by distance
+         * - Rebuild the listings
+         * - Adjust the map camera
+         * - Open a popup for the closest store
+         * - Highlight the listing for the closest store.
+         */
+        this.geocoderControl.on("result", (event) => {
+          /* Get the coordinate of the search result */
+          const searchResult = event.result.geometry;
+
+          /* Get the coordinate of the search result */
+
+          /**
+           * Calculate distances:
+           * For each store, use turf.disance to calculate the distance
+           * in miles between the searchResult and the store. Assign the
+           * calculated value to a property called `distance`.
+           */
+          const options = { units: "miles" };
+
+          layer.data.features.forEach((station)=>{
+            station.properties.distance = turf.distance(
+                searchResult,
+                station.geometry,
+                options
+            );
+          })
+
+          /**
+           * Sort stores by distance from closest to the `searchResult`
+           * to furthest.
+           */
+          layer.data.features.sort((a, b) => {
+            if (a.properties.distance > b.properties.distance) {
+              return 1;
+            }
+            if (a.properties.distance < b.properties.distance) {
+              return -1;
+            }
+            return 0; // a must be equal to b
+          });
+          // console.log(layer.data.features)
+          // console.log(searchResult)
+
+          //   // console.log(e.result.center);
+          // this.geocoderControl.clear();
+          // new mapboxgl.Marker({ draggable: true, color: "blue" })
+          //   .setLngLat(event.result.center)
+          //   .addTo(this.map)
+        });
+          
     });
 
-    this.geocoderControl = new MapboxGeocoder({
+    this.navigationControl = new MapboxDirections({
+        accessToken: this.accessToken,
+        unit: "metric",
+        profile: "mapbox/cycling",
+      });
+
+      //https://anthonylouisdagostino.com/bounding-boxes-for-all-us-states/ bounding box for us
+
+      this.geocoderControl = new MapboxGeocoder({
         accessToken: mapboxgl.accessToken,
-        mapboxgl: mapboxgl
-    })
+        mapboxgl: mapboxgl,
+        marker: true,
+      });
 
-
-    // this.map.addControl(this.navigationControl, "top-right");
-    this.map.addControl(this.geocoderControl,"top-left");
+      // this.map.addControl(this.navigationControl, "top-right");
+      this.map.addControl(this.geocoderControl, "top-left");
+ 
 
     this.map.on("load", () => {
       // Insert the layer beneath any symbol layer.

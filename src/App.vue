@@ -5,6 +5,7 @@
         <Map />
       </div>
       <div class="overlay">
+        <Locator />
         <div class="nav">
           <!-- <Navigation /> -->
         </div>
@@ -27,6 +28,7 @@
 import MarksList from "./components/MarksList.vue";
 import Marking from "./components/Marking.vue";
 // import Navigation from "./components/Navigation.vue";
+import Locator from "./components/Locator.vue";
 import Map from './components/Map.vue';
 import { eventBus } from './main.js';
 import axios from 'axios';
@@ -38,6 +40,7 @@ export default {
     MarksList,
     Marking,
     // Navigation,
+    Locator,
     Map,
   },
 
