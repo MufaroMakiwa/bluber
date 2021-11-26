@@ -1,5 +1,5 @@
 <template>
-  <div class="marker">
+  <div class="marker shadow">
     <div class="header">
       <span class="header-label">Marker</span>
     </div>
@@ -215,12 +215,11 @@ export default {
 .marker {
   font-family: sans-serif;
   width: 350px;
-  border-radius: 6px;
-  background: white;
-  padding: 16px;
+  background-color: white;
+  padding: 1rem;
+  left: 1rem;
+  bottom: 5rem;
   position: absolute;
-  right: 2vw;
-  top: 2vw;
 }
 
 .prev {
@@ -237,7 +236,7 @@ export default {
   margin: 8px;
   text-align: center;
   font-size: 24px;
-  color: #1da1f2;
+  color: #74adb6;
 }
 
 .tagged {

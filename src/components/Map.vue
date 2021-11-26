@@ -50,6 +50,7 @@ export default {
       showParagraph: false,
       mapOptions: {
         zoomSnap: 0.5,
+        zoomControl: false
       },
       showMap: true,
       routing_state: [],

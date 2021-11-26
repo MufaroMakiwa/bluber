@@ -1,113 +1,76 @@
 <template>
-  <div class="app-wrapper">
-    <div class="">
-      <div class="map">
-        <Map />
-      </div>
-      <div class="overlay">
-        <Locator />
-        <div class="nav">
-          <!-- <Navigation /> -->
-        </div>
-        <div class="side-render">
-          <div class="floating-markslist" v-if="showMarks">
-            <MarksList v-bind:marks="marks" />
-          </div>
-          <div v-if="showMarker" class="floating-marker">
-            <Marking />
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <v-app>
+    <router-view />
+  </v-app>
 </template>
 
 <script>
-
-
-import MarksList from "./components/MarksList.vue";
-import Marking from "./components/Marking.vue";
-// import Navigation from "./components/Navigation.vue";
-import Locator from "./components/Locator.vue";
-import Map from './components/Map.vue';
-import { eventBus } from './main.js';
-import axios from 'axios';
-
-
 export default {
   name: "App",
-  components: {
-    MarksList,
-    Marking,
-    // Navigation,
-    Locator,
-    Map,
-  },
-
-  data() {
-    return {
-      username: "Hillary",
-      showMarks:false,
-      isLoggedIn: false,
-      showMarker: false,
-      marks: [],
-    };
-  },
-
-  mounted() {
-    eventBus.$on("toggle-marks", () => {
-      this.showMarks = !this.showMarks;
-      this.showMarker = false;
-    })
-    eventBus.$on("toggle-marker", () => {
-      this.showMarker = !this.showMarker;
-      this.showMarks = false;
-    })
-    eventBus.$on("signIn", () => {
-      this.isLoggedIn = true;
-    })
-    eventBus.$on("get-marks", (params) => {
-        axios.get("/api/mark",{params:params}).then((res)=>{
-          console.log(res)
-          let {marksInSpannedArea, radius, center } = res.data
-          this.marks = marksInSpannedArea;
-          eventBus.$emit("get-plan-radius",center,radius)
-      }).catch((err)=>{
-        console.log("this is my err",err)
-      });
-    })
-  },
-
 }
-
 </script>
 
-<style scoped>
-.nav {
-  /* position: ; */
-
-  position: absolute;
-  top: 2vw;
-  left: 4vw;
-}
-.map {
-  z-index: 0;
-}
-.app-wrapper {
-  width: 100%;
-  height: 100%;
+<style>
+* {
+ box-sizing: border-box;
 }
 
-.overlay {
-  z-index: 999;
-  position: absolute;
-  top: 0;
-  width: 100%;
+html {
+  --border-radius: 8px;
+  --overlay-z-index: 999;
+  font: 16px sans-serif;
 }
 
-.floating-markslist {
-  position: absolute;
-  top: 2vw;
-  right: 2vw;
+body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
 }
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  padding: 0;
+}
+
+input, textarea {
+  transition: all 0.3s;
+  border: none;
+  outline: none;
+}
+
+textarea:hover:not(:focus) {
+  background-color: var(--input-color-hover);
+}
+
+.shadow {
+  background-color: white;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+  border: 1px solid lightgray;
+  border-radius: var(--border-radius);
+}
+
+.overflow-text {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.fade-enter-active {
+  animation: fade-in .2s linear;
+}
+
+.fade-leave-active {
+  animation: fade-in .2s linear reverse;
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 </style>

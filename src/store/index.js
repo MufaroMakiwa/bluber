@@ -6,13 +6,25 @@ Vue.use(Vuex);
 
 
 const store = new Vuex.Store({
-  state: {},
+  state: {
+    template: "user-marks"
+  },
 
-  mutations: {},
+  mutations: {
+    setTemplate(state, payload) {
+      state.template = payload;
+    }
+  },
 
-  actions: {},
+  actions: {
+    setTemplate(state, payload) {
+      state.commit('setTemplate', payload);
+    }
+  },
 
-  getters: {}
+  getters: {
+    template: state => state.template,
+  }
 });
 
 export default store;
