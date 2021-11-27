@@ -47,6 +47,7 @@ export default {
   flex-grow: 1;
   justify-content: flex-start;
   align-items: flex-start;
+  margin-left: 1rem;
 }
 
 .username {

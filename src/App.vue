@@ -73,4 +73,8 @@ textarea:hover:not(:focus) {
   }
 }
 
+.v-text-field--rounded > .v-input__control > .v-input__slot {
+  padding: 0 1rem !important;
+}
+
 </style>

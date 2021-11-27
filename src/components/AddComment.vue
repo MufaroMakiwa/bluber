@@ -1,27 +1,43 @@
 <template>
   <div class="add-comment-container">
     <div class="comment-inner">
-      <UserIcon username="Mufaro Makiwa"/>
+      <UserIcon 
+        v-if="!isReply"
+        username="Mufaro Makiwa" 
+        class="icon"/>
       <v-textarea
         rows="1"
         dense
         outlined
+        rounded
+        single-line
         hide-details 
         auto-grow
         background-color="input"
         v-model="comment"
-        line-height="20"
         class="comment"
-        label="Comment"
-        placeholder="Write a comment..."></v-textarea>
+        :label="textFieldLabel"
+        :placeholder="textFieldLabel"></v-textarea>
     </div>
     
     <div class="submit-section">
       <v-btn
+        v-if="isReply"
+        color="primary"
+        outlined
+        small
+        rounded
+        class="cancel"
+        @click="$emit('cancel')">
+        Cancel
+      </v-btn>
+
+      <v-btn
         depressed
         small
+        rounded
         color="primary">
-        Comment
+        {{ buttonLabel }}
       </v-btn>
     </div> 
   </div>
@@ -36,6 +52,23 @@ export default {
 
   components: {
     UserIcon
+  },
+
+  props: {
+    isReply: {
+      default: false,
+      type: Boolean,
+    }
+  },
+
+  computed: {
+    textFieldLabel() {
+      return this.isReply ? "Write a reply..." : "Write a comment..."
+    },
+
+    buttonLabel() {
+      return this.isReply ? "Reply" : "Comment";
+    }
   },
 
   data() {
@@ -64,6 +97,10 @@ export default {
   width: 100%;
 }
 
+.icon {
+  margin-right: 1rem;
+}
+
 .comment {  
   flex-grow: 1;
 }
@@ -77,4 +114,7 @@ export default {
   width: 100%;
 }
 
+.cancel {
+  margin-right: 1rem;
+}
 </style>

@@ -26,11 +26,11 @@ export default {
   height: 40px;
   border-radius: 50%;
   background-color: lightgray;
-  margin-right: 1rem;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .user-icon .icon {

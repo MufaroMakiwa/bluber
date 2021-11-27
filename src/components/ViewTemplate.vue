@@ -43,7 +43,7 @@ export default {
 .view-container {
   width: 100%;
   height: 100%;
-  padding: 1rem;
+  padding: 1.25rem;
   overflow: scroll;
   display: flex;
   flex-direction: column;
