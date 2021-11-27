@@ -102,7 +102,18 @@ export default {
         ratingCount: 10,
         caption: "I do not know why this has not been fixed yet",
         tags: ["Busy", "Not Safe"]
-      }
+      },
+
+      { 
+        markId: 2,
+        username: "Jianna Liu",
+        dateAdded: "Jan 5",
+        comments: 5,
+        rating: 4.5,
+        ratingCount: 100,
+        caption: "The intersection has been blocked for over a year now",
+        tags: ["Blocked"]
+      },
     ];
     
     return {

@@ -21,7 +21,7 @@
       </template>
 
       <v-list class="menu-options">
-        <v-list-item @click="handleEdit" class="list-item">
+        <v-list-item @click="$emit('edit')" class="list-item">
           <v-list-item-avatar class="avatar">
             <font-awesome-icon icon="edit" class="menu-icon"/> 
           </v-list-item-avatar>
@@ -30,7 +30,7 @@
 
         <v-divider></v-divider>
 
-        <v-list-item @click="handleDelete" class="list-item">
+        <v-list-item @click="$emit('delete')" class="list-item">
           <v-list-item-avatar class="avatar">
             <font-awesome-icon icon="trash-alt" class="menu-icon"/> 
           </v-list-item-avatar>
@@ -45,16 +45,6 @@
 
 export default {
   name: "MarkOptionsMenu",
-
-  methods: {
-    handleEdit() {
-      alert("Handle edit");
-    },
-
-    handleDelete() {
-      alert("Handle delete");
-    }
-  }
 }
 </script>
 

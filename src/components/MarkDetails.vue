@@ -10,7 +10,9 @@
           :username="mark.username"
           :dateAdded="mark.dateAdded"/>
 
-        <MarkOptionsMenu />
+        <MarkOptionsMenu 
+          @edit="editMark"
+          @delete="deleteMark"/>
       </div>
 
       <div class="mark-details">
@@ -23,6 +25,14 @@
         </div>
       </div>
       <v-divider></v-divider>
+      <v-divider></v-divider>
+
+      <div class="comments-section">
+        <AddComment />
+      </div>
+      <v-divider></v-divider>
+      <v-divider></v-divider>
+      
     </template>
   </ViewTemplate>
 </template>
@@ -33,17 +43,33 @@ import ViewTemplate from "./ViewTemplate.vue";
 import MarkUserDetails from "./MarkUserDetails.vue";
 import MarkDescription from "./MarkDescription.vue";
 import MarkOptionsMenu from "./MarkOptionsMenu.vue";
+import AddComment from "./AddComment.vue";
 
 
 export default {
   name: "MarkDetails",
 
   components: {
-    ViewTemplate, MarkUserDetails, MarkDescription, Rating, MarkOptionsMenu
+    ViewTemplate, 
+    MarkUserDetails, 
+    MarkDescription, 
+    Rating,
+    MarkOptionsMenu,
+    AddComment,
   },
 
   props: {
     mark: Object,
+  },
+
+  methods: {
+    editMark() {
+      console.log("Editing mark");
+    },
+
+    deleteMark() {
+      console.log("Deleting mark")
+    }
   }
 }
 </script>
@@ -74,5 +100,14 @@ export default {
   align-items: center;
   margin-top: 1.5rem;
   margin-bottom: 1rem;
+}
+
+.comments-section {
+  margin-top: 1rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
 }
 </style>

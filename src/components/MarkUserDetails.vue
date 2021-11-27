@@ -1,8 +1,6 @@
 <template>
   <div class="user-details-container">
-    <div class="user-icon">
-      <span class="icon">{{ userIcon }}</span>
-    </div>
+    <UserIcon :username="username"/>
 
     <div class="details-inner">
       <span class="username">{{ username }}</span>
@@ -12,8 +10,14 @@
 </template>
 
 <script>
+import UserIcon from "./UserIcon.vue";
+
 export default {
   name: "MarkUserDetails",
+
+  components: {
+    UserIcon
+  },
 
   props: {
     username: String,
@@ -32,27 +36,9 @@ export default {
 .user-details-container {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
   justify-content: flex-start;
   flex-grow: 1;
-}
-
-.user-icon {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background-color: lightgray;
-  margin-right: 1rem;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-}
-
-.user-icon .icon {
-  font-size: 1.5rem;
-  color: white;
-  font-weight: bold;
 }
 
 .details-inner {
