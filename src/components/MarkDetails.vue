@@ -98,7 +98,7 @@ export default {
         {
           username: "Hillary Tamirepi",
           dateAdded: "Yesterday at 6.02PM",
-          content: "I can across this place and I think it is fine now",
+          content: "I came across this place and I think it is fine now",
           replies: [
             {
               username: "Jianna Liu",
@@ -106,6 +106,13 @@ export default {
               content: "This is disgusting"
             }
           ]
+        },
+
+        {
+          username: "Hophin Kibona",
+          dateAdded: "Tuesday at 6.02PM",
+          content: "Please update this now",
+          replies: []
         }
       ]
     }

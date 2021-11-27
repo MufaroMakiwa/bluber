@@ -66,7 +66,7 @@ export default {
 
 .mark-container:hover {
   cursor: pointer;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
 }
 
 .mark-container:first-of-type {
