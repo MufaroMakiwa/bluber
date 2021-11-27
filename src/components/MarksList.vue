@@ -1,7 +1,10 @@
 <template>
   <div class="outer">
     <transition name="fade">
-      <ViewTemplate v-if="displayAllMarks">
+      <ViewTemplate 
+        v-if="displayAllMarks" 
+        :backButton="requiresBackButton"
+        @back="$emit('back')">
         <template v-slot:heading>
           {{ title }}
         </template>
@@ -77,7 +80,11 @@ export default {
   },
 
   props: {
-    title: String
+    title: String,
+    requiresBackButton: {
+      default: false,
+      type: Boolean,
+    }
   },
 
   data() {

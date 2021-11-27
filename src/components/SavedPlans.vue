@@ -1,31 +1,45 @@
 <template>
-  <ViewTemplate>
-    <template v-slot:heading>
-      Saved Plans
-    </template>
+  <div class="outer">
+    <transition name="fade">
+      <ViewTemplate 
+        v-if="!displayPlan">
+        <template v-slot:heading>
+          Saved Plans
+        </template>
 
-    <template v-slot:content>
-      <div class="saved-plans-container" v-if="hasSavedPlans">
-        <SavedPlanCard 
-          v-for="(plan, index) in savedPlans"
-          :key="index"
-          :plan="plan"/>
-      </div>
+        <template v-slot:content>
+          <div class="saved-plans-container" v-if="hasSavedPlans">
+            <SavedPlanCard 
+              v-for="(plan, index) in savedPlans"
+              :key="index"
+              :plan="plan"
+              @click.native="displayPlan=true"/>
+          </div>
 
-      <span v-else class="no-plans">You currently do not have any saved plans</span>
-    </template>
-  </ViewTemplate>
+          <span v-else class="no-plans">You currently do not have any saved plans</span>
+        </template>
+      </ViewTemplate>
+    </transition>
+
+    <MarksList 
+      v-if="displayPlan" 
+      :requiresBackButton="true" 
+      title="Marks in area"
+      @back="displayPlan=false"/>
+    
+  </div>
 </template>
 
 <script>
 import ViewTemplate from "./ViewTemplate.vue";
 import SavedPlanCard from "./SavedPlanCard.vue";
+import MarksList from "./MarksList.vue";
 
 export default {
   name: "SavedPlans",
 
   components: {
-    ViewTemplate, SavedPlanCard
+    ViewTemplate, SavedPlanCard, MarksList
   },
 
   computed: {
@@ -35,8 +49,7 @@ export default {
   },
 
   data() {
-    return {
-      savedPlans: [
+    const savedPlans = [
         {
           start: "77 Massachusetts Avenue",
           end: "189 Vassar Street",
@@ -58,12 +71,20 @@ export default {
           dateAdded: "Jan 1"
         }
       ]
+    return {
+      savedPlans: [...savedPlans],
+      displayPlan: false
     }
   }
 }
 </script>
 
 <style scoped>
+.outer {
+  width: 100%;
+  height: 100%;
+}
+
 .saved-plans-container {
   display: flex;
   flex-direction: column;
