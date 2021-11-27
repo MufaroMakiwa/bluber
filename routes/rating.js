@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const validator = require("./middleware");
-const ratingModel = require("../models/rating");
+const ratingController = require("./rating-controller");
 
 
 const userId1 = "gangoffour1";
@@ -17,9 +17,9 @@ router.post(
     validator.isTargetUserIdExists,
     (req, res, next) => validator.checkMarkRatingStatus(req, res, next, false)
   ],
-  (req, res) => {
+  async (req, res) => {
     const { markId, rating } = req.body;
-    const ratingObj = ratingModel.addOne(userId1, markId, rating, userId2);
+    const ratingObj = await ratingController.addOne(userId1, markId, rating, userId2);
     res.status(201).json(ratingObj).end();
   }
 );
@@ -32,8 +32,8 @@ router.patch(
     validator.isMarkRatingAllowed,
     (req, res, next) => validator.checkMarkRatingStatus(req, res, next, true)
   ],
-  (req, res) => {
-    const ratingObj = ratingModel.updateOne(userId1, req.params.markId, req.body.rating);
+  async (req, res) => {
+    const ratingObj = await ratingController.updateOne(userId1, req.params.markId, req.body.rating);
     res.status(200).json(ratingObj).end();
 
   }
@@ -47,8 +47,8 @@ router.delete(
     validator.isMarkRatingAllowed,
     (req, res, next) => validator.checkMarkRatingStatus(req, res, next, true)
   ],
-  (req, res) => {
-    ratingModel.deleteOne(userId1, req.params.markId);
+  async (req, res) => {
+    await ratingController.deleteOne(userId1, req.params.markId);
     res.status(200).json({
       message: "Rating deleted successfully"
     }).end();

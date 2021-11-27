@@ -80,9 +80,11 @@ const UserSchema = new Schema(
         },
         // reference to _id field in the User collection
         "user_id": {
-            type: Schema.Types.ObjectId, 
-            ref: "User",
-            required: false,
+            // type: Schema.Types.ObjectId, 
+            // ref: "User",
+            // required: false,
+            type: String,
+            required: false
         },
         
     }

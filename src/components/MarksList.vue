@@ -101,8 +101,8 @@ export default {
        },
 
        getBusyMarks() {
+           console.log(this.marks, "BUSY MARKS");
            this.marksToDisplay = this.marks.filter((mark) => mark.tags[0] === "busy");
-
            this.displayAll = false;
            this.displayBusy = true;
            this.displayBlocked = false,

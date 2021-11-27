@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const validator = require("./middleware");
-const replyModel = require("../models/reply");
+const replyController = require("./reply-controller");
 
 
 const userId1 = "gangoffour1";
@@ -15,9 +15,9 @@ router.post(
     validator.isCommentIdInBodyExists,
     validator.isTargetUserIdExists
   ],
-  (req, res) => {
+  async (req, res) => {
     const { commentId, content } = req.body;
-    const reply = replyModel.addOne(userId2, commentId, content, userId1);
+    const reply = await replyController.addOne(userId2, commentId, content, userId1);
     res.status(201).json(reply).end();
   }
 );
@@ -29,8 +29,8 @@ router.patch(
     validator.isReplyIdInParamsExists,
     validator.isValidReplyModifier
   ],
-  (req, res) => {
-    const reply = replyModel.updateOne(req.params.replyId, req.body.content);
+  async (req, res) => {
+    const reply = await replyController.updateOne(req.params.replyId, req.body.content);
     res.status(200).json(reply).end();
   }
 );
@@ -43,8 +43,8 @@ router.delete(
     validator.isCommentIdInBodyExists,
     validator.isValidCommentModifier
   ],
-  (req, res) => {
-    replyModel.deleteOne(req.params.replyId);
+  async (req, res) => {
+    await replyController.deleteOne(req.params.replyId);
     res.status(200).json({
       message: "Reply deleted sucessfully"
     }).end();
