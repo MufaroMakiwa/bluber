@@ -1,5 +1,5 @@
 <template>
-  <div class="mark-container">
+  <div class="card">
     <MarkUserDetails 
       :username="mark.username"
       :dateAdded="mark.dateAdded"/>
@@ -51,28 +51,6 @@ export default {
 </script>
 
 <style scoped>
-.mark-container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  padding: 1rem;
-  border: 1px solid lightgray;
-  border-radius: 8px;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
-  margin-top: 1.5rem;
-  transition: all 0.3s;
-  background-color: whitesmoke;
-}
-
-.mark-container:hover {
-  cursor: pointer;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
-}
-
-.mark-container:first-of-type {
-  margin-top: 0;
-}
-
 .mark-details {
   display: flex;
   flex-direction: column;

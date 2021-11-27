@@ -77,4 +77,27 @@ textarea:hover:not(:focus) {
   padding: 0 1rem !important;
 }
 
+.card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  border: 1px solid lightgray;
+  border-radius: 8px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
+  margin-top: 1.5rem;
+  transition: all 0.3s;
+  background-color: whitesmoke;
+}
+
+.card:hover {
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+}
+
+.card:first-of-type {
+  margin-top: 0;
+}
+
+
 </style>

@@ -10,7 +10,9 @@
           :username="mark.username"
           :dateAdded="mark.dateAdded"/>
 
-        <MarkOptionsMenu 
+        <OptionsMenu 
+          editTitle="Edit mark"
+          deleteTitle="Delete mark"
           @edit="editMark"
           @delete="deleteMark"/>
       </div>
@@ -51,7 +53,7 @@ import Rating from "./Rating.vue"
 import ViewTemplate from "./ViewTemplate.vue";
 import MarkUserDetails from "./MarkUserDetails.vue";
 import MarkDescription from "./MarkDescription.vue";
-import MarkOptionsMenu from "./MarkOptionsMenu.vue";
+import OptionsMenu from "./OptionsMenu.vue";
 import AddComment from "./AddComment.vue";
 import Comment from "./Comment.vue";
 
@@ -64,7 +66,7 @@ export default {
     MarkUserDetails, 
     MarkDescription, 
     Rating,
-    MarkOptionsMenu,
+    OptionsMenu,
     AddComment,
     Comment
   },

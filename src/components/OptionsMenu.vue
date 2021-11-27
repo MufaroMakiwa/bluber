@@ -25,7 +25,7 @@
           <v-list-item-avatar class="avatar">
             <font-awesome-icon icon="edit" class="menu-icon"/> 
           </v-list-item-avatar>
-          <v-list-item-title>Edit mark</v-list-item-title>
+          <v-list-item-title>{{ editTitle }}</v-list-item-title>
         </v-list-item>
 
         <v-divider></v-divider>
@@ -34,7 +34,7 @@
           <v-list-item-avatar class="avatar">
             <font-awesome-icon icon="trash-alt" class="menu-icon"/> 
           </v-list-item-avatar>
-          <v-list-item-title>Delete mark</v-list-item-title>
+          <v-list-item-title>{{ deleteTitle }}</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-menu>
@@ -44,7 +44,12 @@
 <script>
 
 export default {
-  name: "MarkOptionsMenu",
+  name: "OptionsMenu",
+
+  props: {
+    editTitle: String,
+    deleteTitle: String
+  }
 }
 </script>
 

@@ -200,7 +200,7 @@ export default {
 }
 
 .no-marks {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   font-weight: bold;
   color: gray;
 }
