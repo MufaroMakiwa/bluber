@@ -48,7 +48,7 @@ export default {
 
   props: {
     editTitle: String,
-    deleteTitle: String
+    deleteTitle: String,
   }
 }
 </script>

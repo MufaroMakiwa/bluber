@@ -14,14 +14,14 @@
 
     <div class="plan-details">
       <div class="plan-point start">
-        <div class="point-icon">
-
+        <div class="point-icon-container">
+          <div class="point-icon"></div>
         </div>
         <span class="name">{{ plan.start }}</span>
       </div>
       <div class="plan-point end">
-        <div class="point-icon">
-
+        <div class="point-icon-container">
+          <div class="point-icon"></div>
         </div>
         <span class="name">{{ plan.end }}</span>
       </div>
@@ -95,45 +95,46 @@ export default {
   overflow: hidden;
 }
 
+.point-icon-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
 .point-icon {
   width: 15px;
   height: 15px;
   border-radius: 50%;
-  position: relative;
+  z-index: 1;
 }
 
 .start .point-icon {
   background-color: gray;
 }
 
-.point-icon::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  transform: translateX(-100%);
-  border: 1px solid gray;
-  height: 100%;
-}
-
-.point-icon::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  transform: translateX(-100%);
-  border: 1px solid gray;
-  height: 100%;
-}
-
-.start .point-icon::before {
-  top: 100%;
-}
-
-.end .point-icon::before {
-  bottom: 100%;
-}
-
 .end .point-icon {
   background-color: #1ba9bf;
+}
+
+.point-icon-container::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-100%);
+  border: 1px solid gray;
+  height: 100%;
+  z-index: 0;
+}
+
+.start .point-icon-container::before {
+  top: 50%;
+}
+
+.end .point-icon-container::before {
+  bottom: 50%;
 }
 
 .name {

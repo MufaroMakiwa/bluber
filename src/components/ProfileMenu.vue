@@ -71,6 +71,15 @@
             </v-list-item-avatar>
             <v-list-item-title>Saved Plans</v-list-item-title>
           </v-list-item>
+
+          <v-list-item 
+            @click="signOut"
+            color="primary">
+            <v-list-item-avatar class="avatar">
+              <font-awesome-icon icon="sign-out-alt" class="menu-icon"/> 
+            </v-list-item-avatar>
+            <v-list-item-title>Signout</v-list-item-title>
+          </v-list-item>
         </v-list>
       </v-card>
     </v-menu>
@@ -116,7 +125,7 @@ export default {
 
     template() {
       return this.$store.getters.template;
-    }
+    },
   },
 
   methods: {
@@ -130,6 +139,10 @@ export default {
 
     displayMarks() {
       this.$store.dispatch('setTemplate', 'user-marks');
+    },
+
+    signOut() {
+      alert("Handle signout");
     }
   }
 }

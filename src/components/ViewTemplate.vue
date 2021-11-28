@@ -22,6 +22,8 @@
 
 <script>
 import BackButton from "./BackButton.vue";
+
+
 export default {
   name: "ViewTemplate",
 
