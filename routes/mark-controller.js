@@ -149,11 +149,6 @@ async function getMarksInSpannedArea(start, end) {
   // get the center of the spanned area
   const center = getCenter(start, end);
 
-<<<<<<< HEAD
-=======
-  console.log(start,end,center)
-  const all_marks = await findAll();
->>>>>>> origin/mongoose
 
   // loop through all the marks and get the ones with the start or end in the spanned area
   const marksInSpannedArea = 
