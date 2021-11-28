@@ -6,8 +6,8 @@
     <div class="main-app-section shadow">
       <AddMark v-if="template === 'mark'"/>
       <PlanTrip v-if="template === 'plan'"/>
-      <MarksList v-if="template === 'user-marks'" title="Marks in area"/>
-      <UserSaved v-if="template === 'user-saved'"/>
+      <MarksList v-if="template === 'user-marks'" title="My Marks"/>
+      <SavedPlans v-if="template === 'user-saved'"/>
       <Notifications v-if="template === 'notifications'"/>
       <Locator v-if="template === 'locator'"/>
     </div>   
@@ -20,7 +20,7 @@ import Navigator from "../components/Navigator";
 import PlanTrip from "../components/PlanTrip";
 import Notifications from "../components/Notifications";
 import MarksList from "../components/MarksList";
-import UserSaved from "../components/UserSaved";
+import SavedPlans from "../components/SavedPlans";
 import AddMark from "../components/AddMark";
 import Map from '../components/Map';
 import Locator from '../components/Locator'
@@ -38,7 +38,8 @@ export default {
     Notifications,
     MarksList,
     UserSaved,
-    Locator
+    Locator,
+    SavedPlans
   },
 
   data() {

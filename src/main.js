@@ -26,16 +26,21 @@ import {
   faTimesCircle,
   faTimes,
   faArrowLeft, 
-  faFilter } from '@fortawesome/free-solid-svg-icons';
+  faFilter,
+  faEllipsisH,
+  faTrashAlt,
+  faEdit,
+  faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { faStar as faStarRegular } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 
 library.add(
   faStar, faComment, faBars, faUserCircle, faPlus, 
-  faMapMarked, faExchangeAlt, faMinus, faStarHalf, 
-  faStarRegular, faBell, faMapMarker, faMap, 
-  faTimesCircle, faTimes, faArrowLeft, faFilter
+  faMapMarked, faExchangeAlt, faMinus, faStarHalf, faEdit,
+  faStarRegular, faBell, faMapMarker, faMap, faEllipsisH,
+  faTimesCircle, faTimes, faArrowLeft, faFilter, faTrashAlt,
+  faSignOutAlt
 );
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
