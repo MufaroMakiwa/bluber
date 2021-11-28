@@ -37,7 +37,7 @@ export default {
     AddMark,
     Notifications,
     MarksList,
-    UserSaved,
+    // UserSaved,
     Locator,
     SavedPlans
   },

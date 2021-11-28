@@ -61,7 +61,7 @@
 </template>
 
 <script>
-import BackButton from "./BackButton.vue";
+// import BackButton from "./BackButton.vue";
 import axios from "axios";
 import { eventBus } from "../main";
 import ViewTemplate from "./ViewTemplate.vue";

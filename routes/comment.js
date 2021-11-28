@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const validator = require("./middleware");
-const commentModel = require("../models/comment");
+const commentController = require("./comment-controller");
 
 
 const userId1 = "gangoffour1";
@@ -15,9 +15,9 @@ router.post(
     validator.isMarkIdInBodyExists,
     validator.isTargetUserIdExists
   ],
-  (req, res) => {
+  async (req, res) => {
     const { markId, content } = req.body;
-    const comment = commentModel.addOne(userId1, markId, content, userId2);
+    const comment = await commentController.addOne(userId1, markId, content, userId2);
     res.status(201).json(comment).end();
   }
 );
@@ -29,8 +29,8 @@ router.patch(
     validator.isCommentIdInParamsExists,
     validator.isValidCommentModifier
   ],
-  (req, res) => {
-    const comment = commentModel.updateOne(req.params.commentId, req.body.content);
+  async (req, res) => {
+    const comment = await commentController.updateOne(req.params.commentId, req.body.content);
     res.status(200).json(comment).end();
   }
 );
@@ -42,8 +42,8 @@ router.delete(
     validator.isCommentIdInParamsExists,
     validator.isValidCommentModifier
   ],
-  (req, res) => {
-    commentModel.deleteOne(req.params.commentId);
+  async (req, res) => {
+    await commentController.deleteOne(req.params.commentId);
     res.status(200).json({
       message: "Comment deleted sucessfully"
     }).end();

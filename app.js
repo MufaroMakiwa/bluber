@@ -5,7 +5,7 @@ const session = require('express-session');
 var cors = require('cors');
 const logger = require('morgan');
 const history = require('connect-history-api-fallback');
-
+const db = require('./db/db_config');
 
 // require dotenv which allows setting variables in .env file
 require('dotenv').config();
@@ -48,6 +48,19 @@ app.use(express.urlencoded({ extended: false }));
 
 // cookies for sessions
 app.use(cookieParser());
+
+db.mongoose
+  .connect(db.url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  })
+  .then(() => {
+    console.log("Connected to the database!");
+  })
+  .catch(err => {
+    console.log("Cannot connect to the database!", err);
+    process.exit();
+  });
 
 // declare the root directory depending on the current env
 const isProduction = process.env.NODE_ENV === 'production';

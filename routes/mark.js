@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const validator = require("./middleware");
 const markController = require("./mark-controller.js");
-const markModel = require("../models/mark");
 
 
 const userId = "gangoffour";
@@ -13,7 +12,7 @@ router.get(
   [
     // validator.isUserLoggedIn
   ],
-  (req, res) => {
+  async (req, res) => {
     const start = {
       lat: parseFloat(req.query.startLat), 
       lng: parseFloat(req.query.startLng)
@@ -23,8 +22,7 @@ router.get(
       lat: parseFloat(req.query.endLat),
       lng: parseFloat(req.query.endLng)
     }
-
-    const response = markController.getMarksInSpannedArea(start, end);
+    const response = await markController.getMarksInSpannedArea(start, end);
     res.status(200).json(response).end();
   }
 );
@@ -57,7 +55,7 @@ router.post(
   [
     // validator.isUserLoggedIn
   ],
-  (req, res) => {
+  async (req, res) => {
     const { tags, caption, start, end, path } = req.body;
     
     const st = {
@@ -69,7 +67,7 @@ router.post(
       lat: end[0],
       lng: end[1]
     }
-    const mark = markModel.addOne(userId, tags, caption, st, en, path);
+    const mark = await markController.addOne(userId, tags, caption, st, en, path);
     res.status(201).json(mark).end();
   }
 );
@@ -82,8 +80,8 @@ router.patch(
     validator.isMarkIdInParamsExists,
     validator.isValidMarkModifier
   ],
-  (req, res) => {
-    const mark = markModel.updateOne(req.params.markId, req.body);
+  async (req, res) => {
+    const mark = await markController.updateOne(req.params.markId, req.body);
     res.status(200).json(mark).end();
   }
 );
@@ -96,8 +94,8 @@ router.delete(
     validator.isMarkIdInParamsExists,
     validator.isValidMarkModifier
   ],
-  (req, res) => {
-    markModel.deleteOne(req.params.markId);
+  async (req, res) => {
+    await markController.deleteOne(req.params.markId);
     res.status(200).json({
       message: "Mark deleted successfully"
     }).end();
