@@ -52,10 +52,14 @@ export default {
   methods: {
     addMark() {
       this.$store.dispatch('setTemplate', 'mark');
+      this.$store.dispatch('setMapState', 'marking');
+      eventBus.$emit("marking");
     },
 
     planTrip() {
       this.$store.dispatch('setTemplate', 'plan');
+      this.$store.dispatch('setMapState', 'planning');
+      eventBus.$emit("planning");
     },
 
     getBluebikes() {

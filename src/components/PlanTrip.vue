@@ -3,7 +3,8 @@
     <template v-slot:heading>
       Where are you going?
     </template>
-
+    <template v-slot:content>
+    </template>
     <template v-slot:submit>
       <v-btn
         depressed

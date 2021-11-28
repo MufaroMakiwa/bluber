@@ -268,6 +268,7 @@ export default {
     },
 
     handleClick(e) {
+      
       if (this.mapState === "marking") {
         if (this.routing_state.length == 0 || this.routing_state.length == 2) {
           if (this.routing_state.length == 2) {

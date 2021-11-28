@@ -1,52 +1,56 @@
 <template>
   <div class="search-container">
     <div class="search-inner">
-      <span class="search-greeting">
-        Hello, Mufaro
-      </span>
+      <span class="search-greeting"> Hello, Mufaro </span>
 
       <h2 class="search-heading">
         <slot name="heading"></slot>
       </h2>
 
       <div class="input-container start">
-        <SearchInputField 
+        <SearchInputField
           v-model="start"
           :label="startLabel"
-          :placeholder="placeholder"/>
+          :placeholder="placeholder"
+          :type="startInput"
+        />
 
         <v-btn
           :disabled="mode === 'plan'"
           icon
           color="primary"
           class="side-icon"
-          @click="setSearchType">
-          <font-awesome-icon 
-            :icon="searchType === 'path' ? 'minus' : 'plus'" 
-            class="button-icon"/>
+          @click="setSearchType"
+        >
+          <font-awesome-icon
+            :icon="searchType === 'path' ? 'minus' : 'plus'"
+            class="button-icon"
+          />
         </v-btn>
       </div>
-
       <div class="input-container end" v-if="displayEndPointInput">
-        <SearchInputField 
+        <SearchInputField
           v-model="end"
           :label="endLabel"
-          :placeholder="placeholder"/>
+          :placeholder="placeholder"
+          :type="endInput"
+        />
 
         <v-btn
           icon
           :disabled="isSwitchButtonDisabled"
           color="primary"
           class="side-icon fa-rotate-90"
-          @click="switchStartEnd">
-          <font-awesome-icon icon="exchange-alt" class="button-icon"/>
+          @click="switchStartEnd"
+        >
+          <font-awesome-icon icon="exchange-alt" class="button-icon" />
         </v-btn>
       </div>
-
-      <div class="suggestions">
-          
+      <div class="suggestions-container">
+        <slot name="content"></slot>
       </div>
     </div>
+
     <div class="submit-container">
       <slot name="submit"></slot>
     </div>
@@ -54,19 +58,42 @@
 </template>
 
 <script>
+import { eventBus } from "../main";
+import { toPrecision } from "../utils";
+import axios from "axios";
+
 import SearchInputField from "./SearchInputField.vue";
 
 export default {
   name: "Search",
 
   components: {
-    SearchInputField
+    SearchInputField,
   },
 
   props: {
-    mode: String  
+    mode: String,
   },
 
+  beforeCreate() {
+    eventBus.$on("setStart", () => {
+      this.start =
+        this.$store.getters.startMarker[0] +
+        ", " +
+        this.$store.getters.startMarker[1];
+    });
+
+    eventBus.$on("setEnd", () => {
+      this.end =
+        this.$store.getters.endMarker[0] +
+        ", " +
+        this.$store.getters.endMarker[1];
+    });
+
+    eventBus.$on("input",(text,type)=>{
+        this.handleSuggestion(text,type);
+    })
+  },
   computed: {
     startLabel() {
       let directive;
@@ -74,8 +101,9 @@ export default {
       if (this.mode === "plan") {
         directive = "start";
       } else {
-        directive = this.searchType === "intersection" ? "intersection" : "start";
-      } 
+        directive =
+          this.searchType === "intersection" ? "intersection" : "start";
+      }
       return `Enter ${directive} point, or click on the map`;
     },
 
@@ -93,7 +121,7 @@ export default {
 
     isSwitchButtonDisabled() {
       return this.start.trim() === "" && this.end.trim() === "";
-    }
+    },
   },
 
   data() {
@@ -101,24 +129,55 @@ export default {
       placeholder: "e.g 189 Vassar Street",
       start: "",
       end: "",
-      searchType: "intersection"
-    }
+      startInput: "start",
+      endInput: "end",
+      searchType: "intersection",
+    };
   },
 
   methods: {
     setSearchType() {
-      this.searchType === "intersection" 
+      let prevType = this.searchType;
+      this.searchType === "intersection"
         ? (this.searchType = "path")
         : (this.searchType = "intersection");
+      this.$store.dispatch("setMarkType", this.searchType);
+      if (this.searchType === "intersection" && prevType === "path") {
+        eventBus.$emit("removeEnd");
+        this.end = "";
+      }
     },
 
     switchStartEnd() {
+      //store temp
       const previousStart = this.start;
+      let storeTemp = this.$store.getters.startMarker;
+
+      //first swap
       this.start = this.end;
+      this.$store.dispatch("setStartMarker", this.$store.getters.endMarker);
+
+      //final swa[]
       this.end = previousStart;
-    }
-  }
-}
+      this.$store.dispatch("setEndMarker", storeTemp);
+
+      eventBus.$emit("switch");
+    },
+
+    async handleSuggestion(text,type) {
+
+      let bbox = this.$store.getters.bbox;
+
+      const query = await axios.get(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${text}.json?bbox=${bbox[0]},${bbox[1]},${bbox[2]},${bbox[3]}&access_token=pk.eyJ1IjoiaGlsbHp5dGFwcyIsImEiOiJja2MxZ3dtankxNThpMnpsbXo1MG4zdHkzIn0.mxO9d6EI9Xcr6d9RmmR3Jg`
+      );
+      eventBus.$emit('searchResult',query.data.features,type);
+    },
+    toPrecision(x) {
+      return toPrecision(x);
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -136,8 +195,8 @@ export default {
   width: 100%;
   padding: 1rem;
   height: 80px;
-  border-top: 1px solid rgba(0, 0, 0, 0.20);
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.20);
+  border-top: 1px solid rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
 }
 
 .submit-button {

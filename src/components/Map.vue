@@ -12,26 +12,15 @@ import MapboxDirections from "@mapbox/mapbox-gl-directions/dist/mapbox-gl-direct
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import * as turf from "@turf/turf";
-// import L from "leaflet";
+
+import axios from "axios";
 import { latLng } from "leaflet";
 import { eventBus } from "../main";
 import { formatDate, toPrecision } from "../utils";
-// import { LMap, LTileLayer, LMarker, LPopup, LCircle, LControlLayers} from "vue2-leaflet";
-// import { Icon } from "leaflet";
-// import { eventBus } from "../main";
-// import axios from "axios";
 
 export default {
   name: "Map",
-  components: {
-    // LMap,
-    // LTileLayer,
-    // LMarker,
-    // LPopup,
-    // LCircle,
-    // LControlLayers,
-    // MglMap
-  },
+  components: {},
 
   data() {
     return {
@@ -62,6 +51,8 @@ export default {
       planningVectors: [],
       navigationControl: null,
       geocoderControl: null,
+      startMarker: [-71.110558, 42.373611],
+      endMarker: [],
     };
   },
 
@@ -87,6 +78,60 @@ export default {
       antialias: true,
     });
 
+    eventBus.$on("switch", () => {
+      const geojsonStart = {
+        type: "Feature",
+        properties: {},
+        geometry: {
+          type: "Point",
+          coordinates: this.endMarker,
+        },
+      };
+
+      const geojsonEnd = {
+        type: "Feature",
+        properties: {},
+        geometry: {
+          type: "Point",
+          coordinates: this.startMarker,
+        },
+      };
+
+      // if the route already exists on the map, we'll reset it using setData
+      if (this.map.getSource("point")) {
+        this.map.getSource("point").setData(geojsonStart);
+      }
+      if (this.map.getSource("end")) {
+        this.map.getSource("end").setData(geojsonEnd);
+      }
+
+      let temp = this.startMarker;
+      this.startMarker = this.endMarker;
+      this.endMarker = temp;
+    });
+
+    eventBus.$on("removeEnd", () => {
+      if (this.map.getLayer("end")) {
+        this.map.removeLayer("end");
+      }
+
+      if (this.map.getSource("end")) {
+        this.map.removeSource("end");
+      }
+
+      if (this.map.getLayer("route")) {
+        this.map.removeLayer("route");
+        this.$store.dispatch("setRoute",[]);
+      }
+
+      if (this.map.getSource("route")) {
+        this.map.removeSource("route");
+         this.$store.dispatch("setRoute",[]);
+      }
+    });
+
+    eventBus.$on("marking", this.listenForMarkers);
+
     eventBus.$on("fly-to", (coords) => {
       this.map.flyTo({
         center: coords,
@@ -94,6 +139,7 @@ export default {
         essential: true, // this animation is considered essential with respect to prefers-reduced-motion
       });
     });
+
     eventBus.$on("mark-stations", (stations) => {
       let layer = {
         type: "geojson",
@@ -185,15 +231,12 @@ export default {
         }
       );
 
-      
       let popUp = new mapboxgl.Popup({
-          closeButton: false,
-          closeOnClick: false
+        closeButton: false,
+        closeOnClick: false,
       });
 
-
-      this.map.on('mouseenter',"unclustered-point", (e)=>{
-
+      this.map.on("mouseenter", "unclustered-point", (e) => {
         const coordinates = e.features[0].geometry.coordinates.slice();
         // Ensure that if the map is zoomed out such that
         // multiple copies of the feature are visible, the
@@ -201,7 +244,7 @@ export default {
         while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
           coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
         }
-          popUp
+        popUp
           .setLngLat(coordinates)
           .setHTML(
             `
@@ -209,10 +252,10 @@ export default {
               class="popup-locator-card"
             >
               <span class="popup-date">
-                ${formatDate(e.features[0].properties.lastReported) }</span
+                ${formatDate(e.features[0].properties.lastReported)}</span
               >
               <div class="card-header">
-                <span class="name">${e.features[0].properties.name }</span>
+                <span class="name">${e.features[0].properties.name}</span>
               </div>
               <div class="card-body">
                 <div class="bikes">
@@ -234,8 +277,8 @@ export default {
           .addTo(this.map);
       });
 
-      this.map.on('mouseleave', 'unclustered-point', () => {
-        this.map.getCanvas().style.cursor = '';
+      this.map.on("mouseleave", "unclustered-point", () => {
+        this.map.getCanvas().style.cursor = "";
         popUp.remove();
       });
 
@@ -244,7 +287,7 @@ export default {
           center: [e.lngLat.lng, e.lngLat.lat],
           zoom: 20,
           essential: true, // this animation is considered essential with respect to prefers-reduced-motion
-      });
+        });
 
         const coordinates = e.features[0].geometry.coordinates.slice();
 
@@ -265,10 +308,10 @@ export default {
               class="popup-locator-card"
             >
               <span class="popup-date">
-                ${formatDate(e.features[0].properties.lastReported) }</span
+                ${formatDate(e.features[0].properties.lastReported)}</span
               >
               <div class="card-header">
-                <span class="name">${e.features[0].properties.name }</span>
+                <span class="name">${e.features[0].properties.name}</span>
               </div>
               <div class="card-body">
                 <div class="bikes">
@@ -410,13 +453,399 @@ export default {
   },
 
   methods: {
-
     formatDate(d) {
       return formatDate(d);
     },
     toPrecision(d) {
       return toPrecision(d);
     },
+    getTemplate() {
+      return this.$store.getters.template;
+    },
+
+    getMapState() {
+      return this.$store.getters.mapState;
+    },
+
+    getMarkType() {
+      return this.$store.getters.markType;
+    },
+
+    isIntersectionState() {
+      return this.getMarkType() === "intersection";
+    },
+
+    async getRouteStart(start) {
+      this.startMarker = start;
+      let end = this.endMarker;
+      const query = await axios.get(
+        `https://api.mapbox.com/directions/v5/mapbox/cycling/${start[0]},${start[1]};${end[0]},${end[1]}?steps=false&geometries=geojson&access_token=${mapboxgl.accessToken}`
+      );
+
+      const data = query.data.routes;
+      // console.log(data)
+      if (data.length !== 0) {
+        const route = data[0].geometry.coordinates;
+        const geojson = {
+          type: "Feature",
+          properties: {},
+          geometry: {
+            type: "LineString",
+            coordinates: route,
+          },
+        };
+
+        this.$store.dispatch("setRoute",route);
+        // if the route already exists on the map, we'll reset it using setData
+        if (this.map.getSource("route")) {
+          this.map.getSource("route").setData(geojson);
+        }
+        // otherwise, we'll make a new request
+        else {
+          this.map.addLayer({
+            id: "route",
+            type: "line",
+            source: {
+              type: "geojson",
+              data: geojson,
+            },
+            layout: {
+              "line-join": "round",
+              "line-cap": "round",
+            },
+            paint: {
+              "line-color": "#3887be",
+              "line-width": 5,
+              "line-opacity": 0.75,
+            },
+          });
+        }
+      }
+    },
+    async getRoute(end) {
+      let start = this.startMarker;
+      this.endMarker = end;
+      const query = await axios.get(
+        `https://api.mapbox.com/directions/v5/mapbox/cycling/${start[0]},${start[1]};${end[0]},${end[1]}?steps=false&geometries=geojson&access_token=${mapboxgl.accessToken}`
+      );
+
+      const data = query.data.routes;
+
+      if (data.length !== 0) {
+        let route = data[0].geometry.coordinates;
+        const geojson = {
+          type: "Feature",
+          properties: {},
+          geometry: {
+            type: "LineString",
+            coordinates: route,
+          },
+        };
+        this.$store.dispatch("setRoute",route);
+        // if the route already exists on the map, we'll reset it using setData
+        if (this.map.getSource("route")) {
+          this.map.getSource("route").setData(geojson);
+        }
+        // otherwise, we'll make a new request
+        else {
+          this.map.addLayer({
+            id: "route",
+            type: "line",
+            source: {
+              type: "geojson",
+              data: geojson,
+            },
+            layout: {
+              "line-join": "round",
+              "line-cap": "round",
+            },
+            paint: {
+              "line-color": "#3887be",
+              "line-width": 5,
+              "line-opacity": 0.75,
+            },
+          });
+        }
+      }
+    },
+
+    getPointFeatureRepresentation(coords) {
+      const point = {
+        type: "FeatureCollection",
+        features: [
+          {
+            type: "Feature",
+            properties: {},
+            geometry: {
+              type: "Point",
+              coordinates: coords,
+            },
+          },
+        ],
+      };
+      return point;
+    },
+
+    initializeMarkingMap() {
+      const canvas = this.map.getCanvasContainer();
+
+      const geojson = {
+        type: "FeatureCollection",
+        features: [
+          {
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: this.startMarker,
+            },
+          },
+        ],
+      };
+
+      this.map.addSource("point", {
+        type: "geojson",
+        data: geojson,
+      });
+
+      this.map.addLayer({
+        id: "point",
+        type: "circle",
+        source: "point",
+        paint: {
+          "circle-radius": 10,
+          "circle-color": "#F84C4C", // red color
+        },
+      });
+      this.$store.dispatch("setStartMarker", this.startMarker);
+      eventBus.$emit("setStart");
+      // this.$store.dispatch('setStartMarker', this.startMarker);
+      this.map.on("mouseenter", "point", () => {
+        // this.map.setPaintProperty("point", "circle-color", "#3bb2d0");
+        canvas.style.cursor = "move";
+      });
+
+      this.map.on("mouseleave", "point", () => {
+        // this.map.setPaintProperty("point", "circle-color", "#F84C4C");
+        canvas.style.cursor = "";
+      });
+
+      const onMove = (e) => {
+        const coords = e.lngLat;
+
+        // Set a UI indicator for dragging.
+        canvas.style.cursor = "grabbing";
+
+        // Update the Point feature in `geojson` coordinates
+        // and call setData to the source layer `point` on it.
+        geojson.features[0].geometry.coordinates = [coords.lng, coords.lat];
+        this.startMarker = [coords.lng, coords.lat];
+        this.map.getSource("point").setData(geojson);
+      };
+
+      const onUp = () => {
+        // const coords = e.lngLat;
+
+        // Print the coordinates of where the point had
+        // finished being dragged to on the map.
+        // coordinates.style.display = "block";
+        // coordinates.innerHTML = `Longitude: ${coords.lng}<br />Latitude: ${coords.lat}`;
+        canvas.style.cursor = "";
+        // Unbind mouse/touch events
+        this.map.off("mousemove", onMove);
+        this.map.off("touchmove", onMove);
+        if (!this.isIntersectionState()) {
+          this.getRouteStart(this.startMarker);
+        }
+        this.$store.dispatch("setStartMarker", this.startMarker);
+        eventBus.$emit("setStart");
+      };
+
+      this.map.on("mousedown", "point", (e) => {
+        // Prevent the default map drag behavior.
+        e.preventDefault();
+
+        canvas.style.cursor = "grab";
+
+        this.map.on("mousemove", onMove);
+        this.map.once("mouseup", onUp);
+      });
+
+      this.map.on("touchstart", "point", (e) => {
+        if (e.points.length !== 1) return;
+
+        // Prevent the default map drag behavior.
+        e.preventDefault();
+
+        this.map.on("touchmove", onMove);
+        this.map.once("touchend", onUp);
+      });
+    },
+    listenForMarkers() {
+      this.initializeMarkingMap();
+      eventBus.$on("navigateToStart", (coords) => {
+
+        this.startMarker = coords;
+        this.$store.dispatch("setStartMarker", coords);
+        const geojson = {
+          type: "FeatureCollection",
+          features: [
+            {
+              type: "Feature",
+              geometry: {
+                type: "Point",
+                coordinates: coords,
+              },
+            },
+          ],
+        };
+
+        if (this.map.getLayer("point")) {
+          this.map.getSource("point").setData(geojson);
+        } else {
+          this.map.addLayer({
+            id: "point",
+            type: "circle",
+            source: {
+              type: "geojson",
+              data: {
+                type: "FeatureCollection",
+                features: [
+                  {
+                    type: "Feature",
+                    properties: {},
+                    geometry: {
+                      type: "Point",
+                      coordinates: coords,
+                    },
+                  },
+                ],
+              },
+            },
+            paint: {
+              "circle-radius": 10,
+              "circle-color": "#F84C4C",
+            },
+          });
+        }
+
+        this.map.flyTo({
+          center: coords,
+          zoom: 16,
+          essential: true, // this animation is considered essential with respect to prefers-reduced-motion
+        });
+        if (!this.isIntersectionState) {
+          this.getRouteStart(coords);
+        }
+      });
+
+      eventBus.$on("navigateToEnd", (coords) => {
+        this.$store.dispatch("setEndMarker", coords);
+        // this.$store.dispatch('setMarkType', this.startMarker);
+        // eventBus.$emit("setEnd");
+        const end = {
+          type: "FeatureCollection",
+          features: [
+            {
+              type: "Feature",
+              properties: {},
+              geometry: {
+                type: "Point",
+                coordinates: coords,
+              },
+            },
+          ],
+        };
+        if (this.map.getLayer("end")) {
+          this.map.getSource("end").setData(end);
+        } else {
+          this.map.addLayer({
+            id: "end",
+            type: "circle",
+            source: {
+              type: "geojson",
+              data: {
+                type: "FeatureCollection",
+                features: [
+                  {
+                    type: "Feature",
+                    properties: {},
+                    geometry: {
+                      type: "Point",
+                      coordinates: coords,
+                    },
+                  },
+                ],
+              },
+            },
+            paint: {
+              "circle-radius": 10,
+              "circle-color": "#3887be",
+            },
+          });
+        }
+        this.map.flyTo({
+          center: coords,
+          zoom: 14,
+          essential: true, // this animation is considered essential with respect to prefers-reduced-motion
+        });
+        this.getRoute(coords);
+      });
+      this.map.on("click", (event) => {
+        if (!this.isIntersectionState()) {
+          const coords = Object.keys(event.lngLat).map(
+            (key) => event.lngLat[key]
+          );
+
+          this.$store.dispatch("setEndMarker", coords);
+          // this.$store.dispatch('setMarkType', this.startMarker);
+          eventBus.$emit("setEnd");
+          const end = {
+            type: "FeatureCollection",
+            features: [
+              {
+                type: "Feature",
+                properties: {},
+                geometry: {
+                  type: "Point",
+                  coordinates: coords,
+                },
+              },
+            ],
+          };
+          if (this.map.getLayer("end")) {
+            this.map.getSource("end").setData(end);
+          } else {
+            this.map.addLayer({
+              id: "end",
+              type: "circle",
+              source: {
+                type: "geojson",
+                data: {
+                  type: "FeatureCollection",
+                  features: [
+                    {
+                      type: "Feature",
+                      properties: {},
+                      geometry: {
+                        type: "Point",
+                        coordinates: coords,
+                      },
+                    },
+                  ],
+                },
+              },
+              paint: {
+                "circle-radius": 10,
+                "circle-color": "#3887be",
+              },
+            });
+          }
+          this.getRoute(coords);
+        }
+      });
+    },
+
+    async mark() {},
   },
 };
 </script>
@@ -438,5 +867,4 @@ export default {
   left: 24px;
   background-color: white;
 } */
-
 </style>

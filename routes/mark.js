@@ -59,7 +59,7 @@ router.post(
   ],
   (req, res) => {
     const { tags, caption, start, end, path } = req.body;
-    // console.log(start,end)
+    
     const st = {
       lat: start[0],
       lng: start[1]

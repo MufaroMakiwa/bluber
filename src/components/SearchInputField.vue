@@ -12,6 +12,7 @@
 </template>
 
 <script>
+import { eventBus } from '../main';
 export default {
   name: "SearchInputField",
 
@@ -19,12 +20,13 @@ export default {
     value: String,
     label: String,
     placeholder: String,
+    type: String,
   },
 
   methods: {
     handleInput(input) {
       const emitValue = input === null ? '' : input;
-      this.$emit('input', emitValue);
+      eventBus.$emit('input', emitValue,this.type);
     }
   }
 }

@@ -21,6 +21,7 @@
         <h3>Mark details</h3>
 
         <v-textarea
+          v-model="caption"
           :auto-grow="true"
           outlined
           rows="2"
@@ -60,6 +61,8 @@
 
 <script>
 import BackButton from "./BackButton.vue";
+import axios from 'axios';
+import {eventBus} from '../main';
 
 export default {
   name: "CreateMarkDetails",
@@ -90,13 +93,28 @@ export default {
   data() {
     return {
       tags: ["Blocked", "Not Safe", "Busy"],
-      selectedTags: []
+      selectedTags: [],
+      caption: ""
     }
   },
 
   methods: {
     handleSubmit() {
-      alert("Handle create mark");
+
+      let mark = {
+        caption: this.caption,
+        tags: this.selectedTags,
+        start: this.$store.getters.startMarker,
+        end: this.$store.getters.endMarker,
+        path: this.$store.getters.route
+      }
+
+      // console.log(mark);
+      axios.post("/api/mark", mark)
+          .then((mark) => {console.log(mark,"mark successfully posted");eventBus.$emit('back')})
+          .catch((err) => {
+            console.log(err);
+      });
     },
 
     tagClick(tag) {
