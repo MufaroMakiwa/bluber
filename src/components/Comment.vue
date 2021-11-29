@@ -4,6 +4,7 @@
     :isLast="isLast"
     :isReply="false"
     :commentId="comment._id"
+    :commentUserId="comment.userId"
     >
 
     <Response 
@@ -12,6 +13,7 @@
       :response="reply"
       :isReply="true"
       :commentId="comment._id"
+      :commentUserId="comment.userId"
       :isLast="index === comment.replies.length - 1"/>
   </Response>
 </template>

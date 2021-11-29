@@ -29,7 +29,7 @@
             </span>
           </div>
           
-          <AddComment v-else :commentId="commentId" :isReply="true" @cancel="cancelReply"/>
+          <AddComment v-else :commentId="commentId" :commentUserId="commentUserId" :isReply="true" @cancel="cancelReply"/>
         </div>
 
         <div v-if="isReply && isCurrentUserResponse" class="modify-reply-container">
@@ -67,6 +67,7 @@ export default {
     isLast: Boolean,
     isReply: Boolean,
     commentId: String,
+    commentUserId: String
   },
 
   data() {

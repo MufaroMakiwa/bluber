@@ -17,8 +17,8 @@ router.post(
   ],
   async (req, res) => {
     let userId = userId1;
-    const { commentId, content, userId2 } = req.body;
-    const reply = await replyController.addOne(userId2, commentId, content, userId);
+    const { commentId, content,userId2 } = req.body;
+    const reply = await replyController.addOne(userId, commentId, content,userId2);
     res.status(201).json(reply).end();
   }
 );

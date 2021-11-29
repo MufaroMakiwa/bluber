@@ -58,6 +58,8 @@ export default {
     },
     markId: String,
     commentId: String,
+    markUserId: String,
+    commentUserId: String,
   },
 
   computed: {
@@ -80,7 +82,7 @@ export default {
       if (!this.isReply) {
         axios
           .post("/api/comment", {
-            userId2: this.$store.getters.userId,
+            userId2: this.markUserId,
             content: this.comment,
             markId: this.markId,
           })
@@ -93,9 +95,14 @@ export default {
             console.log(err);
           });
       } else {
+        console.log("I am supposed to be sending",{
+            userId2: this.commentUserId,
+            content: this.comment,
+            commentId: this.commentId,
+          })
         axios
           .post("/api/reply", {
-            userId2: this.$store.getters.userId,
+            userId2: this.commentUserId,
             content: this.comment,
             commentId: this.commentId,
           })

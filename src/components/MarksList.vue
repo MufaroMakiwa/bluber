@@ -148,7 +148,9 @@ export default {
 
   watch: {
       marks: function(newMarks){
-        this.displayedMark = newMarks.filter((m)=>(this.displayedMark._id===m._id))[0]
+        if (this.displayedMark){
+          this.displayedMark = newMarks.filter((m)=>(this.displayedMark._id===m._id))[0]
+        }
       }
   }
 

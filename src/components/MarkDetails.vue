@@ -61,7 +61,7 @@
       <v-divider></v-divider>
 
       <div class="add-comment">
-        <AddComment :markId="mark._id"/>
+        <AddComment :markUserId="mark.userId" :markId="mark._id"/>
       </div>
       <v-divider></v-divider>
       <v-divider></v-divider>
