@@ -99,23 +99,23 @@ const Schema = mongoose.Schema;
 const MarkSchema = new Schema(
   {
       // reference to _id field in the User collection
-      "mark_id": {
+      "markId": {
         type: String, 
         required: false,
     },
       // reference to _id field in the User collection
-      "user_id": {
+      "userId": {
         type: String, 
         required: true,
     },
       // we set a default value here to be 0
-      "date_added": {
+      "dateAdded": {
         type: Date,
         required: false,
         default: new Date(),
     },
       // we set a default value here to be 0
-      "date_modified": {
+      "dateModified": {
         type: Date,
         required: false,
         default: new Date(),

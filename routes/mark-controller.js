@@ -11,7 +11,7 @@ async function findAll(){
       {$lookup:
         {
           from: 'marks',
-          localField: 'user_id',
+          localField: 'userId',
           foreignField: '_id',
           as: 'markwithusers' //create a new field 'markwithusers' in this aggregated collection: embeds documents from lookup collection into Short collection
         }
@@ -25,7 +25,7 @@ async function findAll(){
 
 async function findOne(markId){
   try{
-    const mark = await markModel.find({mark_id: markId});
+    const mark = await markModel.find({markId: markId});
     return mark;
   } catch(err){
     return false;
@@ -35,7 +35,7 @@ async function findOne(markId){
 async function addOne(userId, tags, caption, start, end, path){
   const date = new Date();
   const markId = uuidv4();
-  const mark = new markModel({mark_id: markId, user_id: userId, date_added: date, tags: tags, caption: caption, start: start, end: end, path: path});
+  const mark = new markModel({markId: markId, userId: userId, dateAdded: date, tags: tags, caption: caption, start: start, end: end, path: path});
   try {
       await mark.save();
       return mark;
@@ -46,7 +46,7 @@ async function addOne(userId, tags, caption, start, end, path){
 
 async function findAllByUserId(userId){
   try{
-    const marks = await markModel.find({user_id: userId});
+    const marks = await markModel.find({userId: userId});
     return marks;
   } catch(err){
     return false;
@@ -55,7 +55,7 @@ async function findAllByUserId(userId){
 
 async function updateOne(markId, body){
   try{
-    const mark = await markModel.find({mark_id: markId});
+    const mark = await markModel.find({markId: markId});
     body.caption && (mark.caption = body.caption);
     body.tags && (mark.tags = body.tags);
     body.start && (mark.start = body.start);
@@ -70,7 +70,7 @@ async function updateOne(markId, body){
 
 async function deleteOne(markId){
   try{
-    const mark = await markModel.remove({mark_id: markId});
+    const mark = await markModel.remove({markId: markId});
     return mark;
   } catch(err){
     return false;
@@ -143,18 +143,21 @@ function isPointInSpannedArea(point, center, radius) {
 async function getMarksInSpannedArea(start, end) {
   // get the radius between the two points
 
-
+  // console.log(start,end)
   const radius = getDistance(start, end);
 
   // get the center of the spanned area
   const center = getCenter(start, end);
 
+  let allMarks = await findAll();
+  // console.log(all_marks)
 
   // loop through all the marks and get the ones with the start or end in the spanned area
-  const marksInSpannedArea = 
-    all_marks.filter(mark => {
+  const marksInSpannedArea = allMarks.filter(mark => {
           return isPointInSpannedArea(mark.start, center, radius) || isPointInSpannedArea(mark.end, center, radius)
         });
+
+  // console.log("data",marksInSpannedArea,radius,center)
   // add is intersection
   return { marksInSpannedArea, radius, center };
 }

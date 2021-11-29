@@ -25,7 +25,7 @@ import AddMark from "../components/AddMark";
 import Map from '../components/Map';
 import Locator from '../components/Locator'
 import { eventBus } from '../main.js';
-import axios from 'axios';
+// import axios from 'axios';
 
 
 export default {
@@ -71,16 +71,16 @@ export default {
     eventBus.$on("signIn", () => {
       this.isLoggedIn = true;
     })
-    eventBus.$on("get-marks", (params) => {
-        axios.get("/api/mark",{params:params}).then((res)=>{
-          console.log(res)
-          let {marksInSpannedArea, radius, center } = res.data
-          this.marks = marksInSpannedArea;
-          eventBus.$emit("get-plan-radius",center,radius)
-      }).catch((err)=>{
-        console.log("this is my err",err)
-      });
-    })
+    // eventBus.$on("get-marks", (params) => {
+    //     axios.get("/api/mark",{params:params}).then((res)=>{
+    //       console.log(res)
+    //       let {marksInSpannedArea, radius, center } = res.data
+    //       this.marks = marksInSpannedArea;
+    //       eventBus.$emit("get-plan-radius",center,radius)
+    //   }).catch((err)=>{
+    //     console.log("this is my err",err)
+    //   });
+    // })
   },
 
 }

@@ -54,7 +54,6 @@ export default {
     });
 
     eventBus.$on("back",()=>{
-      // console.log("back")
       this.addingMarkDetails = false;
       this.results = [];
     });

@@ -30,7 +30,7 @@
       <v-divider></v-divider>
 
       <div class="add-comment">
-        <AddComment />
+        <AddComment :markId="mark._id"/>
       </div>
       <v-divider></v-divider>
       <v-divider></v-divider>
@@ -77,46 +77,48 @@ export default {
 
   data() {
     return {
-      comments: [
-        {
-          username: "Mufaro Makiwa",
-          dateAdded: "Today at 5.42PM",
-          content: "I think this place is now okay",
-          replies: [
-            {
-              username: "Hophin Kibona",
-              dateAdded: "Today at 6.42PM",
-              content: "I will update after I pass by again"
-            },
+
+      comments: mark.comments
+      // comments: [
+      //   {
+      //     username: "Mufaro Makiwa",
+      //     dateAdded: "Today at 5.42PM",
+      //     content: "I think this place is now okay",
+      //     replies: [
+      //       {
+      //         username: "Hophin Kibona",
+      //         dateAdded: "Today at 6.42PM",
+      //         content: "I will update after I pass by again"
+      //       },
             
-            {
-              username: "Jianna Liu",
-              dateAdded: "Today at 7.20PM",
-              content: "This is missleading, I just gave you a low rating"
-            }
-          ]
-        },
+      //       {
+      //         username: "Jianna Liu",
+      //         dateAdded: "Today at 7.20PM",
+      //         content: "This is missleading, I just gave you a low rating"
+      //       }
+      //     ]
+      //   },
 
-        {
-          username: "Hillary Tamirepi",
-          dateAdded: "Yesterday at 6.02PM",
-          content: "I came across this place and I think it is fine now",
-          replies: [
-            {
-              username: "Jianna Liu",
-              dateAdded: "Today at 7.20PM",
-              content: "This is disgusting"
-            }
-          ]
-        },
+      //   {
+      //     username: "Hillary Tamirepi",
+      //     dateAdded: "Yesterday at 6.02PM",
+      //     content: "I came across this place and I think it is fine now",
+      //     replies: [
+      //       {
+      //         username: "Jianna Liu",
+      //         dateAdded: "Today at 7.20PM",
+      //         content: "This is disgusting"
+      //       }
+      //     ]
+      //   },
 
-        {
-          username: "Hophin Kibona",
-          dateAdded: "Tuesday at 6.02PM",
-          content: "Please update this now",
-          replies: []
-        }
-      ]
+      //   {
+      //     username: "Hophin Kibona",
+      //     dateAdded: "Tuesday at 6.02PM",
+      //     content: "Please update this now",
+      //     replies: []
+      //   }
+      // ]
     }
   },
 

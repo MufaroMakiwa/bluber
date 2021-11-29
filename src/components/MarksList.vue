@@ -40,15 +40,15 @@
         </template>
 
         <template v-slot:content>
-          <div class="marks" v-if="hasDisplayedMarks">
+          <div class="marks" >
           <MarkCard 
-            v-for="mark in filteredMarks"
-            :key="mark.markId"
+            v-for="mark in marks"
+            :key="mark.mark_id"
             :mark="mark" 
             @click.native="handleMarkClick(mark)"/>
           </div>
 
-          <span v-else class="no-marks">{{ emptyMessage }}</span>
+          <!-- <span v-else class="no-marks">{{ emptyMessage }}</span> -->
         </template>
       </ViewTemplate>
     </transition>
@@ -67,10 +67,12 @@
 </template>
 
 <script>
+// import { eventBus } from '../main';
 import Filters from "./Filters.vue";
 import MarkCard from "./MarkCard.vue";
 import MarkDetails from "./MarkDetails.vue";
 import ViewTemplate from "./ViewTemplate.vue";
+// import axios from "axios";
 
 export default {
   name: "MarksList",
@@ -81,59 +83,60 @@ export default {
 
   props: {
     title: String,
+    marks: Array,
     requiresBackButton: {
       default: false,
       type: Boolean,
     }
   },
-
   data() {
-    const dummyMarks = [
-      { 
-        markId: 0,
-        username: "Mufaro Makiwa",
-        dateAdded: "Nov 8",
-        comments: 2,
-        rating: 2,
-        ratingCount: 1,
-        caption: "I hate this place because I cannot navigate well",
-        tags: ["Blocked"]
-      },
+    // const dummyMarks = [
+    //   { 
+    //     markId: 0,
+    //     username: "Mufaro Makiwa",
+    //     dateAdded: "Nov 8",
+    //     comments: 2,
+    //     rating: 2,
+    //     ratingCount: 1,
+    //     caption: "I hate this place because I cannot navigate well",
+    //     tags: ["Blocked"]
+    //   },
 
-      {
-        markId: 1,
-        username: "Hillary Tamirepi",
-        dateAdded: "Dec 1",
-        comments: 17,
-        rating: 4,
-        ratingCount: 10,
-        caption: "I do not know why this has not been fixed yet",
-        tags: ["Busy", "Not Safe"]
-      },
+    //   {
+    //     markId: 1,
+    //     username: "Hillary Tamirepi",
+    //     dateAdded: "Dec 1",
+    //     comments: 17,
+    //     rating: 4,
+    //     ratingCount: 10,
+    //     caption: "I do not know why this has not been fixed yet",
+    //     tags: ["Busy", "Not Safe"]
+    //   },
 
-      { 
-        markId: 2,
-        username: "Jianna Liu",
-        dateAdded: "Jan 5",
-        comments: 5,
-        rating: 4.5,
-        ratingCount: 100,
-        caption: "The intersection has been blocked for over a year now",
-        tags: ["Blocked"]
-      },
-    ];
+    //   { 
+    //     markId: 2,
+    //     username: "Jianna Liu",
+    //     dateAdded: "Jan 5",
+    //     comments: 5,
+    //     rating: 4.5,
+    //     ratingCount: 100,
+    //     caption: "The intersection has been blocked for over a year now",
+    //     tags: ["Blocked"]
+    //   },
+    // ];
     
     return {
       displayFilters: false,
       displayedMark: null,   
-      marks: [...dummyMarks],
-      filteredMarks: [...dummyMarks],
+      filteredMarks: [],
       filters: {
         sortBy: "dateAdded",
         tags: [],
         sortOrder: "descending",
         minimumRating: 0
-      }
+      },
+      hasDisplayedMarks: false,
+
     }    
   },
 
@@ -146,9 +149,9 @@ export default {
       return !noFilters;
     },
 
-    hasDisplayedMarks() {
-      return this.filteredMarks.length > 0;
-    },
+    // hasDisplayedMarks() {
+    //   return this.filteredMarks.length > 0;
+    // },
 
     emptyMessage() {
       return this.hasFilters ? 'There are marks with these filters in area.' : 'There are no marks in this area.'
@@ -157,8 +160,8 @@ export default {
     displayAllMarks() {
       return !this.displayFilters && this.displayedMark === null;
     }
-  },
-  
+  }
+  ,
   methods: {
     clearFilters() {
       this.filters = {

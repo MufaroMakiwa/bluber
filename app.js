@@ -13,10 +13,10 @@ require('dotenv').config();
 // require routers
 const userRouter = require("./routes/user");
 const bluebikeRouter = require("./routes/bluebikes");
-// const commentRouter = require("./routes/comment");
+const commentRouter = require("./routes/comment");
 const markRouter = require("./routes/mark");
 // const ratingRouter = require("./routes/rating");
-// const replyRouter = require("./routes/reply");
+const replyRouter = require("./routes/reply");
 // const savedRouter = require("./routes/reply");
 
 
@@ -71,9 +71,9 @@ app.use("/api/bluebikes", bluebikeRouter);
 app.use("/api/user", userRouter);
 app.use("/api/mark", markRouter);
 
-// app.use("/api/comment", commentRouter);
+app.use("/api/comment", commentRouter);
 // app.use("/api/rating", ratingRouter);
-// app.use("/api/reply", replyRouter);
+app.use("/api/reply", replyRouter);
 // app.use("/api/saved", savedRouter);
 
 

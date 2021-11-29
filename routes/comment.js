@@ -5,19 +5,22 @@ const commentController = require("./comment-controller");
 
 
 const userId1 = "gangoffour1";
-const userId2 = "gangoffour2";
+// const userId2 = "gangoffour2";
 
 
 router.post(
   '/',
   [
-    validator.isUserLoggedIn,
-    validator.isMarkIdInBodyExists,
-    validator.isTargetUserIdExists
+    // validator.isUserLoggedIn,
+    // validator.isMarkIdInBodyExists,
+    // validator.isTargetUserIdExists
   ],
   async (req, res) => {
-    const { markId, content } = req.body;
-    const comment = await commentController.addOne(userId1, markId, content, userId2);
+
+    let userId  = userId1;
+    const { markId, content, userId2 } = req.body;
+  
+    const comment = await commentController.addOne(userId, markId, content, userId2);
     res.status(201).json(comment).end();
   }
 );

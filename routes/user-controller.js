@@ -2,7 +2,7 @@ const User = require("../models/user");
 
 async function findOne(userId){
     try{
-      const user = await User.find({user_id: userId});
+      const user = await User.find({userId: userId});
       return user;
     } catch(err){
       return false;
@@ -30,7 +30,7 @@ async function findOneByName(name){
 
 async function deleteOne(userId){
     try{
-      const user = await User.remove({user_id: userId});
+      const user = await User.remove({userId: userId});
       return user;
     } catch(err){
       return false;

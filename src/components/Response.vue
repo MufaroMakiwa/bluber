@@ -18,7 +18,7 @@
             class="reply-button" 
             v-if="!isReplying"
             @click="toggleReply">Reply</span>
-          <AddComment v-else :isReply="true" @cancel="cancelReply"/>
+          <AddComment v-else :commentId="commentId" :isReply="true" @cancel="cancelReply"/>
         </div>
 
         <div v-if="hasReplies" class="replies">
@@ -44,7 +44,8 @@ export default {
   props: {
     response: Object,
     isLast: Boolean,
-    isReply: Boolean
+    isReply: Boolean,
+    commentId: String,
   },
 
   data() {

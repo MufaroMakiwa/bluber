@@ -7,6 +7,7 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
   state: {
+    userId: "gangoffour2",
     template: "user-marks",
     markType: "intersection",
     mapState: "marking",
@@ -65,7 +66,8 @@ const store = new Vuex.Store({
     startMarker: state => state.startMarker,
     endMarker: state => state.endMarker,
     bbox: state => state.bbox,
-    route: state => state.route
+    route: state => state.route,
+    userId: state => state.userId
   }
 });
 

@@ -1,8 +1,8 @@
 <template>
   <div class="card">
     <MarkUserDetails 
-      :username="mark.username"
-      :dateAdded="mark.dateAdded"/>
+      :username="mark.userId"
+      :dateAdded="formatDate(mark.dateAdded)"/>
 
     <div class="mark-details">
       <MarkDescription 
@@ -25,6 +25,8 @@ import Rating from "./Rating.vue"
 import MarkUserDetails from "./MarkUserDetails.vue";
 import MarkDescription from "./MarkDescription.vue"
 
+import {formatDate} from "../utils";
+
 export default {
   name: "MarkCard",
 
@@ -42,9 +44,16 @@ export default {
     }
   },
 
+  methods:{
+
+    formatDate(d){
+      return formatDate(d);
+    }
+
+  },
   computed: {
     userIcon() {
-      return this.mark.username.charAt(0).toUpperCase();
+      return this.mark.userId.charAt(0).toUpperCase();
     }
   }
 }

@@ -2,13 +2,16 @@
   <Response
     :response="comment"
     :isLast="isLast"
-    :isReply="false">
+    :isReply="false"
+    :commentId="comment._id"
+    >
 
     <Response 
       v-for="(reply, index) in comment.replies"
       :key="index"
       :response="reply"
       :isReply="true"
+      :commentId="comment._id"
       :isLast="index === comment.replies.length - 1"/>
   </Response>
 </template>

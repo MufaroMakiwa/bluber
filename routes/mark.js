@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const validator = require("./middleware");
 const markController = require("./mark-controller.js");
+const {constructMarkResponse}  = require("./utils");
 
 
 const userId = "gangoffour";
@@ -22,7 +23,14 @@ router.get(
       lat: parseFloat(req.query.endLat),
       lng: parseFloat(req.query.endLng)
     }
-    const response = await markController.getMarksInSpannedArea(start, end);
+    let response = await markController.getMarksInSpannedArea(start, end);
+
+    console.log(response.marksInSpannedArea)
+
+    
+    console.log(await Promise.all(response.marksInSpannedArea.map(async (mark) => await constructMarkResponse(mark))))
+
+    // console.log(response)
     res.status(200).json(response).end();
   }
 );
