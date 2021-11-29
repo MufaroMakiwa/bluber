@@ -124,7 +124,6 @@ export default {
 }
 
 .reply-button {
-  text-transform: none;
   color: #1ba9bf;
   font-size: 0.9rem;
   transition: all 0.3s;

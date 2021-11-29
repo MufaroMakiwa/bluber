@@ -1,6 +1,29 @@
 <template>
   <div class="rating-container">
+    <v-tooltip left v-if="addTooltip">
+      <template v-slot:activator="{ on, attrs }">
+        <div
+          class="rating-wrapper"
+          v-on="on"
+          v-bind="attrs">
+          <v-rating
+            class="rating"
+            :value="rating"
+            color="yellow darken-3"
+            background-color="grey darken-1"
+            empty-icon="$ratingFull"
+            half-increments
+            :hover="hover"
+            :readonly="readonly"
+            half-icon="$ratingHalf"
+            size="16"></v-rating>
+        </div>
+      </template>
+      <span>Rate</span>
+    </v-tooltip>
+
     <v-rating
+      v-else
       class="rating"
       :value="rating"
       color="yellow darken-3"
@@ -38,6 +61,11 @@ export default {
     ratingCount: {
       default: null,
       type: Number
+    },
+
+    addTooltip: {
+      default: false,
+      type: Boolean
     }
   },
 
@@ -63,10 +91,19 @@ export default {
   margin: 0;
   padding: 0;
   display: flex;
+  transition: all .3s
 }
 
 .rating-count {
   color: gray;
   margin-left: 0.5rem;
+}
+
+.rating-wrapper {
+  cursor: pointer;
+}
+
+.rating-wrapper:hover .rating {
+  transform: scale(1.05);
 }
 </style>
