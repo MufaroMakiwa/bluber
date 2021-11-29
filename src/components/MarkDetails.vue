@@ -133,7 +133,7 @@ export default {
     isUserRating() {
       // check if the user is already rating this mark. This will determine the title 
       // above and which axios call is made in the rateMark method (delete or post)
-      return true
+      return false;
     }
   },
 
