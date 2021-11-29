@@ -14,11 +14,32 @@
         <span class="response">{{ response.content }}</span>
 
         <div class="reply-container" v-if="!isReply">
-          <span 
-            class="reply-button" 
-            v-if="!isReplying"
-            @click="toggleReply">Reply</span>
+          <div class="modify-buttons" v-if="!isReplying">
+            <span 
+              class="modify-button reply"       
+              @click="toggleReply">
+              Reply
+            </span>
+
+            <span 
+              v-if="isCurrentUserResponse"
+              class="modify-button delete"
+              @click="handleDeleteComment">
+              Delete
+            </span>
+          </div>
+          
           <AddComment v-else :commentId="commentId" :isReply="true" @cancel="cancelReply"/>
+        </div>
+
+        <div v-if="isReply && isCurrentUserResponse" class="modify-reply-container">
+          <div class="modify-buttons">
+            <span 
+              class="modify-button delete"
+              @click="handleDeleteReply">
+              Delete
+            </span>
+          </div>
         </div>
 
         <div v-if="hasReplies" class="replies">
@@ -57,6 +78,11 @@ export default {
   computed: {
     hasReplies() {
       return !this.isReply && this.response.replies.length > 0;
+    },
+
+    isCurrentUserResponse() {
+      // TODO. Check against the userId in the reply or comment
+      return true;
     }
   },
 
@@ -67,6 +93,14 @@ export default {
 
     cancelReply() {
       this.isReplying = false;
+    },
+
+    handleDeleteComment() {
+      alert("Handle delete comment");
+    },
+
+    handleDeleteReply() {
+      alert("Handle delete reply");
     }
   }
 }
@@ -140,17 +174,45 @@ export default {
   padding-bottom: 1rem;
 }
 
-.reply-button {
+.modifiy-buttons {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.modify-button {
   text-transform: none;
-  color: #1ba9bf;
   font-size: 0.9rem;
   transition: all 0.3s;
   cursor: pointer;
 }
 
+.modify-button.reply {
+  color: #1ba9bf;
+}
 
-.reply-button:hover {
+.modify-button.reply:hover {
   color: gray;
+}
+
+.modify-button.delete {
+  color: gray;
+  margin-left: 0.5rem;
+}
+
+.modify-button.delete:hover {
+  color: darkgray;
+}
+
+.modify-reply-container {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.modify-reply-container .delete {
+  margin-left: 0;
 }
 
 .replies {

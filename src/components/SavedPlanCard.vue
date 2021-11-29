@@ -6,7 +6,6 @@
         <span class="date">Saved {{ plan.dateAdded }}</span>
       </div>
       <OptionsMenu 
-        editTitle="Edit plan"
         deleteTitle="Delete plan"
         @edit="editSavedPlan"
         @delete="deleteSavedPlan"/>
