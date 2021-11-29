@@ -115,10 +115,6 @@ export default {
 
   computed: {
     options() {
-      // if the user is signed in, options are only deleting the mark
-      // if not, options are only the rating feature
-
-      // since there is no auth, we will just add both for testing
       return [
         {
           title: "Delete mark",
@@ -137,7 +133,7 @@ export default {
     isUserRating() {
       // check if the user is already rating this mark. This will determine the title 
       // above and which axios call is made in the rateMark method (delete or post)
-      return false
+      return true
     }
   },
 
