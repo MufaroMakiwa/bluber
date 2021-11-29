@@ -1,6 +1,6 @@
 <template>
   <nav class="navbar">
-    <ProfileMenu />
+    <ProfileMenu class="profile" v-if="isSignedIn"/>
 
     <v-btn 
       rounded
@@ -46,6 +46,10 @@ export default {
   computed: {
     template() {
       return this.$store.getters.template;
+    },
+
+    isSignedIn() {
+      return this.$store.getters.isSignedIn;
     }
   },
 
@@ -87,26 +91,16 @@ export default {
   justify-content: space-between;
 }
 
-.user-container {
-  padding: 0.25rem;
-  border-radius: 50%;
-  cursor: pointer;
-  max-width: 200px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  background-color: white;
-  transition: all 0.3s;
-}
-
-.username {
-  margin-left: 1rem;
-  margin-right: 0.5rem;
+.profile {
+  margin-right: 1rem;
 }
 
 .nav-button {
   margin-left: 1rem;
+}
+
+.nav-button:first-of-type {
+  margin-left: 0;
 }
 
 .button-icon {

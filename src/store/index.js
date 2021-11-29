@@ -15,6 +15,7 @@ const store = new Vuex.Store({
     endMarker: [],
     bbox:[ -73.508142,	41.237964,	-69.928393,	42.886589], //xmin	ymin	xmax	ymax
     route: [],
+    user: null
   },
 
   mutations: {
@@ -67,7 +68,9 @@ const store = new Vuex.Store({
     endMarker: state => state.endMarker,
     bbox: state => state.bbox,
     route: state => state.route,
-    userId: state => state.userId
+    userId: state => state.userId,
+    isSignedIn: state => state.user !== null,
+    user: state => state.user
   }
 });
 
