@@ -34,8 +34,7 @@ async function findOne(markId){
 
 async function addOne(userId, tags, caption, start, end, path){
   const date = new Date();
-  const markId = uuidv4();
-  const mark = new markModel({markId: markId, userId: userId, dateAdded: date, tags: tags, caption: caption, start: start, end: end, path: path});
+  const mark = new markModel({userId: userId, dateAdded: date, tags: tags, caption: caption, start: start, end: end, path: path});
   try {
       await mark.save();
       return mark;

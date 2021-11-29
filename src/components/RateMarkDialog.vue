@@ -11,7 +11,7 @@
         <v-divider></v-divider>
         <v-rating
           class="rating"
-          :v-model="rating"
+          v-model="rating"
           color="yellow darken-3"
           background-color="grey darken-1"
           empty-icon="$ratingFull"

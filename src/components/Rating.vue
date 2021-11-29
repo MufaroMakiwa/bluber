@@ -8,7 +8,7 @@
           v-bind="attrs">
           <v-rating
             class="rating"
-            :value="rating"
+            :value="toPrecision(rating)"
             color="yellow darken-3"
             background-color="grey darken-1"
             empty-icon="$ratingFull"
@@ -25,7 +25,7 @@
     <v-rating
       v-else
       class="rating"
-      :value="rating"
+      :value="toPrecision(rating)"
       color="yellow darken-3"
       background-color="grey darken-1"
       empty-icon="$ratingFull"
@@ -35,13 +35,17 @@
       half-icon="$ratingHalf"
       size="16"></v-rating>
 
-    <span class="rating-count" v-if="ratingCount === null">({{ rating }})</span>
+    <span class="rating-count" v-if="ratingCount === null">({{ toPrecision(rating) }})</span>
     <span class="rating-count" v-else>{{ rating }}</span>
     <span class="rating-count" v-if="ratingCount !== null">({{ ratingCountLabel }})</span>
   </div>
 </template>
 
 <script>
+
+import {toPrecision} from "../utils";
+
+
 export default {
   name: "Rating",
 
@@ -56,7 +60,9 @@ export default {
       type: Boolean
     },
 
-    rating: Number,
+    rating: {
+        type: Number
+    },
 
     ratingCount: {
       default: null,
@@ -71,9 +77,15 @@ export default {
 
   computed: {
     ratingCountLabel() {
-      if (this.ratingCount === null) return "";
+      if (this.ratingCount === null) return 0;
       if (this.ratingCount === 1) return `${this.ratingCount} rating`;
       return `${this.ratingCount} ratings`;
+    }
+  },
+
+  methods:{
+    toPrecision(d){
+      return toPrecision(d);
     }
   }
 }

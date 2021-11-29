@@ -15,7 +15,7 @@ router.post(
     // validator.isMarkIdInBodyExists,
     // validator.isMarkRatingAllowed,
     // validator.isTargetUserIdExists,
-    (req, res, next) => validator.checkMarkRatingStatus(req, res, next, false)
+    // (req, res, next) => validator.checkMarkRatingStatus(req, res, next, false)
   ],
   async (req, res) => {
     let userId = userId1;

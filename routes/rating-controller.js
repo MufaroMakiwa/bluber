@@ -51,7 +51,7 @@ async function findAllByTargetUserId(targetUserId){
 
 async function updateOne(userId, markId, ratingContent){
     try{
-        const rating = await Rating.find({ratingId: markId, userId: userId});
+        const rating = await Rating.find({markId: markId, userId: userId});
         rating.rating = ratingContent;
         rating.dateModified = new Date();
         rating.save();
@@ -76,7 +76,7 @@ async function deleteOne(userId, markId){
  */
 async function deleteMany(markId){
   try{
-    const rating = await Rating.deleteOne({markId: markId});
+    const rating = await Rating.deleteMany({markId: markId});
     return rating;
   } catch(err){
     return false;

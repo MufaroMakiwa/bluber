@@ -25,7 +25,7 @@
     
           <Rating 
             :addTooltip="true"
-            :rating="mark.rating" 
+            :rating="toPrecision(mark.rating)" 
             :ratingCount="mark.ratingCount"
             @click.native="isRating=true"/>
 
@@ -66,7 +66,10 @@ import MarkDescription from "./MarkDescription.vue";
 import OptionsMenu from "./OptionsMenu.vue";
 import AddComment from "./AddComment.vue";
 import Comment from "./Comment.vue";
-import { formatDate } from '../utils';
+import { formatDate, toPrecision } from '../utils';
+
+import axios from "axios";
+import { eventBus } from '../main';
 
 
 export default {
@@ -123,16 +126,27 @@ export default {
   methods: {
     submitRating(rating) {
       this.isRating = false;
-      alert('Submiting user rating');
-      console.log(rating);
+      axios.post("/api/rating",{
+        markId: this.mark._id,
+        rating: rating,
+        userId2: this.mark.userId
+      }).then(()=>{
+        eventBus.$emit("refresh");
+      }).catch((err)=>{console.log(err)})
+      // alert('Submiting user rating');
+      // console.log(rating);
     },
 
+    toPrecision(d){
+      return toPrecision(d);
+    },
     removeRating(){
       alert("Delete users current rating");
     },
 
     deleteMark() {
-      console.log("Deleting mark")
+      // console.log("Deleting mark")
+      axios.delete('/api/mark/'+this.mark._id).then(()=>{eventBus.$emit("refresh");eventBus.$emit('back')}).catch((err)=>console.log(err))
     },
 
     formatDate(d){
