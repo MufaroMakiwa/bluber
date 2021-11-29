@@ -77,6 +77,7 @@ export default {
 
   computed: {
     hasReplies() {
+      // TODO this is causing an error because the replies field is not in the response
       return !this.isReply && this.response.replies.length > 0;
     },
 

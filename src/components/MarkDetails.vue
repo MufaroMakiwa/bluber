@@ -11,9 +11,9 @@
           :dateAdded="formatDate(mark.dateAdded)"/>
 
         <OptionsMenu 
-          deleteTitle="Delete mark"
-          @edit="editMark"
-          @delete="deleteMark"/>
+          :options="options"
+          @delete="deleteMark"
+          @rate="rateMark"/>
       </div>
 
       <div class="mark-details">
@@ -23,6 +23,38 @@
 
         <div class="ratings-container">
           <Rating :rating="mark.rating" :ratingCount="mark.ratingCount"/>
+        </div>
+
+        <div class="add-rating" v-if="isRating">
+          <span>Rate this mark</span>
+          <v-rating
+            class="rating"
+            :v-model="rating"
+            color="yellow darken-3"
+            background-color="grey darken-1"
+            empty-icon="$ratingFull"
+            hover
+            size="24"></v-rating>
+
+          <div class="rating-buttons-container">
+            <v-btn
+              rounded
+              outlined
+              color="primary"
+              small
+              @click="stopRating">
+              Cancel
+            </v-btn>
+
+            <v-btn
+              rounded
+              depressed
+              color="primary"
+              small
+              @click="submitRating">
+              Rate
+            </v-btn>
+          </div>
         </div>
       </div>
       <v-divider></v-divider>
@@ -39,8 +71,7 @@
           v-for="(comment, index) in mark.comments" 
           :key="index"
           :comment="comment"
-          :isLast="index === mark.comments.length - 1"
-          :isReply="false"/>
+          :isLast="index === mark.comments.length - 1"/>
       </div>
 
     </template>
@@ -75,71 +106,56 @@ export default {
     mark: Object,
   },
 
-  beforeMount(){  
-    console.log("this is the mark",this.mark);
-  },
   data() {
     return {
-
-      // comments: this.mark.comments
-      // comments: [
-      //   {
-      //     username: "Mufaro Makiwa",
-      //     dateAdded: "Today at 5.42PM",
-      //     content: "I think this place is now okay",
-      //     replies: [
-      //       {
-      //         username: "Hophin Kibona",
-      //         dateAdded: "Today at 6.42PM",
-      //         content: "I will update after I pass by again"
-      //       },
-      // comments: mark.comments
-      // comments: [
-      //   {
-      //     username: "Mufaro Makiwa",
-      //     dateAdded: "Today at 5.42PM",
-      //     content: "I think this place is now okay",
-      //     replies: [
-      //       {
-      //         username: "Hophin Kibona",
-      //         dateAdded: "Today at 6.42PM",
-      //         content: "I will update after I pass by again"
-      //       },
-            
-      //       {
-      //         username: "Jianna Liu",
-      //         dateAdded: "Today at 7.20PM",
-      //         content: "This is missleading, I just gave you a low rating"
-      //       }
-      //     ]
-      //   },
-
-      //   {
-      //     username: "Hillary Tamirepi",
-      //     dateAdded: "Yesterday at 6.02PM",
-      //     content: "I came across this place and I think it is fine now",
-      //     replies: [
-      //       {
-      //         username: "Jianna Liu",
-      //         dateAdded: "Today at 7.20PM",
-      //         content: "This is disgusting"
-      //       }
-      //     ]
-      //   },
-
-      //   {
-      //     username: "Hophin Kibona",
-      //     dateAdded: "Tuesday at 6.02PM",
-      //     content: "Please update this now",
-      //     replies: []
-      //   }
-      // ]
+      isRating: true,
+      rating: 0
     }
   },
 
+  computed: {
+    options() {
+      // if the user is signed in, options are only deleting the mark
+      // if not, options are only the rating feature
+
+      // since there is no auth, we will just add both for testing
+      return [
+        {
+          title: "Delete mark",
+          icon: "trash-alt",
+          event: "delete"
+        },
+
+        {
+          title: !this.isUserRating ? "Rate this mark" : "Remove rating", // this title will depend on the computed property below
+          icon: "star",
+          event: "rate"
+        }
+      ]
+    },
+
+    isUserRating() {
+      // check if the user is already rating this mark. This will determine the title 
+      // above and which axios call is made in the rateMark method (delete or post)
+      return false
+    }
+  },
+
+  beforeMount(){  
+    console.log("this is the mark",this.mark);
+  },
+
   methods: {
-    editMark() {
-      console.log("Editing mark");
+    rateMark() {
+      if (!this.isUserRating) {
+        this.isRating = true;
+      } else {
+        // handle delete
+      }
+    },
+
+    submitRating() {
+      alert('Submiting user rating');
     },
 
     deleteMark() {
@@ -148,7 +164,12 @@ export default {
 
     formatDate(d){
       return formatDate(d)
-    } 
+    },
+    
+    stopRating() {
+      this.rating = 0;
+      this.isRating = false;
+    }
   }
 }
 </script>
@@ -197,5 +218,11 @@ export default {
   width: 100%;
   align-items: flex-start;
   justify-content: flex-start;
+}
+
+.rating {
+  margin: 0;
+  padding: 0;
+  display: flex;
 }
 </style>
