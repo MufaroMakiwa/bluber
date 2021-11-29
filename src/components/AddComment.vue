@@ -42,6 +42,7 @@
 // import { eventBus } from '../main';
 import UserIcon from "./UserIcon.vue";
 import axios from "axios";
+import { eventBus } from '../main';
 
 export default {
   name: "AddComment",
@@ -83,8 +84,10 @@ export default {
             content: this.comment,
             markId: this.markId,
           })
-          .then((res) => {
-            console.log(res);
+          .then(() => {
+            // console.log(res);
+            this.comment = "";
+            eventBus.$emit("refresh");
           })
           .catch((err) => {
             console.log(err);
@@ -96,8 +99,10 @@ export default {
             content: this.comment,
             commentId: this.commentId,
           })
-          .then((res) => {
-            console.log(res);
+          .then(() => {
+            // console.log(res);
+            this.comment = "";
+            eventBus.$emit("refresh");
           })
           .catch((err) => {
             console.log(err);

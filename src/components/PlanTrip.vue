@@ -76,6 +76,29 @@ export default {
       this.results = [];
     });
 
+    eventBus.$on("refresh",()=>{
+        let params = {
+          startLat: this.$store.getters.startMarker[0] ,
+          startLng: this.$store.getters.startMarker[1] ,
+          endLat: this.$store.getters.endMarker[0] , 
+          endLng: this.$store.getters.endMarker[1],
+        }
+
+        axios.get("/api/mark",{params:params}).then((res)=>{
+
+          let {marksInSpannedArea, radius, center } = res.data
+          this.marks = marksInSpannedArea;
+          // this.filteredMarks = marksInSpannedArea;
+          //  this.hasDisplayedMarks = true;
+          // console.log(this.marks)
+          // console.log(this.filteredMarks)
+          console.log(marksInSpannedArea,radius,center);
+          // eventBus.$emit("get-plan-radius",center,radius)
+      }).catch((err)=>{
+        console.log("this is my err",err)
+      });
+    })
+
   }
   ,
   methods: {

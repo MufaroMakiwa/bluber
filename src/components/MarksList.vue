@@ -180,7 +180,14 @@ export default {
     handleMarkClick(mark) {
       this.displayedMark = mark;
     }
+  },
+
+  watch: {
+      marks: function(newMarks){
+        this.displayedMark = newMarks.filter((m)=>(this.displayedMark._id===m._id))[0]
+      }
   }
+
 }
 </script>
 
