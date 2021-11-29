@@ -28,7 +28,15 @@
 
       <v-card>      
         <div class="header-container">
-          <font-awesome-icon icon="user-circle" class="user-icon-menu"/> 
+          <font-awesome-icon 
+            v-if="imageUrl === ''"
+            icon="user-circle" 
+            class="user-icon-menu"/> 
+          <img 
+            v-else
+            class="profile-image"
+            :src="imageUrl"
+            alt="Profile Image"/>
           <span class="name">{{ name }}</span>
           <span class="email">{{ email }}</span>
           <Rating class="rating-margin" :rating="rating"/>
@@ -143,6 +151,10 @@ export default {
 
     rating() {
       return this.isSignedIn ? this.user.rating : 0;
+    },
+
+    imageUrl() {
+      return this.isSignedIn ? this.user.imageUrl : "";
     }
   },
 
@@ -176,6 +188,11 @@ export default {
 .user-icon {
   font-size: 3rem;
   color: gray;
+}
+
+.profile-image {
+  border-radius: 50%;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
 }
 
 .user-icon-menu {
