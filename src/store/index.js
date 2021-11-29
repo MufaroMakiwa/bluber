@@ -1,5 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import axios from "axios";
 
 
 Vue.use(Vuex);
@@ -13,7 +14,7 @@ const store = new Vuex.Store({
     mapState: "marking",
     startMarker: [],
     endMarker: [],
-    bbox:[ -73.508142,	41.237964,	-69.928393,	42.886589], //xmin	ymin	xmax	ymax
+    bbox: [-73.508142, 41.237964,	-69.928393,	42.886589], //xmin	ymin	xmax	ymax
     route: [],
     user: null
   },
@@ -39,9 +40,6 @@ const store = new Vuex.Store({
     },
     setUser(state, payload) {
       state.user = payload;
-
-      // if user is signed out, set template to be auth else plan
-      state.user === null ? state.template = 'authentication' : state.template = 'plan';   
     }
   },
 
@@ -66,6 +64,10 @@ const store = new Vuex.Store({
     },
     setUser(state, payload) {
       state.commit('setUser', payload)
+    },
+    async getUser(state) {
+      const response = await axios.get('/api/user/session');
+      state.commit('setUser', response.data.user);
     }
   },
 

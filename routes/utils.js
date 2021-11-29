@@ -1,6 +1,7 @@
 const commentController = require("./comment-controller");
 const markController = require("./mark-controller.js");
 const replyController = require("./reply-controller");
+const ratingController = require("./rating-controller");
 
 
 async function constructMarkResponse(mark){
@@ -20,6 +21,9 @@ async function constructCommentResponse(comment){
 
 function constructUserResponse(user){
   // TODO add the rating here as well
+  const userRatings = ratingController.findAllByTargetUserId(user._id);
+  console.log(userRatings);
+  user.rating = 0;
   return user;
 }
 

@@ -41,6 +41,22 @@ const { constructUserResponse } = require('./utils');
       }
   });
   
+  /**
+   * Get the current session user details if one exists
+   * 
+   * @name GET /user/session
+   * @returns {User | undefined} - The current session user if one exists
+   */
+  router.get('/session', async (req, res) => {
+    if (req.session.userId) {
+      const user = await controller.findOne(req.session.userId);
+      res.status(200).send({
+        user: constructUserResponse(user),
+      });
+    } else {
+      res.status(200).send({user: null});
+    }
+  });
   
   /**
    * Sign out a user
@@ -53,7 +69,7 @@ const { constructUserResponse } = require('./utils');
    */
   router.delete('/session', [ validator.isUserLoggedIn ], async (req, res) => {
     req.session.userId = undefined;
-    res.status(200).send("You have been logged out successfully.");
+    res.status(200).json("You have been logged out successfully.").end();
   });
   
   

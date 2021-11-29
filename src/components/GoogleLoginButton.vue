@@ -4,6 +4,9 @@
     :onSuccess="handleLogin" 
     :onFailure="onFailure">
     <v-btn
+      rounded
+      outlined
+      color="primary"
       class="sign-in-button">
       <GoogleIcon class="icon"/>
       Connect with Google
@@ -21,6 +24,24 @@ export default {
 
   components: {
     GoogleLogin, GoogleIcon,
+  },
+
+  props: {
+    redirect: {
+      default: null,
+      type: String,
+    },
+
+    isParentDialog: {
+      default: false,
+      type: Boolean,
+    }
+  },
+
+  computed: {
+    hasRedirect() {
+      return this.redirect !== null;
+    }
   },
 
   data() {
@@ -42,22 +63,27 @@ export default {
         .then(response => {
           const user = response.data.user;
           
-          // TODO to retrieve the rating from the response
           this.$store.dispatch('setUser', {
             name: user.name,
             email: user.email,
             imageUrl: user.imageUrl,
             userId: user._id,
-            rating: 0
+            rating: user.rating
           });
+
+          this.hasRedirect && this.$store.dispatch('setTemplate', this.redirect);
         })
         .catch(error => {
           // do not expect an error with google auth yet
           console.log(error)
         })
+        .finally(() => {
+          this.isParentDialog && this.$emit('auth-complete');
+        })
     },
 
     onFailure(error) {
+      this.isParentDialog && this.$emit('auth-complete');
       console.log(error);
     }
   }

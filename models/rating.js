@@ -1,16 +1,8 @@
-const { v4: uuidv4 } = require("uuid");
-
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const RatingSchema = new Schema(
   {
-      // reference to _id field in the User collection
-    //   "ratingId": {
-    //     type: String, 
-    //     default: uuidv4(),
-    //     required: false,
-    // },
       // reference to _id field in the User collection
       "userId": {
         type: String, 

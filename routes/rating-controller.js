@@ -1,5 +1,4 @@
 const Rating = require("../models/rating");
-const { v4: uuidv4 } = require("uuid");
 
 async function findOne(userId, markId){
     try{

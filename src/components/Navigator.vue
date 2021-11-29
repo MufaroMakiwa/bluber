@@ -28,6 +28,12 @@
       <img class="button-bike-icon" alt="" src="https://img.icons8.com/external-wanicon-lineal-color-wanicon/64/000000/external-bike-healthy-wanicon-lineal-color-wanicon.png">
       Bluebikes
     </v-btn>
+
+    <AuthenticationDialog 
+      :dialog="displayAuthDialog" 
+      action="add a mark"
+      @close-auth-dialog="displayAuthDialog=false"
+      redirect="mark"/>
   </nav>
 </template>
 
@@ -35,12 +41,13 @@
 import ProfileMenu from './ProfileMenu.vue';
 import axios from 'axios';
 import {eventBus} from '../main';
+import AuthenticationDialog from "./AuthenticationDialog.vue";
 
 export default {
   name: "Navigator",
 
   components: {
-    ProfileMenu
+    ProfileMenu, AuthenticationDialog
   },
 
   computed: {
@@ -53,8 +60,18 @@ export default {
     }
   },
 
+  data() {
+    return {
+      displayAuthDialog: false
+    }
+  },
+
   methods: {
     addMark() {
+      if (!this.isSignedIn) {
+        this.displayAuthDialog = true;
+        return;
+      }
       this.$store.dispatch('setTemplate', 'mark');
       this.$store.dispatch('setMapState', 'marking');
       eventBus.$emit("marking");
@@ -69,11 +86,11 @@ export default {
     getBluebikes() {
       this.$store.dispatch('setTemplate', 'locator');
       axios
-            .get("/api/bluebikes")
-            .then((res) => { eventBus.$emit("mark-stations",res.data)})
-            .catch((err) => {
-                console.log(err);
-            });
+        .get("/api/bluebikes")
+        .then((res) => { eventBus.$emit("mark-stations",res.data)})
+        .catch((err) => {
+            console.log(err);
+        });
       }
     }
   }

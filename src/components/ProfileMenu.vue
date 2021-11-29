@@ -175,6 +175,7 @@ export default {
       axios.delete('/api/user/session')
         .then(() => {
           this.$store.dispatch('setUser', null);
+          this.$store.dispatch('setTemplate', 'authentication');
         })
         .catch(error => {
           console.log(error);

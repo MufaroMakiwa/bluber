@@ -7,7 +7,7 @@
     <img class="button-bike-icon" alt="" src="https://img.icons8.com/external-wanicon-lineal-color-wanicon/64/000000/external-bike-healthy-wanicon-lineal-color-wanicon.png" />
 
     <div class="login-container">
-      <GoogleLoginButton />
+      <GoogleLoginButton redirect="plan"/>
     </div>
   </div>
 </template>
@@ -17,7 +17,7 @@ import GoogleLoginButton from "./GoogleLoginButton";
 
 
 export default {
-  name: "Notifications",
+  name: "Authentication",
 
   components: {
     GoogleLoginButton
