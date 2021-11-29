@@ -10,6 +10,7 @@
       <SavedPlans v-if="template === 'user-saved'"/>
       <Notifications v-if="template === 'notifications'"/>
       <Locator v-if="template === 'locator'"/>
+      <Authentication v-if="template === 'authentication'"/>
     </div>   
   </div>
 </template>
@@ -21,6 +22,7 @@ import PlanTrip from "../components/PlanTrip";
 import Notifications from "../components/Notifications";
 import MarksList from "../components/MarksList";
 import SavedPlans from "../components/SavedPlans";
+import Authentication from "../components/Authentication";
 import AddMark from "../components/AddMark";
 import Map from '../components/Map';
 import Locator from '../components/Locator'
@@ -37,7 +39,7 @@ export default {
     AddMark,
     Notifications,
     MarksList,
-    // UserSaved,
+    Authentication,
     Locator,
     SavedPlans
   },
