@@ -22,42 +22,51 @@ const store = new Vuex.Store({
     setTemplate(state, payload) {
       state.template = payload;
     },
-    setMarkType(state,payload){
+    setMarkType(state, payload) {
       state.markType = payload;
     },
-    setMapState(state,payload){
+    setMapState(state, payload) {
       state.mapState = payload;
     },
-    setStartMarker(state,payload){
+    setStartMarker(state, payload) {
       state.startMarker = payload;
     },
-    setEndMarker(state,payload){
+    setEndMarker(state, payload) {
       state.endMarker = payload;
     },
-    setRoute(state,payload){
+    setRoute(state, payload) {
       state.route = payload;
     },
+    setUser(state, payload) {
+      state.user = payload;
+
+      // if user is signed out, set template to be auth else plan
+      state.user === null ? state.template = 'authentication' : state.template = 'plan';   
+    }
   },
 
   actions: {
     setTemplate(state, payload) {
       state.commit('setTemplate', payload);
     },
-    setMarkType(state,payload){
+    setMarkType(state, payload) {
       state.commit('setMarkType', payload);
     },
-    setMapState(state,payload){
+    setMapState(state, payload) {
       state.commit('setMapState', payload);
     },
-    setStartMarker(state,payload){
+    setStartMarker(state, payload) {
       state.commit('setStartMarker', payload);
     },
-    setEndMarker(state,payload){
+    setEndMarker(state, payload) {
       state.commit('setEndMarker', payload);
     },
-    setRoute(state,payload){
+    setRoute(state, payload) {
       state.commit('setRoute', payload);
     },
+    setUser(state, payload) {
+      state.commit('setUser', payload)
+    }
   },
 
   getters: {

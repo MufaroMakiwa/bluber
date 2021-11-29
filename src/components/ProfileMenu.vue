@@ -29,9 +29,9 @@
       <v-card>      
         <div class="header-container">
           <font-awesome-icon icon="user-circle" class="user-icon-menu"/> 
-          <span class="name">Mufaro Makiwa</span>
-          <span class="email">mufaroemakiwa@gmail.com</span>
-          <Rating class="rating-margin" :rating="0"/>
+          <span class="name">{{ name }}</span>
+          <span class="email">{{ email }}</span>
+          <Rating class="rating-margin" :rating="rating"/>
         </div>
           
         <v-divider></v-divider>
@@ -88,7 +88,7 @@
 
 <script>
 import Rating from './Rating.vue';
-
+import axios from 'axios';
 
 export default {
   name: "ProfileMenu",
@@ -104,8 +104,6 @@ export default {
   },
 
   props: {
-    username: String,
-    
     notificationCount: {
       default: 0,
       type: Number
@@ -126,6 +124,26 @@ export default {
     template() {
       return this.$store.getters.template;
     },
+
+    isSignedIn() {
+      return this.$store.getters.isSignedIn;
+    },
+
+    user() {
+      return this.$store.getters.user;
+    },
+
+    name() {     
+      return this.isSignedIn ? this.user.name : "";
+    },
+
+    email() {
+      return this.isSignedIn ? this.user.email : "";
+    },
+
+    rating() {
+      return this.isSignedIn ? this.user.rating : 0;
+    }
   },
 
   methods: {
@@ -142,7 +160,13 @@ export default {
     },
 
     signOut() {
-      alert("Handle signout");
+      axios.delete('/api/user/session')
+        .then(() => {
+          this.$store.dispatch('setUser', null);
+        })
+        .catch(error => {
+          console.log(error);
+        })
     }
   }
 }

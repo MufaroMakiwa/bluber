@@ -1,14 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const validator = require("./middleware");
-// const userModel = require("../models/user");
-// const commentModel = require("../models/comment");
-// const markModel = require("../models/mark");
-// const ratingModel = require("../models/rating");
-// const savedModel = require("../models/saved");
-// const replyModel = require("../models/reply");
 const controller = require('./user-controller');
-
+const { constructUserResponse } = require('./utils');
   
   /**
    * Sign in user.
@@ -76,20 +70,31 @@ const controller = require('./user-controller');
    */
   router.post(
     '/', 
-    [
-      validator.isValidUsername, 
-      validator.isUsernameAvailable
-    ], 
     async (req, res) => {
       try {
-        const user = await controller.addOne(req.body.username, "Gangoffour@mit.edu");
-        req.session.userId = user.userId;
+        const existingUser = await controller.findOneByEmail(req.body.email);
+
+        if (existingUser) {
+          req.session.userId = existingUser._id;
+
+          res.status(201).json({
+            message: 'You have successfully logged in', 
+            user: constructUserResponse(existingUser)
+          }).end();
+          return;
+        }
+        
+        // TODO the body will need to be updated when adding passwords etc
+        const user = await controller.addOne(req.body.name, req.body.email, req.body.imageUrl);
+        req.session.userId = user._id;
+        console.log(req.session.userId);
+
         res.status(201).json({
           message: 'Your account was created successfully.', 
-          user: user
+          user: constructUserResponse(user)
         }).end();
       } catch (error) {
-        res.status(503).json({ error: "Could not create account" }).end();
+        res.status(503).json({ error }).end();
       }
   });
 

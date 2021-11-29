@@ -1,4 +1,3 @@
-
 const commentController = require("./comment-controller");
 const markController = require("./mark-controller.js");
 const replyController = require("./reply-controller");
@@ -20,8 +19,8 @@ async function constructCommentResponse(comment){
 
 
 function constructUserResponse(user){
-
-
+  // TODO add the rating here as well
+  return user;
 }
 
 function sortResponsesByKey(responses,key="dateAdded"){

@@ -108,11 +108,10 @@ export default {
   margin-right: 0.75rem;
 }
 
-.button-bike-icon
-{
+.button-bike-icon {
   margin-right: 0.75rem;
-  width: 30px;
-  height: 30px;
+  width: 25px;
+  height: 25px;
   padding-bottom: 4px;
 }
 
