@@ -83,7 +83,7 @@ export default {
 
   props: {
     title: String,
-    // marks: Array,
+    marks: Array,
     requiresBackButton: {
       default: false,
       type: Boolean,
@@ -128,7 +128,7 @@ export default {
     return {
       displayFilters: false,
       displayedMark: null,  
-      marks: dummyMarks, 
+      // marks: [], 
       filteredMarks: [],
       filters: {
         sortBy: "dateAdded",
