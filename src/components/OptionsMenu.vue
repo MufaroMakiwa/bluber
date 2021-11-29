@@ -21,14 +21,6 @@
       </template>
 
       <v-list class="menu-options">
-        <v-list-item @click="$emit('edit')" class="list-item">
-          <v-list-item-avatar class="avatar">
-            <font-awesome-icon icon="edit" class="menu-icon"/> 
-          </v-list-item-avatar>
-          <v-list-item-title>{{ editTitle }}</v-list-item-title>
-        </v-list-item>
-
-        <v-divider></v-divider>
 
         <v-list-item @click="$emit('delete')" class="list-item">
           <v-list-item-avatar class="avatar">
@@ -47,7 +39,6 @@ export default {
   name: "OptionsMenu",
 
   props: {
-    editTitle: String,
     deleteTitle: String,
   }
 }

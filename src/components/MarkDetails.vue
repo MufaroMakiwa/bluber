@@ -11,7 +11,6 @@
           :dateAdded="formatDate(mark.dateAdded)"/>
 
         <OptionsMenu 
-          editTitle="Edit mark"
           deleteTitle="Delete mark"
           @edit="editMark"
           @delete="deleteMark"/>
@@ -83,6 +82,18 @@ export default {
     return {
 
       // comments: this.mark.comments
+      // comments: [
+      //   {
+      //     username: "Mufaro Makiwa",
+      //     dateAdded: "Today at 5.42PM",
+      //     content: "I think this place is now okay",
+      //     replies: [
+      //       {
+      //         username: "Hophin Kibona",
+      //         dateAdded: "Today at 6.42PM",
+      //         content: "I will update after I pass by again"
+      //       },
+      // comments: mark.comments
       // comments: [
       //   {
       //     username: "Mufaro Makiwa",

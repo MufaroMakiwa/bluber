@@ -37,7 +37,7 @@
         <v-divider></v-divider>
 
         <v-list>
-          <v-list-item 
+          <!-- <v-list-item 
             @click="displayNotifications"
             color="primary"
             :input-value="template === 'notifications'">
@@ -50,7 +50,7 @@
               v-if="isDisplayNotificationsCount">
               {{ displayedNotificationCount }}
             </span>         
-          </v-list-item>
+          </v-list-item> -->
 
           <v-list-item 
             @click="displayMarks"

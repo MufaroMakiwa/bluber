@@ -83,51 +83,52 @@ export default {
 
   props: {
     title: String,
-    marks: Array,
+    // marks: Array,
     requiresBackButton: {
       default: false,
       type: Boolean,
     }
   },
   data() {
-    // const dummyMarks = [
-    //   { 
-    //     markId: 0,
-    //     username: "Mufaro Makiwa",
-    //     dateAdded: "Nov 8",
-    //     comments: 2,
-    //     rating: 2,
-    //     ratingCount: 1,
-    //     caption: "I hate this place because I cannot navigate well",
-    //     tags: ["Blocked"]
-    //   },
+    const dummyMarks = [
+      { 
+        markId: 0,
+        username: "Mufaro Makiwa",
+        dateAdded: "Nov 8",
+        comments: 2,
+        rating: 2,
+        ratingCount: 1,
+        caption: "I hate this place because I cannot navigate well",
+        tags: ["Blocked"]
+      },
 
-    //   {
-    //     markId: 1,
-    //     username: "Hillary Tamirepi",
-    //     dateAdded: "Dec 1",
-    //     comments: 17,
-    //     rating: 4,
-    //     ratingCount: 10,
-    //     caption: "I do not know why this has not been fixed yet",
-    //     tags: ["Busy", "Not Safe"]
-    //   },
+      {
+        markId: 1,
+        username: "Hillary Tamirepi",
+        dateAdded: "Dec 1",
+        comments: 17,
+        rating: 4,
+        ratingCount: 10,
+        caption: "I do not know why this has not been fixed yet",
+        tags: ["Busy", "Not Safe"]
+      },
 
-    //   { 
-    //     markId: 2,
-    //     username: "Jianna Liu",
-    //     dateAdded: "Jan 5",
-    //     comments: 5,
-    //     rating: 4.5,
-    //     ratingCount: 100,
-    //     caption: "The intersection has been blocked for over a year now",
-    //     tags: ["Blocked"]
-    //   },
-    // ];
+      { 
+        markId: 2,
+        username: "Jianna Liu",
+        dateAdded: "Jan 5",
+        comments: 5,
+        rating: 4.5,
+        ratingCount: 100,
+        caption: "The intersection has been blocked for over a year now",
+        tags: ["Blocked"]
+      },
+    ];
     
     return {
       displayFilters: false,
-      displayedMark: null,   
+      displayedMark: null,  
+      marks: dummyMarks, 
       filteredMarks: [],
       filters: {
         sortBy: "dateAdded",
@@ -136,7 +137,6 @@ export default {
         minimumRating: 0
       },
       hasDisplayedMarks: false,
-
     }    
   },
 
