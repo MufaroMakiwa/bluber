@@ -52,7 +52,7 @@ async function findAllByTargetUserId(targetUserId){
 
 async function updateOne(replyId, content){
     try{
-        const reply = await Reply.find({replyId: replyId});
+        const reply = await Reply.find({_id: replyId});
         reply.content = content;
         reply.dateModified = new Date();
         reply.save();
@@ -64,12 +64,25 @@ async function updateOne(replyId, content){
 
 async function deleteOne(replyId){
     try{
-      const reply = await Reply.remove({replyId: replyId});
+      const reply = await Reply.deleteOne({_id: replyId});
       return reply;
     } catch(err){
       return false;
     }
+}
+/** 
+ * 
+ * @param {commentId} 
+ * Deletes all replies that belong to a specific comemnt with {commentId}
+*/
+async function deleteMany(commentId){
+  try{
+    return await Reply.deleteMany({commentId: commentId});
+  } catch(err){
+    return false;
   }
+}
+
 
 module.exports = Object.freeze({
     findOne,
@@ -78,5 +91,6 @@ module.exports = Object.freeze({
     findAllByCommentId,
     findAllByTargetUserId,
     updateOne,
-    deleteOne
+    deleteOne,
+    deleteMany
   });

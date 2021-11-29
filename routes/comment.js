@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const validator = require("./middleware");
 const commentController = require("./comment-controller");
-
+const { deleteComment}  = require("./utils");
 
 const userId1 = "gangoffour1";
 // const userId2 = "gangoffour2";
@@ -41,12 +41,12 @@ router.patch(
 router.delete(
   '/:commentId?',
   [
-    validator.isUserLoggedIn,
-    validator.isCommentIdInParamsExists,
-    validator.isValidCommentModifier
+    // validator.isUserLoggedIn,
+    // validator.isCommentIdInParamsExists,
+    // validator.isValidCommentModifier
   ],
   async (req, res) => {
-    await commentController.deleteOne(req.params.commentId);
+    await deleteComment(req.params.commentId);
     res.status(200).json({
       message: "Comment deleted sucessfully"
     }).end();

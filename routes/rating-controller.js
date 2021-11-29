@@ -12,9 +12,8 @@ async function findOne(userId, markId){
   
 async function addOne(userId, markId, ratingContent, targetUserId){
     const date = new Date();
-    const ratingId = uuidv4();
     
-    const rating = new Rating({ratingId: ratingId, userId: userId, markId: markId, date_added: date, dateModified: date, rating: ratingContent,targetUserId: targetUserId});
+    const rating = new Rating({userId: userId, markId: markId, dateAdded: date, dateModified: date, rating: ratingContent,targetUserId: targetUserId});
     try {
         await rating.save();
         return rating;
@@ -64,12 +63,25 @@ async function updateOne(userId, markId, ratingContent){
 
 async function deleteOne(userId, markId){
     try{
-      const rating = await Rating.remove({ratingId: markId, userId: userId});
+      const rating = await Rating.deleteOne({markId: markId, userId: userId});
       return rating;
     } catch(err){
       return false;
     }
+}
+
+/**
+ * 
+ * @param {*} markId 
+ */
+async function deleteMany(markId){
+  try{
+    const rating = await Rating.deleteOne({markId: markId});
+    return rating;
+  } catch(err){
+    return false;
   }
+}
 
 module.exports = Object.freeze({
     findOne,
@@ -78,5 +90,6 @@ module.exports = Object.freeze({
     findAllByMarkId,
     findAllByTargetUserId,
     updateOne,
-    deleteOne
+    deleteOne,
+    deleteMany,
   });

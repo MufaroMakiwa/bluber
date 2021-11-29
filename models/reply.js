@@ -6,11 +6,11 @@ const Schema = mongoose.Schema;
 const ReplySchema = new Schema(
   {
       // reference to _id field in the User collection
-      "replyId": {
-        type: String, 
-        default: uuidv4(),
-        required: false,
-    },
+    //   "replyId": {
+    //     type: String, 
+    //     default: uuidv4(),
+    //     required: false,
+    // },
       // reference to _id field in the User collection
       "userId": {
         type: String, 

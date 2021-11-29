@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const validator = require("./middleware");
 const markController = require("./mark-controller.js");
-const {constructMarkResponse}  = require("./utils");
+const {constructMarkResponse,sortResponsesByKey, deleteMark}  = require("./utils");
 
 
 const userId = "gangoffour";
@@ -25,6 +25,7 @@ router.get(
     }
     let response = await markController.getMarksInSpannedArea(start, end);
     response.marksInSpannedArea = await Promise.all(response.marksInSpannedArea.map(async (mark) => await constructMarkResponse(mark)))
+    response.marksInSpannedArea = sortResponsesByKey(response.marksInSpannedArea)
     res.status(200).json(response).end();
   }
 );
@@ -92,12 +93,12 @@ router.patch(
 router.delete(
   '/:markId?',
   [
-    validator.isUserLoggedIn,
-    validator.isMarkIdInParamsExists,
-    validator.isValidMarkModifier
+    // validator.isUserLoggedIn,
+    // validator.isMarkIdInParamsExists,
+    // validator.isValidMarkModifier
   ],
   async (req, res) => {
-    await markController.deleteOne(req.params.markId);
+    await deleteMark(req.params.markId);
     res.status(200).json({
       message: "Mark deleted successfully"
     }).end();

@@ -8,7 +8,7 @@
       <div class="response-details">
         <div class="name-time-container">
           <span class="username">{{ response.userId }}</span>
-          <span class="date">{{ response.dateAdded }}</span>
+          <span class="date">{{ formatDate(response.dateAdded) }}</span>
         </div>
 
         <span class="response">{{ response.content }}</span>
@@ -32,7 +32,7 @@
           <AddComment v-else :commentId="commentId" :commentUserId="commentUserId" :isReply="true" @cancel="cancelReply"/>
         </div>
 
-        <div v-if="isReply && isCurrentUserResponse" class="modify-reply-container">
+        <div v-if="isReply && isCurrentUserResponse(response.userId)" class="modify-reply-container">
           <div class="modify-buttons">
             <span 
               class="modify-button delete"
@@ -53,6 +53,9 @@
 <script>
 import UserIcon from "./UserIcon.vue";
 import AddComment from "./AddComment.vue";
+import {formatDate} from "../utils";
+import axios from "axios";
+import { eventBus } from '../main';
 
 
 export default {
@@ -82,9 +85,10 @@ export default {
       return !this.isReply && this.response.replies.length > 0;
     },
 
-    isCurrentUserResponse() {
+    isCurrentUserResponse(otherUserId) {
       // TODO. Check against the userId in the reply or comment
-      return true;
+      // return true;
+      return otherUserId===this.$store.getters.userId
     }
   },
 
@@ -98,11 +102,18 @@ export default {
     },
 
     handleDeleteComment() {
-      alert("Handle delete comment");
+
+      axios.delete('/api/comment/'+this.response._id).then(()=>{ eventBus.$emit("refresh");console.log("comment successfully deleted")}).catch((err)=>{console.log(err)});
+
     },
 
     handleDeleteReply() {
-      alert("Handle delete reply");
+
+      axios.delete('/api/reply/'+this.response._id).then(()=>{ eventBus.$emit("refresh");console.log("reply successfully deleted")}).catch((err)=>{console.log(err)});
+    },
+
+    formatDate(d){
+      return formatDate(d);
     }
   }
 }

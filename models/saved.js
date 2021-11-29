@@ -6,11 +6,11 @@ const { v4: uuidv4 } = require("uuid");
  const SavedSchema = new Schema(
    {
        // reference to _id field in the User collection
-       "savedId": {
-         type: String,
-         default: uuidv4(),
-         required: false,
-     },
+    //    "savedId": {
+    //      type: String,
+    //      default: uuidv4(),
+    //      required: false,
+    //  },
        // reference to _id field in the User collection
        "userId": {
          type: String, 

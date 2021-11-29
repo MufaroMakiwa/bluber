@@ -99,10 +99,10 @@ const Schema = mongoose.Schema;
 const MarkSchema = new Schema(
   {
       // reference to _id field in the User collection
-      "markId": {
-        type: String, 
-        required: false,
-    },
+    //   "markId": {
+    //     type: String, 
+    //     required: false,
+    // },
       // reference to _id field in the User collection
       "userId": {
         type: String, 

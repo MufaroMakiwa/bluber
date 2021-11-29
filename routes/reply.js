@@ -26,9 +26,9 @@ router.post(
 router.patch(
   '/:replyId?',
   [
-    validator.isUserLoggedIn,
-    validator.isReplyIdInParamsExists,
-    validator.isValidReplyModifier
+    // validator.isUserLoggedIn,
+    // validator.isReplyIdInParamsExists,
+    // validator.isValidReplyModifier
   ],
   async (req, res) => {
     const reply = await replyController.updateOne(req.params.replyId, req.body.content);
@@ -39,10 +39,10 @@ router.patch(
 router.delete(
   '/:replyId?',
   [
-    validator.isUserLoggedIn,
-    validator.isReplyIdInParamsExists,
-    validator.isCommentIdInBodyExists,
-    validator.isValidCommentModifier
+    // validator.isUserLoggedIn,
+    // validator.isReplyIdInParamsExists,
+    // validator.isCommentIdInBodyExists,
+    // validator.isValidCommentModifier
   ],
   async (req, res) => {
     await replyController.deleteOne(req.params.replyId);

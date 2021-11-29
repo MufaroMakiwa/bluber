@@ -25,7 +25,7 @@ async function findAll(){
 
 async function findOne(markId){
   try{
-    const mark = await markModel.find({markId: markId});
+    const mark = await markModel.find({_id: markId});
     return mark;
   } catch(err){
     return false;
@@ -55,7 +55,7 @@ async function findAllByUserId(userId){
 
 async function updateOne(markId, body){
   try{
-    const mark = await markModel.find({markId: markId});
+    const mark = await markModel.find({_id: markId});
     body.caption && (mark.caption = body.caption);
     body.tags && (mark.tags = body.tags);
     body.start && (mark.start = body.start);
@@ -70,12 +70,28 @@ async function updateOne(markId, body){
 
 async function deleteOne(markId){
   try{
-    const mark = await markModel.remove({markId: markId});
+    const mark = await markModel.deleteOne({_id: markId});
     return mark;
   } catch(err){
     return false;
   }
 }
+
+/**
+ * 
+ * @param {*} markId 
+ * 
+ * Delete all marks that belong to a user with userId
+ */
+async function deleteMany(userId){
+  try{
+    const marks = await markModel.deleteMany({userId: userId});
+    return marks;
+  } catch(err){
+    return false;
+  }
+}
+
 
 /**
  * Convert to radians
@@ -185,5 +201,6 @@ module.exports = Object.freeze({
   addOne,
   findAllByUserId,
   updateOne,
-  deleteOne
+  deleteOne,
+  deleteMany
 })

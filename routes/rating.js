@@ -11,15 +11,16 @@ const userId2 = "gangoffour2";
 router.post(
   '/',
   [
-    validator.isUserLoggedIn,
-    validator.isMarkIdInBodyExists,
-    validator.isMarkRatingAllowed,
-    validator.isTargetUserIdExists,
+    // validator.isUserLoggedIn,
+    // validator.isMarkIdInBodyExists,
+    // validator.isMarkRatingAllowed,
+    // validator.isTargetUserIdExists,
     (req, res, next) => validator.checkMarkRatingStatus(req, res, next, false)
   ],
   async (req, res) => {
-    const { markId, rating } = req.body;
-    const ratingObj = await ratingController.addOne(userId1, markId, rating, userId2);
+    let userId = userId1;
+    const { markId, rating, userId2 } = req.body;
+    const ratingObj = await ratingController.addOne(userId, markId, rating, userId2);
     res.status(201).json(ratingObj).end();
   }
 );
@@ -42,17 +43,19 @@ router.patch(
 router.delete(
   '/:markId?',
   [
-    validator.isUserLoggedIn,
-    validator.isMarkIdInParamsExists,
-    validator.isMarkRatingAllowed,
-    (req, res, next) => validator.checkMarkRatingStatus(req, res, next, true)
+    // validator.isUserLoggedIn,
+    // validator.isMarkIdInParamsExists,
+    // validator.isMarkRatingAllowed,
+    // (req, res, next) => validator.checkMarkRatingStatus(req, res, next, true)
   ],
   async (req, res) => {
-    await ratingController.deleteOne(userId1, req.params.markId);
+    let userId = userId1;
+    await ratingController.deleteOne(userId, req.params.markId);
     res.status(200).json({
       message: "Rating deleted successfully"
     }).end();
   }
 );
+
 
 module.exports = router;
