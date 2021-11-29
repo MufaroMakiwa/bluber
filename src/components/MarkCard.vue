@@ -12,7 +12,7 @@
       <div class="interaction-details">
        <div class="comment-summary">
          <font-awesome-icon icon="comment" class="comment-icon"/>
-         <span class="comment-count">{{ mark.comments }}</span>
+         <span class="comment-count">{{ commentCount}}</span>
        </div>
         <Rating :rating="mark.rating"/>
       </div>
@@ -54,6 +54,10 @@ export default {
   computed: {
     userIcon() {
       return this.mark.userId.charAt(0).toUpperCase();
+    },
+
+    commentCount(){
+      return this.mark.comments.length
     }
   }
 }

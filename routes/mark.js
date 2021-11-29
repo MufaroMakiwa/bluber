@@ -24,13 +24,7 @@ router.get(
       lng: parseFloat(req.query.endLng)
     }
     let response = await markController.getMarksInSpannedArea(start, end);
-
-    console.log(response.marksInSpannedArea)
-
-    
-    console.log(await Promise.all(response.marksInSpannedArea.map(async (mark) => await constructMarkResponse(mark))))
-
-    // console.log(response)
+    response.marksInSpannedArea = await Promise.all(response.marksInSpannedArea.map(async (mark) => await constructMarkResponse(mark)))
     res.status(200).json(response).end();
   }
 );

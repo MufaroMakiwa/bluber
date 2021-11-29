@@ -2,12 +2,12 @@
   <div class="response-container">
     <div class="response-wrapper">
       <div class="icon-wrapper">
-        <UserIcon :username="response.username" />
+        <UserIcon :username="response.userId" />
         <hr v-if="!isLast" class="divider"/>
       </div>
       <div class="response-details">
         <div class="name-time-container">
-          <span class="username">{{ response.username }}</span>
+          <span class="username">{{ response.userId }}</span>
           <span class="date">{{ response.dateAdded }}</span>
         </div>
 

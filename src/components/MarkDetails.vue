@@ -7,8 +7,8 @@
     <template v-slot:content>
       <div class="mark-header">
         <MarkUserDetails 
-          :username="mark.username"
-          :dateAdded="mark.dateAdded"/>
+          :username="mark.userId"
+          :dateAdded="formatDate(mark.dateAdded)"/>
 
         <OptionsMenu 
           editTitle="Edit mark"
@@ -37,10 +37,10 @@
 
       <div class="comments-section">
         <Comment 
-          v-for="(comment, index) in comments" 
+          v-for="(comment, index) in mark.comments" 
           :key="index"
           :comment="comment"
-          :isLast="index === comments.length - 1"
+          :isLast="index === mark.comments.length - 1"
           :isReply="false"/>
       </div>
 
@@ -56,6 +56,7 @@ import MarkDescription from "./MarkDescription.vue";
 import OptionsMenu from "./OptionsMenu.vue";
 import AddComment from "./AddComment.vue";
 import Comment from "./Comment.vue";
+import { formatDate } from '../utils';
 
 
 export default {
@@ -75,10 +76,13 @@ export default {
     mark: Object,
   },
 
+  beforeMount(){  
+    console.log("this is the mark",this.mark);
+  },
   data() {
     return {
 
-      comments: mark.comments
+      // comments: this.mark.comments
       // comments: [
       //   {
       //     username: "Mufaro Makiwa",
@@ -129,7 +133,11 @@ export default {
 
     deleteMark() {
       console.log("Deleting mark")
-    }
+    },
+
+    formatDate(d){
+      return formatDate(d)
+    } 
   }
 }
 </script>
