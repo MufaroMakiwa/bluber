@@ -29,8 +29,7 @@ export default {
 
   props: {
     comment: Object,
-    isLast: Boolean,
-    isReply: Boolean
+    isLast: Boolean
   },
 
   data() {
