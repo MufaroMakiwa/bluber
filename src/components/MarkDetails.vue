@@ -12,8 +12,8 @@
 
         <OptionsMenu 
           :options="options"
-          @delete="deleteMark"
-          @rate="rateMark"/>
+          @delete-mark="deleteMark"
+          @remove-rating="removeRating"/>
       </div>
 
       <div class="mark-details">
@@ -22,40 +22,19 @@
           :tags="mark.tags"/>
 
         <div class="ratings-container">
-          <Rating :rating="mark.rating" :ratingCount="mark.ratingCount"/>
+    
+          <Rating 
+            :addTooltip="true"
+            :rating="mark.rating" 
+            :ratingCount="mark.ratingCount"
+            @click.native="isRating=true"/>
+
+          <RateMarkDialog 
+            :display="isRating"
+            @cancel="isRating=false"
+            @submit-rating="submitRating"/>
         </div>
 
-        <div class="add-rating" v-if="isRating">
-          <span>Rate this mark</span>
-          <v-rating
-            class="rating"
-            :v-model="rating"
-            color="yellow darken-3"
-            background-color="grey darken-1"
-            empty-icon="$ratingFull"
-            hover
-            size="24"></v-rating>
-
-          <div class="rating-buttons-container">
-            <v-btn
-              rounded
-              outlined
-              color="primary"
-              small
-              @click="stopRating">
-              Cancel
-            </v-btn>
-
-            <v-btn
-              rounded
-              depressed
-              color="primary"
-              small
-              @click="submitRating">
-              Rate
-            </v-btn>
-          </div>
-        </div>
       </div>
       <v-divider></v-divider>
       <v-divider></v-divider>
@@ -82,6 +61,7 @@
 import Rating from "./Rating.vue"
 import ViewTemplate from "./ViewTemplate.vue";
 import MarkUserDetails from "./MarkUserDetails.vue";
+import RateMarkDialog from "./RateMarkDialog.vue";
 import MarkDescription from "./MarkDescription.vue";
 import OptionsMenu from "./OptionsMenu.vue";
 import AddComment from "./AddComment.vue";
@@ -99,7 +79,8 @@ export default {
     Rating,
     OptionsMenu,
     AddComment,
-    Comment
+    Comment,
+    RateMarkDialog,
   },
 
   props: {
@@ -108,8 +89,7 @@ export default {
 
   data() {
     return {
-      isRating: true,
-      rating: 0
+      isRating: false,
     }
   },
 
@@ -119,20 +99,19 @@ export default {
         {
           title: "Delete mark",
           icon: "trash-alt",
-          event: "delete"
+          event: "delete-mark"
         },
 
         {
-          title: !this.isUserRating ? "Rate this mark" : "Remove rating", // this title will depend on the computed property below
+          title: "Remove rating",
           icon: "star",
-          event: "rate"
+          event: "remove-rating"
         }
       ]
     },
 
     isUserRating() {
-      // check if the user is already rating this mark. This will determine the title 
-      // above and which axios call is made in the rateMark method (delete or post)
+      // check if the user is already rating this mark. 
       return false;
     }
   },
@@ -142,16 +121,14 @@ export default {
   },
 
   methods: {
-    rateMark() {
-      if (!this.isUserRating) {
-        this.isRating = true;
-      } else {
-        // handle delete
-      }
+    submitRating(rating) {
+      this.isRating = false;
+      alert('Submiting user rating');
+      console.log(rating);
     },
 
-    submitRating() {
-      alert('Submiting user rating');
+    removeRating(){
+      alert("Delete users current rating");
     },
 
     deleteMark() {
@@ -160,11 +137,6 @@ export default {
 
     formatDate(d){
       return formatDate(d)
-    },
-    
-    stopRating() {
-      this.rating = 0;
-      this.isRating = false;
     }
   }
 }
@@ -216,9 +188,12 @@ export default {
   justify-content: flex-start;
 }
 
-.rating {
-  margin: 0;
-  padding: 0;
+.add-rating-container {
   display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  flex-grow: 1;
+  margin-right: 1rem
 }
 </style>
