@@ -116,7 +116,7 @@ function isPointInSpannedArea(point, center, radius) {
 }
 
 
-function getMarksInSpannedArea(start, end) {
+async function getMarksInSpannedArea(start, end) {
   // get the radius between the two points
   const radius = getDistance(start, end);
 
@@ -124,9 +124,9 @@ function getMarksInSpannedArea(start, end) {
   const center = getCenter(start, end);
 
   // loop through all the marks and get the ones with the start or end in the spanned area
+  const allMarks = await markModel.find({});
   const marksInSpannedArea = 
-      markModel
-        .findAll()
+      allMarks
         .filter(mark => {
           return isPointInSpannedArea(mark.start, center, radius) || isPointInSpannedArea(mark.end, center, radius)
         });

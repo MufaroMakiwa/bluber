@@ -3,7 +3,7 @@
     <Map class="map"/>  
     <Navigator />   
 
-    <div class="main-app-section shadow">
+    <div class="shadow main-app-section">
       <div 
         v-if="!isSignedIn && template !== 'authentication'" 
         class="sign-in-container">
@@ -126,6 +126,7 @@ export default {
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
+  border: none;
 }
 
 .app-inner {

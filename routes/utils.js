@@ -5,9 +5,16 @@ const ratingController = require("./rating-controller");
 const userController = require("./user-controller");
 
 
-async function constructMarkResponse(mark) {
+async function constructMarkResponse(mark, userId) {
+  // get the comments
   let comments = await commentController.findAllByMarkId(mark._id);
   comments = await Promise.all(comments.map(async (comment) => await constructCommentResponse(comment)));
+
+  // get the rating
+  const markRatings = await ratingController.findAllByMarkId(mark._id);
+  const rating = markRatings.reduce((prev, curr) => prev + curr.rating, 0);
+  const ratingCount = markRatings.length;
+  const isCurrentUserRating = markRatings.filter(rating => rating.userId === userId)[0];
   
   return {
     _id: mark._id,
@@ -18,7 +25,10 @@ async function constructMarkResponse(mark) {
     start: mark.start,
     end: mark.end,
     path: mark.path,
-    comments: sortResponsesByKey(comments)
+    comments: sortResponsesByKey(comments),
+    rating: ratingCount == 0 ? 0 : rating / ratingCount,
+    ratingCount: ratingCount,
+    isCurrentUserRating: isCurrentUserRating !== undefined
   };
 }
 
@@ -57,13 +67,14 @@ async function constructUserResponseFromUserId(userId) {
 async function constructUserResponse(user) {
   const userRatings = await ratingController.findAllByTargetUserId(user._id);
   const rating = userRatings.reduce((prev, curr) => prev + curr.rating, 0);
+  const ratingCount = userRatings.length;
   
   return {
     userId: user._id,
     name: user.name,
     email: user.email,
     imageUrl: user.imageUrl,
-    rating: rating
+    rating: ratingCount === 0 ? 0 : rating / userRatings.length,
   };
 }
 

@@ -1,7 +1,8 @@
 <template>
   <div class="card">
     <MarkUserDetails 
-      :username="mark.userId"
+      :username="mark.user.name"
+      :imageUrl="mark.user.imageUrl"
       :dateAdded="formatDate(mark.dateAdded)"/>
 
     <div class="mark-details">
@@ -12,7 +13,7 @@
       <div class="interaction-details">
        <div class="comment-summary">
          <font-awesome-icon icon="comment" class="comment-icon"/>
-         <span class="comment-count">{{ commentCount}}</span>
+         <span class="comment-count">{{ commentCount }}</span>
        </div>
         <Rating :rating="mark.rating"/>
       </div>

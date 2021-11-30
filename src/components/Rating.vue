@@ -103,7 +103,4 @@ export default {
   cursor: pointer;
 }
 
-.rating-wrapper:hover .rating {
-  transform: scale(1.05);
-}
 </style>

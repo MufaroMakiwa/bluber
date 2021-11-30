@@ -22,7 +22,7 @@ router.get(
       lng: parseFloat(req.query.endLng)
     }
     let response = await markController.getMarksInSpannedArea(start, end);
-    response.marksInSpannedArea = await Promise.all(response.marksInSpannedArea.map(async (mark) => await constructMarkResponse(mark)))
+    response.marksInSpannedArea = await Promise.all(response.marksInSpannedArea.map(async (mark) => await constructMarkResponse(mark, req.session.userId)))
     response.marksInSpannedArea = sortResponsesByKey(response.marksInSpannedArea)
     res.status(200).json(response).end();
   }
@@ -48,7 +48,7 @@ router.post(
     }
     const mark = await markController.addOne(req.session.userId, tags, caption, st, en, path);
     res.status(201).json({
-      mark: await constructMarkResponse(mark)
+      mark: await constructMarkResponse(mark, req.session.userId)
     }).end();
   }
 );

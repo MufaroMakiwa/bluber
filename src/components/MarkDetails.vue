@@ -7,10 +7,12 @@
     <template v-slot:content>
       <div class="mark-header">
         <MarkUserDetails 
-          :username="mark.userId"
+          :username="mark.user.name"
+          :imageUrl="mark.user.imageUrl"
           :dateAdded="formatDate(mark.dateAdded)"/>
 
         <OptionsMenu 
+          v-if="isSignedIn"
           :options="options"
           @delete-mark="deleteMark"
           @remove-rating="removeRating"/>
@@ -24,10 +26,10 @@
         <div class="ratings-container">
     
           <Rating 
-            :addTooltip="true"
+            :addTooltip="!isCurrentUserMark"
             :rating="mark.rating" 
             :ratingCount="mark.ratingCount"
-            @click.native="isRating=true"/>
+            @click.native="triggerRating"/>
 
           <RateMarkDialog 
             :display="isRating"
@@ -36,10 +38,10 @@
         </div>
 
       </div>
-      <v-divider></v-divider>
-      <v-divider></v-divider>
+      <v-divider v-if="isSignedIn"></v-divider>
+      <v-divider v-if="isSignedIn"></v-divider>
 
-      <div class="add-comment">
+      <div class="add-comment" v-if="isSignedIn">
         <AddComment :markUserId="mark.userId" :markId="mark._id"/>
       </div>
       <v-divider></v-divider>
@@ -53,6 +55,12 @@
           :isLast="index === mark.comments.length - 1"/>
       </div>
 
+      <AuthenticationDialog 
+        :dialog="displayAuthDialog" 
+        action="rate this mark"
+        @close-auth-dialog="displayAuthDialog=false"/>
+
+
     </template>
   </ViewTemplate>
 </template>
@@ -65,6 +73,7 @@ import RateMarkDialog from "./RateMarkDialog.vue";
 import MarkDescription from "./MarkDescription.vue";
 import OptionsMenu from "./OptionsMenu.vue";
 import AddComment from "./AddComment.vue";
+import AuthenticationDialog from "./AuthenticationDialog.vue";
 import Comment from "./Comment.vue";
 import { formatDate } from '../utils';
 
@@ -81,6 +90,7 @@ export default {
     AddComment,
     Comment,
     RateMarkDialog,
+    AuthenticationDialog
   },
 
   props: {
@@ -90,37 +100,57 @@ export default {
   data() {
     return {
       isRating: false,
+      displayAuthDialog: false
     }
   },
 
   computed: {
     options() {
-      return [
-        {
-          title: "Delete mark",
-          icon: "trash-alt",
-          event: "delete-mark"
-        },
-
-        {
-          title: "Remove rating",
-          icon: "star",
-          event: "remove-rating"
-        }
-      ]
+      return this.isCurrentUserMark 
+      ? 
+        [
+          {
+            title: "Delete mark",
+            icon: "trash-alt",
+            event: "delete-mark"
+          }
+        ]
+      :
+        [
+          {
+            title: "Remove rating",
+            icon: "star",
+            event: "remove-rating"
+          }
+        ]
     },
 
-    isUserRating() {
-      // check if the user is already rating this mark. 
-      return false;
+    isSignedIn() {
+      return this.$store.getters.isSignedIn;
+    },
+
+    user() {
+      return this.$store.getters.user;
+    },
+ 
+    isCurrentUserMark() {
+      return this.isSignedIn && this.mark.user.userId === this.user.userId;
     }
   },
 
-  beforeMount(){  
-    console.log("this is the mark",this.mark);
-  },
 
   methods: {
+    triggerRating() {
+      if (this.isCurrentUserMark) {
+        return;
+      }
+      if (this.isSignedIn) {
+        this.isRating = true;
+      } else {
+        this.displayAuthDialog = true;
+      }
+    },
+
     submitRating(rating) {
       this.isRating = false;
       alert('Submiting user rating');
