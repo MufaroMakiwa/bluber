@@ -38,13 +38,13 @@ router.post(
     const { tags, caption, start, end, path } = req.body;
     
     const st = {
-      lat: start[0],
-      lng: start[1]
+      lat: start[1],
+      lng: start[0]
     };
 
     const en = {
-      lat: end[0],
-      lng: end[1]
+      lat: end[1],
+      lng: end[0]
     }
     const mark = await markController.addOne(req.session.userId, tags, caption, st, en, path);
     res.status(201).json({

@@ -54,6 +54,7 @@ export default {
     });
 
     eventBus.$on("back", () => {
+      console.log("back here");
       this.addingMarkDetails = false;
       this.results = [];
     });
@@ -68,7 +69,7 @@ export default {
     });
   },
   beforeDestroy() {
-    eventBus.$off("back");
+    // eventBus.$off("back");
     eventBus.$off("input");
     eventBus.$off("clearSuggestions");
     eventBus.$off("searchResult");
