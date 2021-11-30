@@ -67,7 +67,7 @@ export default {
             name: user.name,
             email: user.email,
             imageUrl: user.imageUrl,
-            userId: user._id,
+            userId: user.userId,
             rating: user.rating
           });
 

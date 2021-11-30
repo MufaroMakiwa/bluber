@@ -48,6 +48,7 @@ async function findAllByTargetUserId(targetUserId){
     }
 }
 
+// TODO
 async function updateOne(userId, markId, ratingContent){
     try{
         const rating = await Rating.find({ratingId: markId, userId: userId});

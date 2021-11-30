@@ -32,18 +32,6 @@ async function findAllByUserId(userId){
     }
   }
 
-async function updateOne(savedId, body){
-    try{
-        const saved = await Saved.find({savedId: savedId});
-        body.name && (saved.name = body.name);
-        body.start && (saved.start = body.start);
-        body.end && (saved.end = body.end);
-        saved.dateModified = new Date();
-        return saved;
-    } catch(err){
-        return false;
-    }
-}
 
 async function deleteOne(savedId){
     try{
@@ -58,6 +46,5 @@ module.exports = Object.freeze({
     findOne,
     addOne,
     findAllByUserId,
-    updateOne,
     deleteOne
   });

@@ -14,12 +14,6 @@ const RatingSchema = new Schema(
         required: false,
         default: new Date(),
     },
-      // we set a default value here to be 0
-      "dateModified": {
-        type: Date,
-        required: false,
-        default: new Date(),
-    },
       "markId": {
         type: String,
         required: true,
@@ -35,5 +29,4 @@ const RatingSchema = new Schema(
   }
 );
 
-// mongoose will automatically create the collection for our DB
 module.exports = mongoose.model("rating", RatingSchema);

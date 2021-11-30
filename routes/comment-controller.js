@@ -1,5 +1,4 @@
 const Comment = require("../models/comment");
-const { v4: uuidv4 } = require("uuid");
 
 async function findOne(commentId){
     try{
@@ -50,26 +49,16 @@ async function findAllByTargetUserId(targetUserId){
     }
 }
 
-async function updateOne(commentId, content){
-    try{
-        const comment = await Comment.find({_id: commentId});
-        comment.content = content;
-        comment.dateModified = new Date();
-        comment.save();
-        return comment;
-    } catch(err){
-        return false;
-    }
-}
+
 
 async function deleteOne(commentId){
-    try{
-      const comment = await Comment.deleteOne({_id: commentId});
-      return comment;
-    } catch(err){
-      return false;
-    }
+  try{
+    const comment = await Comment.deleteOne({_id: commentId});
+    return comment;
+  } catch(err){
+    return false;
   }
+}
 
 /**
  * 
@@ -86,12 +75,11 @@ async function deleteMany(markId){
 }
 
 module.exports = Object.freeze({
-    findOne,
-    addOne,
-    findAllByUserId,
-    findAllByMarkId,
-    findAllByTargetUserId,
-    updateOne,
-    deleteOne,
-    deleteMany
-  });
+  findOne,
+  addOne,
+  findAllByUserId,
+  findAllByMarkId,
+  findAllByTargetUserId,
+  deleteOne,
+  deleteMany
+});

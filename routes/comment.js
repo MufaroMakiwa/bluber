@@ -1,11 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const validator = require("./middleware");
+// const validator = require("./middleware");
 const commentController = require("./comment-controller");
-const { deleteComment}  = require("./utils");
-
-const userId1 = "gangoffour1";
-// const userId2 = "gangoffour2";
+const { deleteComment, constructCommentResponse }  = require("./utils");
 
 
 router.post(
@@ -16,25 +13,11 @@ router.post(
     // validator.isTargetUserIdExists
   ],
   async (req, res) => {
-
-    let userId  = userId1;
-    const { markId, content, userId2 } = req.body;
-  
-    const comment = await commentController.addOne(userId, markId, content, userId2);
-    res.status(201).json(comment).end();
-  }
-);
-
-router.patch(
-  '/:commentId?',
-  [
-    validator.isUserLoggedIn,
-    validator.isCommentIdInParamsExists,
-    validator.isValidCommentModifier
-  ],
-  async (req, res) => {
-    const comment = await commentController.updateOne(req.params.commentId, req.body.content);
-    res.status(200).json(comment).end();
+    const { markId, content, targetUserId } = req.body;
+    const comment = await commentController.addOne(req.session.userId, markId, content, targetUserId);
+    res.status(201).json({
+      comment: await constructCommentResponse(comment)
+    }).end();
   }
 );
 

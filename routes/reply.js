@@ -1,11 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const validator = require("./middleware");
+// const validator = require("./middleware");
 const replyController = require("./reply-controller");
+const { constructReplyResponse }  = require("./utils");
 
-
-const userId1 = "gangoffour1";
-// const userId2 = "gangoffour2";
 
 
 router.post(
@@ -16,25 +14,14 @@ router.post(
     // validator.isTargetUserIdExists
   ],
   async (req, res) => {
-    let userId = userId1;
-    const { commentId, content,userId2 } = req.body;
-    const reply = await replyController.addOne(userId, commentId, content,userId2);
-    res.status(201).json(reply).end();
+    const { commentId, content, targetUserId } = req.body;
+    const reply = await replyController.addOne(req.session.userId, commentId, content, targetUserId);
+    res.status(201).json({
+      reply: await constructReplyResponse(reply)
+    }).end();
   }
 );
 
-router.patch(
-  '/:replyId?',
-  [
-    // validator.isUserLoggedIn,
-    // validator.isReplyIdInParamsExists,
-    // validator.isValidReplyModifier
-  ],
-  async (req, res) => {
-    const reply = await replyController.updateOne(req.params.replyId, req.body.content);
-    res.status(200).json(reply).end();
-  }
-);
 
 router.delete(
   '/:replyId?',

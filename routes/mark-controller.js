@@ -1,7 +1,56 @@
 const markModel = require("../models/mark");
-// const BLUBER_DATA_SERVER_URL = "http://bluber-server.herokuapp.com/road"
-const BLUBER_DATA_SERVER_URL = "http://127.0.0.1:5000/road";
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+
+async function findOne(markId){
+  try{
+    const mark = await markModel.findOne({_id: markId});
+    return mark;
+  } catch(err){
+    return false;
+  }
+}
+
+async function addOne(userId, tags, caption, start, end, path){
+  const mark = new markModel({userId: userId, tags: tags, caption: caption, start: start, end: end, path: path});
+  try {
+      await mark.save();
+      return mark;
+  } catch(err) {
+      return false;
+  }
+}
+
+async function findAllByUserId(userId){
+  try{
+    const marks = await markModel.find({userId: userId});
+    return marks;
+  } catch(err){
+    return false;
+  }
+}
+
+async function deleteOne(markId){
+  try{
+    const mark = await markModel.deleteOne({_id: markId});
+    return mark;
+  } catch(err){
+    return false;
+  }
+}
+
+/**
+ * 
+ * @param {*} markId 
+ * 
+ * Delete all marks that belong to a user with userId
+ */
+async function deleteMany(userId){
+  try{
+    const marks = await markModel.deleteMany({userId: userId});
+    return marks;
+  } catch(err){
+    return false;
+  }
+}
 
 
 /**
@@ -69,14 +118,10 @@ function isPointInSpannedArea(point, center, radius) {
 
 function getMarksInSpannedArea(start, end) {
   // get the radius between the two points
-
-
   const radius = getDistance(start, end);
 
   // get the center of the spanned area
   const center = getCenter(start, end);
-
-  console.log(start,end,center)
 
   // loop through all the marks and get the ones with the start or end in the spanned area
   const marksInSpannedArea = 
@@ -90,24 +135,11 @@ function getMarksInSpannedArea(start, end) {
 }
 
 
-/**
- * Get the path from the start to the end
- * 
- * @param {Object} start - (lat, lng) of start point
- * @param {Object} end - (lat, lng) of end point
- * @returns {Object[]} - A list of (lat, lng) objects from start to end
- */
-async function getPath(start, end) {
-  const routeEndpoint = `${BLUBER_DATA_SERVER_URL}/${start.lat}/${start.lng}/${end.lat}/${end.lng}`;
-  // const routeEndpoint = `${BLUBER_DATA_SERVER_URL}`
-  const path = await fetch(routeEndpoint);
-  // const data = await path.json();
-  const data = await path.json();
-  return data;
-}
-
-
 module.exports = Object.freeze({
   getMarksInSpannedArea,
-  getPath
+  findOne,
+  addOne,
+  findAllByUserId,
+  deleteOne,
+  deleteMany
 })
