@@ -74,12 +74,13 @@ export default {
     });
 
     eventBus.$on("refresh",()=>{
-        let params = {
-          startLat: this.$store.getters.startMarker[0] ,
-          startLng: this.$store.getters.startMarker[1] ,
-          endLat: this.$store.getters.endMarker[0] , 
-          endLng: this.$store.getters.endMarker[1],
-        }
+      let params = {
+        startLat: this.$store.getters.point1[1] ,
+        startLng: this.$store.getters.point1[0] ,
+        endLat: this.$store.getters.point2[1] , 
+        endLng: this.$store.getters.point2[0],
+      }
+
         axios.get("/api/mark",{params:params}).then((res)=>{
           let {marksInSpannedArea, radius, center } = res.data          
           this.marks = marksInSpannedArea;
@@ -111,6 +112,9 @@ export default {
       console.log(params)
 
       axios.get("/api/mark",{params:params}).then((res)=>{
+
+        // console.log("these are params",params,marksInSpannedArea);
+
         let {marksInSpannedArea, radius, center } = res.data
         this.marks = marksInSpannedArea;
         eventBus.$emit("draw-plan-radius",center,radius)
