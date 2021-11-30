@@ -2,18 +2,20 @@
   <div class="response-container">
     <div class="response-wrapper">
       <div class="icon-wrapper">
-        <UserIcon :username="response.userId" />
+        <UserIcon 
+          :username="response.user.name"
+          :imageUrl="response.user.imageUrl" />
         <hr v-if="!isLast" class="divider"/>
       </div>
       <div class="response-details">
         <div class="name-time-container">
-          <span class="username">{{ response.userId }}</span>
+          <span class="username">{{ response.user.name }}</span>
           <span class="date">{{ formatDate(response.dateAdded) }}</span>
         </div>
 
         <span class="response">{{ response.content }}</span>
 
-        <div class="reply-container" v-if="!isReply">
+        <div class="reply-container" v-if="!isReply && isSignedIn">
           <div class="modify-buttons" v-if="!isReplying">
             <span 
               class="modify-button reply"       
@@ -32,7 +34,7 @@
           <AddComment v-else :commentId="commentId" :commentUserId="commentUserId" :isReply="true" @cancel="cancelReply"/>
         </div>
 
-        <div v-if="isReply && isCurrentUserResponse(response.userId)" class="modify-reply-container">
+        <div v-if="isReply && isCurrentUserResponse" class="modify-reply-container">
           <div class="modify-buttons">
             <span 
               class="modify-button delete"
@@ -81,14 +83,19 @@ export default {
 
   computed: {
     hasReplies() {
-      // TODO this is causing an error because the replies field is not in the response
       return !this.isReply && this.response.replies.length > 0;
     },
 
-    isCurrentUserResponse(otherUserId) {
-      // TODO. Check against the userId in the reply or comment
-      // return true;
-      return otherUserId===this.$store.getters.userId
+    isCurrentUserResponse() {
+      return this.isSignedIn && this.response.user.userId === this.user.userId;
+    },
+
+    user() {
+      return this.$store.getters.user;
+    },
+
+    isSignedIn() {
+      return this.$store.getters.isSignedIn;
     }
   },
 
@@ -102,14 +109,26 @@ export default {
     },
 
     handleDeleteComment() {
-
-      axios.delete('/api/comment/'+this.response._id).then(()=>{ eventBus.$emit("refresh");console.log("comment successfully deleted")}).catch((err)=>{console.log(err)});
+      axios.delete('/api/comment/'+this.response._id)
+        .then(() => { 
+          eventBus.$emit("refresh");
+          console.log("comment successfully deleted")
+        })
+        .catch((err) => {
+          console.log(err)
+        });
 
     },
 
     handleDeleteReply() {
-
-      axios.delete('/api/reply/'+this.response._id).then(()=>{ eventBus.$emit("refresh");console.log("reply successfully deleted")}).catch((err)=>{console.log(err)});
+      axios.delete('/api/reply/'+this.response._id)
+        .then(() => { 
+          eventBus.$emit("refresh");
+          console.log("reply successfully deleted")
+        })
+        .catch((err) => {
+          console.log(err)
+        });
     },
 
     formatDate(d){
@@ -128,12 +147,15 @@ export default {
   width: 100%;
 }
 
+.response-container:last-of-type > .response-wrapper > .response-details {
+  padding-bottom: 0;
+}
+
 .icon-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  height: 100%;
 }
 
 .response-wrapper {
@@ -178,12 +200,13 @@ export default {
 .response {
   font-size: 0.9rem;
   word-break: break-word;
-  /* margin-top: 0.5rem; */
 }
 
 .reply-container {
   width: 100%;
-  margin-top: 0.5rem;
+}
+
+.content-padded {
   padding-bottom: 1rem;
 }
 
@@ -221,7 +244,6 @@ export default {
 
 .modify-reply-container {
   width: 100%;
-  margin-top: 0.5rem;
 }
 
 .modify-reply-container .delete {
@@ -234,5 +256,6 @@ export default {
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
+  margin-top: 1rem;
 }
 </style>

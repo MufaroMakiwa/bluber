@@ -58,7 +58,10 @@ export default {
     },
 
     commentCount(){
-      return this.mark.comments.length
+      const replyCount = this.mark.comments.reduce(
+        (prev, curr) => prev + curr.replies.length, 0
+      )
+      return this.mark.comments.length + replyCount;
     }
   }
 }

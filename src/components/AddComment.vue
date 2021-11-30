@@ -11,6 +11,7 @@
         dense
         outlined
         rounded
+        :autofocus="isReply"
         single-line
         hide-details
         auto-grow
@@ -62,8 +63,8 @@ export default {
     },
     markId: String,
     commentId: String,
-    markUserId: String,
-    commentUserId: String,
+    markUserId: String, // author of the mark
+    commentUserId: String, // author of the comment
   },
 
   computed: {
@@ -114,20 +115,15 @@ export default {
             console.log(err);
           });
       } else {
-        console.log("I am supposed to be sending",{
-            userId2: this.commentUserId,
-            content: this.comment,
-            commentId: this.commentId,
-          })
         axios
           .post("/api/reply", {
-            userId2: this.commentUserId,
+            targetUserId: this.commentUserId,
             content: this.comment,
             commentId: this.commentId,
           })
           .then(() => {
-            // console.log(res);
             this.comment = "";
+            this.$emit('cancel');
             eventBus.$emit("refresh");
           })
           .catch((err) => {

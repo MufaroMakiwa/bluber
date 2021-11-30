@@ -4,8 +4,7 @@
     :isLast="isLast"
     :isReply="false"
     :commentId="comment._id"
-    :commentUserId="comment.userId"
-    >
+    :commentUserId="comment.user.userId" >
 
     <Response 
       v-for="(reply, index) in comment.replies"
@@ -13,7 +12,7 @@
       :response="reply"
       :isReply="true"
       :commentId="comment._id"
-      :commentUserId="comment.userId"
+      :commentUserId="comment.user.userId"
       :isLast="index === comment.replies.length - 1"/>
   </Response>
 </template>

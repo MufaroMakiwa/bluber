@@ -16,13 +16,17 @@
         <div class="point-icon-container">
           <div class="point-icon"></div>
         </div>
-        <span class="name">{{ plan.start }}</span>
+        <div class="name-container">
+          <span class="name">{{ plan.start }}</span>
+        </div>
       </div>
       <div class="plan-point end">
         <div class="point-icon-container">
           <div class="point-icon"></div>
         </div>
-        <span class="name">{{ plan.end }}</span>
+        <div class="name-container">
+          <span class="name">{{ plan.end }}</span>
+        </div>
       </div>
     </div>
   </div>
@@ -95,13 +99,13 @@ export default {
 }
 
 .point-icon-container {
-  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   position: relative;
-  padding: 0.5rem 0;
+  height: 100%;
+  padding: 0.75rem 0;
 }
 
 .point-icon {
@@ -137,8 +141,11 @@ export default {
   bottom: 50%;
 }
 
-.name {
-  padding: 0.5rem 0;
+.name-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
   margin-left: 2rem;
 }
 </style>
