@@ -128,7 +128,18 @@ export default {
     },
 
     filteredMarks() {
-      return this.filter();
+      const filtered = this.marks.filter(mark => {
+        const aboveRatingBound = mark.rating >= this.filters.minimumRating;
+        const hasFilterTags = this.filters.tags.length === 0 
+                              ? true
+                              : mark.tags.some(tag => this.filters.tags.includes(tag));
+        return aboveRatingBound && hasFilterTags;
+      })
+      
+      // sort the marks
+      const sortDirection = this.filters.sortOrder === "descending" ? -1 : 1;
+      const property = this.filters.sortBy;
+      return filtered.sort((a, b) => (a[property] > b[property] ? sortDirection : -sortDirection));  
     },
 
     emptyMessage() {
