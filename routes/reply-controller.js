@@ -1,5 +1,4 @@
 const Reply = require("../models/reply");
-const { v4: uuidv4 } = require("uuid");
 
 async function findOne(replyId){
     try{
@@ -12,9 +11,8 @@ async function findOne(replyId){
   
 async function addOne(userId, commentId ,content, targetUserId){
     const date = new Date();
-    const replyId = uuidv4();
     
-    const reply = new Reply({replyId: replyId, userId: userId, dateAdded: date, dateModified: date, commentId: commentId, content: content, targetUserId: targetUserId});
+    const reply = new Reply({userId: userId, dateAdded: date, commentId: commentId, content: content, targetUserId: targetUserId});
     try {
         await reply.save();
         return reply;

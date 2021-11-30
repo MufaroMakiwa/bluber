@@ -11,8 +11,7 @@ const ReplySchema = new Schema(
       // we set a default value here to be 0
       "dateAdded": {
         type: Date,
-        required: false,
-        default: new Date(),
+        required: true,
     },
       "commentId": {
         type: String,

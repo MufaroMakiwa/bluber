@@ -115,7 +115,7 @@ export default {
         .post("/api/mark", mark)
         .then((mark) => {
           console.log(mark, "mark successfully posted");
-          eventBus.$emit("back");
+          eventBus.$emit("mark-created");
         })
         .catch((err) => {
           console.log(err);

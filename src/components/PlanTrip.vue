@@ -66,63 +66,57 @@ export default {
       this.type = type;
       this.results = results;
     });
+
     eventBus.$on("input", (text) => {
       if (text.length === 0) {
         this.results = [];
       }
     });
-    eventBus.$on("back",()=>{
-      this.displayPlan = false;
-      this.results = [];
-    });
 
-    eventBus.$on("refresh",()=>{
-        let params = {
-          startLat: this.$store.getters.startMarker[0] ,
-          startLng: this.$store.getters.startMarker[1] ,
-          endLat: this.$store.getters.endMarker[0] , 
-          endLng: this.$store.getters.endMarker[1],
-        }
-        axios.get("/api/mark",{params:params}).then((res)=>{
-          let {marksInSpannedArea, radius, center } = res.data
+    eventBus.$on("refresh", () => {
+      //   let params = {
+      //     startLat: this.$store.getters.startMarker[0] ,
+      //     startLng: this.$store.getters.startMarker[1] ,
+      //     endLat: this.$store.getters.endMarker[0] , 
+      //     endLng: this.$store.getters.endMarker[1],
+      //   }
+      //   axios.get("/api/mark",{params:params}).then((res)=>{
+      //     let { marksInSpannedArea, radius, center } = res.data
 
-          console.log(marksInSpannedArea);
+      //     console.log(marksInSpannedArea);
           
-          this.marks = marksInSpannedArea;
-          eventBus.$emit("drawCircle",center,radius);
-      }).catch((err)=>{
-        console.log("this is my err",err)
-      });
+      //     this.marks = marksInSpannedArea;
+      //     eventBus.$emit("drawCircle",center,radius);
+      // }).catch((err)=>{
+      //   console.log("this is my err",err)
+      // });
     })
 
-  }
-
-  ,
+  },
+  
   beforeDestroy(){
       eventBus.$off("searchResult");
       eventBus.$off("input");
-      eventBus.$off("back");
       eventBus.$off("refresh");
       eventBus.$emit("clearPlan");
   }
   ,
   methods: {
     handleSubmit() {
+      this.displayPlan = true;
+      let params = {
+        startLat: this.$store.getters.point1[1] ,
+        startLng: this.$store.getters.point1[0] ,
+        endLat: this.$store.getters.point2[1] , 
+        endLng: this.$store.getters.point2[0],
+      }
 
-        this.displayPlan = true;
-        let params = {
-          startLat: this.$store.getters.point1[1] ,
-          startLng: this.$store.getters.point1[0] ,
-          endLat: this.$store.getters.point2[1] , 
-          endLng: this.$store.getters.point2[0],
-        }
+      console.log(params)
 
-        console.log(params)
-
-        axios.get("/api/mark",{params:params}).then((res)=>{
-          let {marksInSpannedArea, radius, center } = res.data
-          this.marks = marksInSpannedArea;
-          eventBus.$emit("draw-plan-radius",center,radius)
+      axios.get("/api/mark",{params:params}).then((res)=>{
+        let {marksInSpannedArea, radius, center } = res.data
+        this.marks = marksInSpannedArea;
+        eventBus.$emit("draw-plan-radius",center,radius)
       }).catch((err)=>{
         console.log("this is my err",err)
       });
@@ -130,6 +124,7 @@ export default {
 
     hidePlan() {
       this.displayPlan = false;
+      this.results = [];
     } 
     ,
     navigateTo(suggestion) {

@@ -10,7 +10,9 @@ async function findOne(userId){
   }
   
 async function addOne(name, email, imageUrl){
-  const user = new User({ name, email, imageUrl });
+  const date = new Date();
+
+  const user = new User({ name: name, email: email, imageUrl: imageUrl, dateAdded: date });
   try {
       await user.save();
       return user;
