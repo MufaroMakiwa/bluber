@@ -1,7 +1,96 @@
 const markModel = require("../models/mark");
-// const BLUBER_DATA_SERVER_URL = "http://bluber-server.herokuapp.com/road"
-const BLUBER_DATA_SERVER_URL = "http://127.0.0.1:5000/road";
+const { v4: uuidv4 } = require("uuid");
+const BLUBER_DATA_SERVER_URL = "http://bluber-server.herokuapp.com/road"
+// const BLUBER_DATA_SERVER_URL = "http://127.0.0.1:5000/road";
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+
+async function findAll(){
+  try{
+    //perform a join on the Short and User collections: Short.short_creator_id corresponds to User._id
+    const marks = await markModel.aggregate([
+      {$lookup:
+        {
+          from: 'marks',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'markwithusers' //create a new field 'markwithusers' in this aggregated collection: embeds documents from lookup collection into Short collection
+        }
+      }
+    ]);
+    return marks;
+  } catch(err) {
+    return false;
+  }
+}
+
+async function findOne(markId){
+  try{
+    const mark = await markModel.find({_id: markId});
+    return mark;
+  } catch(err){
+    return false;
+  }
+}
+
+async function addOne(userId, tags, caption, start, end, path){
+  const date = new Date();
+  const markId = uuidv4();
+  const mark = new markModel({markId: markId, userId: userId, dateAdded: date, tags: tags, caption: caption, start: start, end: end, path: path});
+  try {
+      await mark.save();
+      return mark;
+  } catch(err) {
+      return false;
+  }
+}
+
+async function findAllByUserId(userId){
+  try{
+    const marks = await markModel.find({userId: userId});
+    return marks;
+  } catch(err){
+    return false;
+  }
+}
+
+async function updateOne(markId, body){
+  try{
+    const mark = await markModel.find({_id: markId});
+    body.caption && (mark.caption = body.caption);
+    body.tags && (mark.tags = body.tags);
+    body.start && (mark.start = body.start);
+    body.end && (mark.end = body.end);
+    mark.dateModified = new Date();
+    await mark.save();
+    return mark;
+  } catch(err){
+    return false;
+  }
+}
+
+async function deleteOne(markId){
+  try{
+    const mark = await markModel.deleteOne({_id: markId});
+    return mark;
+  } catch(err){
+    return false;
+  }
+}
+
+/**
+ * 
+ * @param {*} markId 
+ * 
+ * Delete all marks that belong to a user with userId
+ */
+async function deleteMany(userId){
+  try{
+    const marks = await markModel.deleteMany({userId: userId});
+    return marks;
+  } catch(err){
+    return false;
+  }
+}
 
 
 /**
@@ -67,24 +156,24 @@ function isPointInSpannedArea(point, center, radius) {
 }
 
 
-function getMarksInSpannedArea(start, end) {
+async function getMarksInSpannedArea(start, end) {
   // get the radius between the two points
 
-
+  // console.log(start,end)
   const radius = getDistance(start, end);
 
   // get the center of the spanned area
   const center = getCenter(start, end);
 
-  console.log(start,end,center)
+  let allMarks = await findAll();
+  // console.log(all_marks)
 
   // loop through all the marks and get the ones with the start or end in the spanned area
-  const marksInSpannedArea = 
-      markModel
-        .findAll()
-        .filter(mark => {
+  const marksInSpannedArea = allMarks.filter(mark => {
           return isPointInSpannedArea(mark.start, center, radius) || isPointInSpannedArea(mark.end, center, radius)
         });
+
+  // console.log("data",marksInSpannedArea,radius,center)
   // add is intersection
   return { marksInSpannedArea, radius, center };
 }
@@ -99,9 +188,7 @@ function getMarksInSpannedArea(start, end) {
  */
 async function getPath(start, end) {
   const routeEndpoint = `${BLUBER_DATA_SERVER_URL}/${start.lat}/${start.lng}/${end.lat}/${end.lng}`;
-  // const routeEndpoint = `${BLUBER_DATA_SERVER_URL}`
   const path = await fetch(routeEndpoint);
-  // const data = await path.json();
   const data = await path.json();
   return data;
 }
@@ -109,5 +196,11 @@ async function getPath(start, end) {
 
 module.exports = Object.freeze({
   getMarksInSpannedArea,
-  getPath
+  getPath,
+  findOne,
+  addOne,
+  findAllByUserId,
+  updateOne,
+  deleteOne,
+  deleteMany
 })

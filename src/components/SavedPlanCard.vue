@@ -101,6 +101,7 @@ export default {
   align-items: center;
   justify-content: center;
   position: relative;
+  padding: 0.5rem 0;
 }
 
 .point-icon {

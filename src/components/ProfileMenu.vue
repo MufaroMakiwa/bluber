@@ -20,8 +20,17 @@
             fab
             color="white"
             v-bind="attrs"
-            v-on="on">        
-            <font-awesome-icon icon="user-circle" class="user-icon"/>  
+            v-on="on">   
+            <img 
+              v-if="imageUrl !== ''"
+              class="profile-image-icon"
+              :src="imageUrl"
+              alt=""/>
+
+            <font-awesome-icon 
+              v-else
+              icon="user-circle" 
+              class="user-icon"/>  
           </v-btn>
         </v-badge>         
       </template>
@@ -36,7 +45,7 @@
             v-else
             class="profile-image"
             :src="imageUrl"
-            alt="Profile Image"/>
+            alt=""/>
           <span class="name">{{ name }}</span>
           <span class="email">{{ email }}</span>
           <Rating class="rating-margin" :rating="rating"/>
@@ -187,17 +196,27 @@ export default {
 
 <style scoped>
 .user-icon {
-  font-size: 3rem;
+  width: 50px;
+  height: 50px;
   color: gray;
+}
+
+.profile-image-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
 }
 
 .profile-image {
   border-radius: 50%;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+  width: 90px;
+  height: 90px;
 }
 
 .user-icon-menu {
-  font-size: 4rem;
+  width: 90px;
+  height: 90px;
   color: gray;
 }
 
