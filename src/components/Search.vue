@@ -105,8 +105,12 @@ export default {
     });
 
     eventBus.$on("input", (text, type) => {
+      console.log("this is happening",type,text)
       this.handleSuggestion(text, type);
     });
+
+    eventBus.$on("setStartInput",(text)=> this.start =text);
+    eventBus.$on("setEndInput",(text)=>this.end = text);
   },
 
   computed: {

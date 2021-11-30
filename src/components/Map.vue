@@ -83,6 +83,7 @@ export default {
 
     this.map.on("click", (e) => {
       const coords = Object.keys(e.lngLat).map((key) => e.lngLat[key]);
+      console.log("this state",this.getMapState())
       if (this.getMapState() === "planning") {
         // console.log("always clciking", this.routing_state.length);
         if (
@@ -193,7 +194,8 @@ export default {
           }
         }
       } else {
-        if (!this.isIntersectionState()) {
+        if (!this.isIntersectionState()) { 
+
           this.$store.dispatch("setEndMarker", coords);
           eventBus.$emit("setEnd");
           const end = {
@@ -237,6 +239,7 @@ export default {
               },
             });
           }
+
           this.getRoute(coords);
         }
       }
@@ -244,10 +247,7 @@ export default {
 
     eventBus.$on("draw-plan-radius", (center, radius) => {
       
-      // console.log("listenging",[center.lng, center.lat])
       let center1 = turf.point([center.lng, center.lat]);
-
-      console.log(center,radius)
   
       let options = {
         steps: 80,
@@ -366,6 +366,16 @@ export default {
       if (this.map.getSource("point2")) {
         this.map.removeSource("point2");
       }
+
+      if (this.map.getLayer("circle-fill")){
+        this.map.removeLayer("circle-fill");
+      }
+
+      if (this.map.getSource("circleData")){
+        this.map.removeSource("circleData");
+      }
+
+
     });
 
     eventBus.$on("switch", () => {
@@ -421,7 +431,7 @@ export default {
     });
 
     eventBus.$on("marking", this.listenForMarkers);
-    // eventBus.$on("planning", this.listenForPlanningMarkers);
+    eventBus.$on("planning", this.listenForPlanningMarkers);
 
     eventBus.$on("fly-to", (coords) => {
       this.map.flyTo({

@@ -55,15 +55,7 @@ const store = new Vuex.Store({
     setMarkType(state, payload) {
       state.commit("setMarkType", payload);
     },
-    setMapState(state, payload) {
-      state.commit("setMapState", payload);
-    },
-    setStartMarker(state, payload) {
-      state.commit("setStartMarker", payload);
-    },
-    setEndMarker(state, payload) {
-      state.commit("setEndMarker", payload);
-    },
+
     setRoute(state, payload) {
       state.commit("setRoute", payload);
     },
@@ -74,7 +66,6 @@ const store = new Vuex.Store({
 
     setPoint2(state, payload) {
       state.commit("setPoint2", payload);
-      state.commit('setMarkType', payload);
     },
     setMapState(state, payload) {
       state.commit('setMapState', payload);
@@ -84,9 +75,6 @@ const store = new Vuex.Store({
     },
     setEndMarker(state, payload) {
       state.commit('setEndMarker', payload);
-    },
-    setRoute(state, payload) {
-      state.commit('setRoute', payload);
     },
     setUser(state, payload) {
       state.commit('setUser', payload)

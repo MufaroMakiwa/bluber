@@ -84,10 +84,7 @@ export default {
           endLng: this.$store.getters.endMarker[1],
         }
         axios.get("/api/mark",{params:params}).then((res)=>{
-          let {marksInSpannedArea, radius, center } = res.data
-
-          console.log(marksInSpannedArea);
-          
+          let {marksInSpannedArea, radius, center } = res.data          
           this.marks = marksInSpannedArea;
           eventBus.$emit("drawCircle",center,radius);
       }).catch((err)=>{
@@ -133,12 +130,13 @@ export default {
     } 
     ,
     navigateTo(suggestion) {
-      // console.log("this is my suggestion",suggestion)
+
       if (this.type === "start") {
-        // console.log("navigating", suggestion.center, this.type);
         eventBus.$emit("navigateToStart", suggestion.center);
+        eventBus.$emit("setStartInput",suggestion.place_name);
       } else {
         eventBus.$emit("navigateToEnd", suggestion.center);
+        eventBus.$emit("setEndInput",suggestion.place_name);
       }
     },
   }
