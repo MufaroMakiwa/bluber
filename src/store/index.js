@@ -93,7 +93,6 @@ const store = new Vuex.Store({
     endMarker: state => state.endMarker,
     bbox: state => state.bbox,
     route: state => state.route,
-    userId: state => state.userId,
     isSignedIn: state => state.user !== null,
     user: state => state.user,
     point1: (state) => state.point1,

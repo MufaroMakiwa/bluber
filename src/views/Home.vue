@@ -13,7 +13,11 @@
       <div class="app-inner">
         <AddMark v-if="template === 'mark'"/>
         <PlanTrip v-if="template === 'plan'"/>
-        <MarksList v-if="template === 'user-marks'" title="My Marks"/>
+        <MarksList 
+          v-if="template === 'user-marks'" 
+          title="My Marks" 
+          :marks="marks"
+          :userMarks="true"/>
         <SavedPlans v-if="template === 'user-saved'"/>
         <Notifications v-if="template === 'notifications'"/>
         <Locator v-if="template === 'locator'"/>
@@ -58,8 +62,7 @@ export default {
       username: "Hillary",
       showMarks:false,
       isLoggedIn: false,
-      showMarker: false,
-      marks: [],
+      showMarker: false
     };
   },
 
@@ -70,6 +73,14 @@ export default {
 
     isSignedIn() {
       return this.$store.getters.isSignedIn;
+    },
+
+    user() {
+      return this.$store.getters.user;
+    },
+
+    marks() {
+      return this.isSignedIn ? this.user.marks : []
     }
   },
 

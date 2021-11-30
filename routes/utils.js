@@ -60,21 +60,39 @@ async function constructReplyResponse(reply) {
 
 async function constructUserResponseFromUserId(userId) {
   const user = await userController.findOne(userId);
-  const response = await constructUserResponse(user);
+  const response = await constructUserResponse(user, false);
   return response 
 }
 
-async function constructUserResponse(user) {
-  const userRatings = await ratingController.findAllByTargetUserId(user._id);
-  const rating = userRatings.reduce((prev, curr) => prev + curr.rating, 0);
-  const ratingCount = userRatings.length;
+async function constructUserResponse(user, includePersonalInfo=true) {
+  // get user marks
+  const getMarks = async () => {
+    let marks = await markController.findAllByUserId(user._id);
+    marks = await Promise.all(marks.map(async (mark) => await constructMarkResponse(mark)));
+    return sortResponsesByKey(marks);
+  }
+  
+  // get saved plans
+  const getSaved = async () => {
+    return [];
+  }
+
+  // get the rating
+  const getRating = async () => {
+    const userRatings = await ratingController.findAllByTargetUserId(user._id);
+    const rating = userRatings.reduce((prev, curr) => prev + curr.rating, 0);
+    const ratingCount = userRatings.length;
+    return ratingCount === 0 ? 0 : rating / userRatings.length;
+  }
   
   return {
     userId: user._id,
     name: user.name,
     email: user.email,
     imageUrl: user.imageUrl,
-    rating: ratingCount === 0 ? 0 : rating / userRatings.length,
+    ...(includePersonalInfo && {rating: await getRating()}),
+    ...(includePersonalInfo && {marks: await getMarks()}),
+    ...(includePersonalInfo && {saved: await getSaved()})
   };
 }
 
@@ -83,15 +101,15 @@ function sortResponsesByKey(responses, key="dateAdded"){
 }
 
 async function deleteMark(markId){ 
-  let comments = await commentController.findAllByMarkId(markId)
-  await Promise.all(comments.forEach(async(comment)=> await replyController.deleteMany(comment._id)))
+  let comments = await commentController.findAllByMarkId(markId);
+  await Promise.all(comments.map(async (comment) => await replyController.deleteMany(comment._id)));
   await commentController.deleteMany(markId);
-  await markController.deleteOne(markId)
+  await markController.deleteOne(markId);
 }
 
 async function deleteComment(commentId){
+  await replyController.deleteMany(commentId);
   await commentController.deleteOne(commentId);
-  await replyController.deleteMany(commentId)
 }
 
 

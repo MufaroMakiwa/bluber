@@ -12,7 +12,7 @@
           :dateAdded="formatDate(mark.dateAdded)"/>
 
         <OptionsMenu 
-          v-if="isSignedIn && mark.isCurrentUserRating"
+          v-if="displayOptions"
           :options="options"
           @delete-mark="deleteMark"
           @remove-rating="removeRating"/>
@@ -27,9 +27,9 @@
     
           <Rating 
             :rating="toPrecision(mark.rating)" 
-            :addTooltip="!isCurrentUserMark"
+            :addTooltip="canRate"
             :ratingCount="mark.ratingCount"
-            @click.native="triggerRating"/>
+            @open-rating-dialog="triggerRating"/>
 
           <RateMarkDialog 
             :display="isRating"
@@ -98,6 +98,10 @@ export default {
 
   props: {
     mark: Object,
+    userMarks: {
+      default: false,
+      type: Boolean,
+    }
   },
 
   data() {
@@ -128,6 +132,16 @@ export default {
         ]
     },
 
+    displayOptions() {
+      if (this.isCurrentUserMark) {
+        return true;
+      } else if (this.mark.isCurrentUserRating) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
     isSignedIn() {
       return this.$store.getters.isSignedIn;
     },
@@ -138,13 +152,17 @@ export default {
  
     isCurrentUserMark() {
       return this.isSignedIn && this.mark.user.userId === this.user.userId;
+    },
+
+    canRate() {
+      return !this.isCurrentUserMark && !this.mark.isCurrentUserRating;
     }
   },
 
 
   methods: {
     triggerRating() {
-      if (this.isCurrentUserMark) {
+      if (!this.canRate) {
         return;
       }
       if (this.isSignedIn) {
@@ -160,10 +178,13 @@ export default {
         markId: this.mark._id,
         rating: rating,
         targetUserId: this.mark.user.userId
-      }).then(() => {
-        console.log("Successful rate");
-        eventBus.$emit("refresh");
-      }).catch((err) => {
+      })
+      .then(() => {
+        this.userMarks 
+        ? this.$store.dispatch('getUser')
+        : eventBus.$emit("refresh");
+      })
+      .catch((err) => {
         console.log(err)
       })
     },
@@ -173,16 +194,27 @@ export default {
     },
     
     removeRating(){
-      alert("Delete users current rating");
+      axios.delete('/api/rating/' + this.mark._id)
+        .then(() => {
+          this.userMarks 
+          ? this.$store.dispatch('getUser')
+          : eventBus.$emit("refresh");
+        })
+        .catch(err => {
+          console.log(err)
+        })
+
     },
 
     deleteMark() {
-      axios.delete('/api/mark/'+this.mark._id)
-      .then(() => {
-        eventBus.$emit("refresh");
-        this.$emit('back');
-      })
-      .catch((err) => console.log(err))
+      axios.delete('/api/mark/' + this.mark._id)
+        .then(() => {
+          this.userMarks 
+          ? this.$store.dispatch('getUser')
+          : eventBus.$emit("refresh");
+          this.$emit('back');
+        })
+        .catch((err) => console.log(err))
     },
 
     formatDate(d){

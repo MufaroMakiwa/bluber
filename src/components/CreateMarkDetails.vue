@@ -113,8 +113,8 @@ export default {
       // console.log(mark);
       axios
         .post("/api/mark", mark)
-        .then((mark) => {
-          console.log(mark, "mark successfully posted");
+        .then(async () => {
+          await this.$store.dispatch('getUser');
           eventBus.$emit("mark-created");
         })
         .catch((err) => {

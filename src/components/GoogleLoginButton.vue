@@ -68,7 +68,9 @@ export default {
             email: user.email,
             imageUrl: user.imageUrl,
             userId: user.userId,
-            rating: user.rating
+            rating: user.rating,
+            marks: user.marks,
+            saved: user.saved
           });
 
           this.hasRedirect && this.$store.dispatch('setTemplate', this.redirect);

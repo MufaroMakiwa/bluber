@@ -102,12 +102,11 @@ export default {
       if (!this.isReply) {
         axios
           .post("/api/comment", {
-            userId2: this.markUserId,
+            targetUserId: this.markUserId,
             content: this.comment,
             markId: this.markId,
           })
           .then(() => {
-            // console.log(res);
             this.comment = "";
             eventBus.$emit("refresh");
           })
