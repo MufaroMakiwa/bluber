@@ -51,7 +51,7 @@ export default {
       planningVectors: [],
       navigationControl: null,
       geocoderControl: null,
-
+      routesDisplayed: false,
       point1: [],
       point2: [],
       startMarker: [-71.110558, 42.373611],
@@ -83,119 +83,120 @@ export default {
 
     this.map.on("click", (e) => {
       const coords = Object.keys(e.lngLat).map((key) => e.lngLat[key]);
-      console.log("this state",this.getMapState())
+      console.log("this state", this.getMapState());
       if (this.getMapState() === "planning") {
         // console.log("always clciking", this.routing_state.length);
-        if (
-          this.routing_state.length === 0 ||
-          this.routing_state.length === 2
-        ) {
-          if (this.routing_state.length === 2) {
-            this.routing_state = [];
-            this.point1 = [];
-            this.point2 = [];
-          }
-          this.routing_state.push(coords);
-          this.point1 = coords;
-          this.$store.dispatch("setPoint1", coords);
-          eventBus.$emit("setPoint1");
+        if (!this.routesDisplayed) {
+          if (
+            this.routing_state.length === 0 ||
+            this.routing_state.length === 2
+          ) {
+            if (this.routing_state.length === 2) {
+              this.routing_state = [];
+              this.point1 = [];
+              this.point2 = [];
+            }
+            this.routing_state.push(coords);
+            this.point1 = coords;
+            this.$store.dispatch("setPoint1", coords);
+            eventBus.$emit("setPoint1");
 
-          if (this.map.getLayer("point2")) {
-            this.map.removeLayer("point2");
-            this.map.removeSource("point2");
-          }
+            if (this.map.getLayer("point2")) {
+              this.map.removeLayer("point2");
+              this.map.removeSource("point2");
+            }
 
-          const geojson = {
-            type: "FeatureCollection",
-            features: [
-              {
-                type: "Feature",
-                geometry: {
-                  type: "Point",
-                  coordinates: this.point1,
+            const geojson = {
+              type: "FeatureCollection",
+              features: [
+                {
+                  type: "Feature",
+                  geometry: {
+                    type: "Point",
+                    coordinates: this.point1,
+                  },
                 },
-              },
-            ],
-          };
+              ],
+            };
 
-          if (this.map.getLayer("point1")) {
-            this.map.getSource("point1").setData(geojson);
-          } else {
-            this.map.addLayer({
-              id: "point1",
-              type: "circle",
-              source: {
-                type: "geojson",
-                data: {
-                  type: "FeatureCollection",
-                  features: [
-                    {
-                      type: "Feature",
-                      properties: {},
-                      geometry: {
-                        type: "Point",
-                        coordinates: coords,
+            if (this.map.getLayer("point1")) {
+              this.map.getSource("point1").setData(geojson);
+            } else {
+              this.map.addLayer({
+                id: "point1",
+                type: "circle",
+                source: {
+                  type: "geojson",
+                  data: {
+                    type: "FeatureCollection",
+                    features: [
+                      {
+                        type: "Feature",
+                        properties: {},
+                        geometry: {
+                          type: "Point",
+                          coordinates: coords,
+                        },
                       },
-                    },
-                  ],
+                    ],
+                  },
                 },
-              },
-              paint: {
-                "circle-radius": 10,
-                "circle-color": "#F84C4C",
-              },
-            });
-          }
-        } else if (this.routing_state.length === 1) {
-          this.routing_state.push(coords);
-          this.point2 = coords;
-          this.$store.dispatch("setPoint2", coords);
-          eventBus.$emit("setPoint2");
-          const geojson = {
-            type: "FeatureCollection",
-            features: [
-              {
-                type: "Feature",
-                geometry: {
-                  type: "Point",
-                  coordinates: this.point2,
+                paint: {
+                  "circle-radius": 10,
+                  "circle-color": "#F84C4C",
                 },
-              },
-            ],
-          };
+              });
+            }
+          } else if (this.routing_state.length === 1) {
+            this.routing_state.push(coords);
+            this.point2 = coords;
+            this.$store.dispatch("setPoint2", coords);
+            eventBus.$emit("setPoint2");
+            const geojson = {
+              type: "FeatureCollection",
+              features: [
+                {
+                  type: "Feature",
+                  geometry: {
+                    type: "Point",
+                    coordinates: this.point2,
+                  },
+                },
+              ],
+            };
 
-          if (this.map.getLayer("point2")) {
-            this.map.getSource("point2").setData(geojson);
-          } else {
-            this.map.addLayer({
-              id: "point2",
-              type: "circle",
-              source: {
-                type: "geojson",
-                data: {
-                  type: "FeatureCollection",
-                  features: [
-                    {
-                      type: "Feature",
-                      properties: {},
-                      geometry: {
-                        type: "Point",
-                        coordinates: coords,
+            if (this.map.getLayer("point2")) {
+              this.map.getSource("point2").setData(geojson);
+            } else {
+              this.map.addLayer({
+                id: "point2",
+                type: "circle",
+                source: {
+                  type: "geojson",
+                  data: {
+                    type: "FeatureCollection",
+                    features: [
+                      {
+                        type: "Feature",
+                        properties: {},
+                        geometry: {
+                          type: "Point",
+                          coordinates: coords,
+                        },
                       },
-                    },
-                  ],
+                    ],
+                  },
                 },
-              },
-              paint: {
-                "circle-radius": 10,
-                "circle-color": "#3887be",
-              },
-            });
+                paint: {
+                  "circle-radius": 10,
+                  "circle-color": "#3887be",
+                },
+              });
+            }
           }
         }
       } else {
-        if (!this.isIntersectionState()) { 
-
+        if (!this.isIntersectionState()) {
           this.$store.dispatch("setEndMarker", coords);
           eventBus.$emit("setEnd");
           const end = {
@@ -245,10 +246,109 @@ export default {
       }
     });
 
+    eventBus.$on("drawRoutes", (marks) => {
+      this.routesDisplayed = true;
+      const randomColor = (() => {
+        "use strict";
+
+        const randomInt = (min, max) => {
+          return Math.floor(Math.random() * (max - min + 1)) + min;
+        };
+
+        return () => {
+          var h = randomInt(0, 255);
+          var s = randomInt(90, 100);
+          var l = randomInt(40, 50);
+          return `hsl(${h},${s}%,${l}%)`;
+        };
+      })();
+
+      marks.forEach((mark) => {
+        if (mark.path.length) {
+          this.map.addLayer({
+            id: mark._id,
+            type: "line",
+            source: {
+              type: "geojson",
+              data: {
+                type: "Feature",
+                properties: {},
+                geometry: {
+                  type: "LineString",
+                  coordinates: mark.path,
+                },
+              },
+            },
+            layout: {
+              "line-join": "round",
+              "line-cap": "round",
+            },
+            paint: {
+              "line-color": `${randomColor()}`,
+              "line-width": 10,
+            },
+          });
+        } else {
+
+          const marker = new mapboxgl.Marker()
+            .setLngLat([mark.start.lng, mark.start.lat])
+            .addTo(this.map);
+
+          console.log(marker)
+
+          this.map.addLayer({
+            id: mark._id,
+            type: "circle",
+            source: {
+              type: "geojson",
+              data: {
+                type: "FeatureCollection",
+                features: [
+                  {
+                    type: "Feature",
+                    properties: {},
+                    geometry: {
+                      type: "Point",
+                      coordinates: [mark.start.lng, mark.start.lat],
+                    },
+                  },
+                ],
+              },
+            },
+            paint: {
+              "circle-radius": 8,
+              "circle-color": `${randomColor()}`,
+              'circle-stroke-width': 2,
+              'circle-stroke-color': '#ffffff'
+            },
+          });
+
+
+        }
+
+        this.map.on("mouseenter", mark._id, (e) => {
+          console.log(e);
+          this.map.getCanvas().style.cursor = "pointer";
+        });
+        this.map.on("mouseleave", mark._id, (e) => {
+          console.log(e);
+          this.map.getCanvas().style.cursor = "";
+        });
+
+        this.map.on("click", mark._id, (e) => {
+          eventBus.$emit("openMarkDetails", mark);
+          this.map.flyTo({
+            center: [e.lngLat.lng, e.lngLat.lat],
+            zoom: 16,
+            essential: true, // this animation is considered essential with respect to prefers-reduced-motion
+          });
+        });
+      });
+    });
+
     eventBus.$on("draw-plan-radius", (center, radius) => {
-      
       let center1 = turf.point([center.lng, center.lat]);
-  
+
       let options = {
         steps: 80,
         units: "kilometers",
@@ -367,15 +467,13 @@ export default {
         this.map.removeSource("point2");
       }
 
-      if (this.map.getLayer("circle-fill")){
+      if (this.map.getLayer("circle-fill")) {
         this.map.removeLayer("circle-fill");
       }
 
-      if (this.map.getSource("circleData")){
+      if (this.map.getSource("circleData")) {
         this.map.removeSource("circleData");
       }
-
-
     });
 
     eventBus.$on("switch", () => {

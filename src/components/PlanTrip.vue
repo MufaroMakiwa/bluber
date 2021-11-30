@@ -84,6 +84,7 @@ export default {
         axios.get("/api/mark",{params:params}).then((res)=>{
           let {marksInSpannedArea, radius, center } = res.data          
           this.marks = marksInSpannedArea;
+          // eventBus.$emit("drawRoutes",this.marks)
           eventBus.$emit("drawCircle",center,radius);
       }).catch((err)=>{
         console.log("this is my err",err)
@@ -109,15 +110,12 @@ export default {
         endLng: this.$store.getters.point2[0],
       }
 
-      console.log(params)
-
       axios.get("/api/mark",{params:params}).then((res)=>{
-
-        // console.log("these are params",params,marksInSpannedArea);
-
         let {marksInSpannedArea, radius, center } = res.data
         this.marks = marksInSpannedArea;
-        eventBus.$emit("draw-plan-radius",center,radius)
+        eventBus.$emit("drawRoutes",this.marks)
+        console.log(radius,center)
+        // eventBus.$emit("draw-plan-radius",center,radius)
       }).catch((err)=>{
         console.log("this is my err",err)
       });

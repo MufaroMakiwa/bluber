@@ -67,7 +67,7 @@
 </template>
 
 <script>
-// import { eventBus } from '../main';
+import { eventBus } from '../main';
 import Filters from "./Filters.vue";
 import MarkCard from "./MarkCard.vue";
 import MarkDetails from "./MarkDetails.vue";
@@ -89,6 +89,12 @@ export default {
       type: Boolean,
     }
   },
+  beforeMount(){
+    eventBus.$on("openMarkDetails",(mark)=>{
+      this.displayedMark = mark;
+    });
+  }
+  ,
   data() {
     return {
       displayFilters: false,
