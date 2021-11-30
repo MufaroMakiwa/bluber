@@ -12,7 +12,7 @@
           :dateAdded="formatDate(mark.dateAdded)"/>
 
         <OptionsMenu 
-          v-if="isSignedIn"
+          v-if="isSignedIn && mark.isCurrentUserRating"
           :options="options"
           @delete-mark="deleteMark"
           @remove-rating="removeRating"/>
@@ -156,27 +156,33 @@ export default {
 
     submitRating(rating) {
       this.isRating = false;
-      axios.post("/api/rating",{
+      axios.post("/api/rating", {
         markId: this.mark._id,
         rating: rating,
-        userId2: this.mark.userId
-      }).then(()=>{
+        targetUserId: this.mark.user.userId
+      }).then(() => {
+        console.log("Successful rate");
         eventBus.$emit("refresh");
-      }).catch((err)=>{console.log(err)})
-      // alert('Submiting user rating');
-      // console.log(rating);
+      }).catch((err) => {
+        console.log(err)
+      })
     },
 
     toPrecision(d){
       return toPrecision(d);
     },
+    
     removeRating(){
       alert("Delete users current rating");
     },
 
     deleteMark() {
-      // console.log("Deleting mark")
-      axios.delete('/api/mark/'+this.mark._id).then(()=>{eventBus.$emit("refresh");eventBus.$emit('back')}).catch((err)=>console.log(err))
+      axios.delete('/api/mark/'+this.mark._id)
+      .then(() => {
+        eventBus.$emit("refresh");
+        this.$emit('back');
+      })
+      .catch((err) => console.log(err))
     },
 
     formatDate(d){

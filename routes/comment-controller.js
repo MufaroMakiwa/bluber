@@ -10,10 +10,8 @@ async function findOne(commentId){
   }
   
 async function addOne(userId, markId, content, targetUserId){
-    const date = new Date();
-    // const commentId = uuidv4();
-    
-    const comment = new Comment({userId: userId, markId: markId, dateAdded: date, dateModified: date, content: content, targetUserId: targetUserId});
+    const date = new Date();    
+    const comment = new Comment({userId: userId,  markId: markId, dateAdded: date, content: content, targetUserId: targetUserId});
     try {
         await comment.save();
         return comment;

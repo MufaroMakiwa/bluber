@@ -53,8 +53,8 @@ export default {
       this.results = results;
     });
 
-    eventBus.$on("back", () => {
-      console.log("back here");
+    eventBus.$on("mark-created", () => {
+      console.log("mark created");
       this.addingMarkDetails = false;
       this.results = [];
     });
@@ -69,7 +69,7 @@ export default {
     });
   },
   beforeDestroy() {
-    // eventBus.$off("back");
+    eventBus.$off("mark-created");
     eventBus.$off("input");
     eventBus.$off("clearSuggestions");
     eventBus.$off("searchResult");

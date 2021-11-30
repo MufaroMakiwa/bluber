@@ -1,5 +1,4 @@
 const Saved = require("../models/saved");
-const { v4: uuidv4 } = require("uuid");
 
 async function findOne(savedId){
     try{
@@ -12,9 +11,8 @@ async function findOne(savedId){
   
 async function addOne(userId, start, end, name){
     const date = new Date();
-    const savedId = uuidv4();
     
-    const saved = new Saved({savedId: savedId, userId: userId, start: start, dateAdded: date, dateModified: date, end: end, name: name});
+    const saved = new Saved({userId: userId, start: start, dateAdded: date, end: end, name: name});
     try {
         await saved.save();
         return saved;

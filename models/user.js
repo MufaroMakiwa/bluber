@@ -15,8 +15,7 @@ const UserSchema = new Schema(
         // we set a default value here to be 0
         "dateAdded": {
             type: String,
-            required: false,
-            default: new Date(),
+            required: true,
         },
         // user image url
         "imageUrl": {
