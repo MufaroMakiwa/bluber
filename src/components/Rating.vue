@@ -3,6 +3,7 @@
     <v-tooltip left v-if="addTooltip">
       <template v-slot:activator="{ on, attrs }">
         <div
+          @click="$emit('open-rating-dialog')"
           class="rating-wrapper"
           v-on="on"
           v-bind="attrs">

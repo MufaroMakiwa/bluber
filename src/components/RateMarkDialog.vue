@@ -36,7 +36,7 @@
             color="primary"
             small
             class="rating-button"
-            @click="$emit('submit-rating', rating)">
+            @click="submit">
             Rate
           </v-btn>
         </div>
@@ -56,6 +56,13 @@ export default {
   data() {
     return {
       rating: 0
+    }
+  },
+
+  methods: {
+    submit() {
+      this.$emit('submit-rating', this.rating);
+      this.rating = 0;
     }
   }
 }

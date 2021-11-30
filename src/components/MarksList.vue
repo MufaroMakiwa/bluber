@@ -62,6 +62,7 @@
     <MarkDetails 
       v-if="displayedMark !== null"
       :mark="displayedMark"
+      :userMarks="userMarks"
       @back="displayedMark=null"/>
   </div>
 </template>
@@ -85,6 +86,10 @@ export default {
     title: String,
     marks: Array,
     requiresBackButton: {
+      default: false,
+      type: Boolean,
+    },
+    userMarks: {
       default: false,
       type: Boolean,
     }
