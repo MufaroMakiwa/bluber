@@ -123,11 +123,17 @@ export default {
         directive =
           this.searchType === "intersection" ? "intersection" : "start";
       }
-      return `Enter ${directive} point, or click on the map`;
+      return this.template === "mark" 
+              ? `Enter ${directive} point, or drag the red marker`
+              : `Enter ${directive} point, or click on the map`
     },
 
     endLabel() {
       return "Enter end point...";
+    },
+
+    template() {
+      return this.$store.getters.template;
     },
 
     displayEndPointInput() {

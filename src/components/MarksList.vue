@@ -40,15 +40,17 @@
         </template>
 
         <template v-slot:content>
-          <div class="marks" >
+          <div class="marks" v-if="hasDisplayedMarks" >
           <MarkCard 
-            v-for="mark in marks"
+            v-for="mark in filteredMarks"
             :key="mark.mark_id"
             :mark="mark" 
             @click.native="handleMarkClick(mark)"/>
           </div>
 
-          <!-- <span v-else class="no-marks">{{ emptyMessage }}</span> -->
+          <div class="no-marks-container" v-else>
+            <span class="no-marks">{{ emptyMessage }}</span>
+          </div>
         </template>
       </ViewTemplate>
     </transition>
@@ -73,7 +75,6 @@ import Filters from "./Filters.vue";
 import MarkCard from "./MarkCard.vue";
 import MarkDetails from "./MarkDetails.vue";
 import ViewTemplate from "./ViewTemplate.vue";
-// import axios from "axios";
 
 export default {
   name: "MarksList",
@@ -98,14 +99,12 @@ export default {
     return {
       displayFilters: false,
       displayedMark: null,  
-      filteredMarks: [],
       filters: {
         sortBy: "dateAdded",
         tags: [],
         sortOrder: "descending",
         minimumRating: 0
       },
-      hasDisplayedMarks: false,
     }    
   },
 
@@ -118,9 +117,13 @@ export default {
       return !noFilters;
     },
 
-    // hasDisplayedMarks() {
-    //   return this.filteredMarks.length > 0;
-    // },
+    hasDisplayedMarks() {
+      return this.filteredMarks.length > 0;
+    },
+
+    filteredMarks() {
+      return this.filter();
+    },
 
     emptyMessage() {
       return this.hasFilters ? 'There are marks with these filters in area.' : 'There are no marks in this area.'
@@ -148,6 +151,17 @@ export default {
 
     handleMarkClick(mark) {
       this.displayedMark = mark;
+    },
+
+    filter() {
+      const filtered = this.marks.filter(mark => {
+        const aboveRatingBound = mark.rating >= this.filters.minimumRating;
+        const hasFilterTags = this.filters.tags.length === 0 
+                              ? true
+                              : mark.tags.some(tag => this.filters.tags.includes(tag));
+        return aboveRatingBound && hasFilterTags;
+      })
+      return filtered;
     }
   },
 
@@ -187,8 +201,13 @@ export default {
   margin-top: 1.5rem;
 }
 
-.no-marks {
+.no-marks-container {
+  display: flex;
   margin-top: 1.5rem;
+  width: 100%;
+}
+
+.no-marks {
   font-weight: bold;
   color: gray;
 }
