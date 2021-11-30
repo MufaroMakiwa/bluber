@@ -83,22 +83,27 @@ export default {
           endLat: this.$store.getters.endMarker[0] , 
           endLng: this.$store.getters.endMarker[1],
         }
-
         axios.get("/api/mark",{params:params}).then((res)=>{
-
           let {marksInSpannedArea, radius, center } = res.data
+
+          console.log(marksInSpannedArea);
+          
           this.marks = marksInSpannedArea;
-          // this.filteredMarks = marksInSpannedArea;
-          //  this.hasDisplayedMarks = true;
-          // console.log(this.marks)
-          // console.log(this.filteredMarks)
-          console.log(marksInSpannedArea,radius,center);
-          // eventBus.$emit("get-plan-radius",center,radius)
+          eventBus.$emit("drawCircle",center,radius);
       }).catch((err)=>{
         console.log("this is my err",err)
       });
     })
 
+  }
+
+  ,
+  beforeDestroy(){
+      eventBus.$off("searchResult");
+      eventBus.$off("input");
+      eventBus.$off("back");
+      eventBus.$off("refresh");
+      eventBus.$emit("clearPlan");
   }
   ,
   methods: {
@@ -106,22 +111,18 @@ export default {
 
         this.displayPlan = true;
         let params = {
-          startLat: this.$store.getters.startMarker[0] ,
-          startLng: this.$store.getters.startMarker[1] ,
-          endLat: this.$store.getters.endMarker[0] , 
-          endLng: this.$store.getters.endMarker[1],
+          startLat: this.$store.getters.point1[1] ,
+          startLng: this.$store.getters.point1[0] ,
+          endLat: this.$store.getters.point2[1] , 
+          endLng: this.$store.getters.point2[0],
         }
 
-        axios.get("/api/mark",{params:params}).then((res)=>{
+        console.log(params)
 
+        axios.get("/api/mark",{params:params}).then((res)=>{
           let {marksInSpannedArea, radius, center } = res.data
           this.marks = marksInSpannedArea;
-          // this.filteredMarks = marksInSpannedArea;
-          //  this.hasDisplayedMarks = true;
-          // console.log(this.marks)
-          // console.log(this.filteredMarks)
-          console.log(marksInSpannedArea,radius,center);
-          // eventBus.$emit("get-plan-radius",center,radius)
+          eventBus.$emit("draw-plan-radius",center,radius)
       }).catch((err)=>{
         console.log("this is my err",err)
       });

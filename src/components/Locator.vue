@@ -1,15 +1,34 @@
 <template>
   <div class="result-list">
     <div class="result-header">
-      <span class="title">10 closest bikestations to </span>
-      <span class="location-name">{{ location }}</span>
+      <span class="title"> 10 Closest Bike Locations to </span>
+      <div class="search-input">
+        <SearchInputField
+          placeholder="77 Massachusetts Avenue"
+          type="locator"
+          :value="value"
+        />
+      </div>
+    </div>
+    <div class="">
+      <div class="search-results">
+        <div
+          v-for="result in results"
+          v-bind:key="result.id"
+          class="result-item"
+          v-on:click="navigateTo(result)"
+        >
+          <span class="place-text">{{ result.text }}</span>
+          <span class="place-name">{{ result.place_name }}</span>
+        </div>
+      </div>
     </div>
     <div class="result-container">
       <div
         v-bind:key="station.properties.featureId"
         v-for="(station, index) in stations"
         :class="station.properties.className"
-        @click="goToStation(index,station.geometry.coordinates)"
+        @click="goToStation(index, station.geometry.coordinates)"
       >
         <span class="milage"
           >{{ toPrecision(station.properties.distance) }} mil</span
@@ -42,26 +61,42 @@
 <script>
 import { eventBus } from "../main";
 import { formatDate, toPrecision } from "../utils";
+import axios from "axios";
+import SearchInputField from "./SearchInputField.vue";
 
 export default {
   name: "Locator",
   props: [],
+  components: { SearchInputField },
   data() {
     return {
       stations: [],
       location: "",
       className: "locator-card",
       highlightedCard: 0,
+      results: [],
+      value: "",
     };
   },
 
   beforeCreate() {
     eventBus.$on("bikes-result", (placeName, stations) => {
       this.location = placeName;
-      this.stations = stations.map(station=>{ station.properties.className="locator-card";return station});
+      this.stations = stations.map((station) => {
+        station.properties.className = "locator-card";
+        return station;
+      });
+    });
+
+    eventBus.$on("input", async (text, type) => {
+      await this.handleSuggestion(text, type);
     });
   },
-  beforeDestroy() {},
+  beforeDestroy() {
+    eventBus.$off("bikes-result");
+    eventBus.$off("input");
+    eventBus.$emit("clearLocator");
+  },
   methods: {
     formatDate(d) {
       return formatDate(d);
@@ -70,18 +105,47 @@ export default {
       return toPrecision(d);
     },
 
-    goToStation(index,coords) {
+    goToStation(index, coords) {
       this.stations[this.highlightedCard].properties.className = "locator-card";
       this.highlightedCard = index;
-      this.stations[this.highlightedCard].properties.className = "locator-card click";
+      this.stations[this.highlightedCard].properties.className =
+        "locator-card click";
       eventBus.$emit("fly-to", coords);
       this.stations = this.stations;
+    },
+
+    async handleSuggestion(text, type) {
+      if (type === "locator" && text.length !== 0) {
+        let bbox = this.$store.getters.bbox;
+        try {
+          const query = await axios.get(
+            `https://api.mapbox.com/geocoding/v5/mapbox.places/${text}.json?bbox=${bbox[0]},${bbox[1]},${bbox[2]},${bbox[3]}&access_token=pk.eyJ1IjoiaGlsbHp5dGFwcyIsImEiOiJja2MxZ3dtankxNThpMnpsbXo1MG4zdHkzIn0.mxO9d6EI9Xcr6d9RmmR3Jg`
+          );
+          this.results = query.data.features;
+        } catch (error) {
+          this.results = [];
+          
+        }
+      } else {
+        this.results = [];
+        this.stations = [];
+      }
+    },
+    navigateTo(suggestion) {
+      eventBus.$emit("fly-to-station", suggestion.center);
+      this.value = suggestion.place_name;
+      eventBus.$emit("result", suggestion);
+      this.results = [];
     },
   },
 };
 </script>
 
 <style scoped>
+.search-input {
+  margin-top: 24px;
+}
+
 .result-list {
   display: flex;
   align-items: center;
@@ -201,18 +265,16 @@ export default {
   box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
 }
 
-
 /* 
  * 
  * Class switch
  */
 
- .click
- {
-    background-color: #74adb6;
-    color: #fff;
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
- }
+.click {
+  background-color: #74adb6;
+  color: #fff;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+}
 
 /* .click .result-header {
   display: flex;
@@ -233,24 +295,58 @@ export default {
   font-size: 12px;
 } */
 
-
-
 .click .name {
   color: #ffea00;
   font-weight: 700;
   font-size: 16px;
 }
 
-
-
-
 .click .milage {
   color: #fff;
 }
 
 .click .date {
-
   color: #fff;
 }
 
+.search-results {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.result-item {
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  margin: 8px 0;
+  width: 100%;
+  cursor: pointer;
+  box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px,
+    rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
+  border-radius: 3px;
+}
+.result-item:hover {
+  background-color: #74adb6;
+  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+    rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+  transform: scale(1.01);
+}
+
+.result-item:hover .place-text {
+  color: #ffea00;
+}
+.result-item:hover .place-name {
+  color: #fff;
+}
+
+.place-text {
+  color: #74adb6;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.place-name {
+  font-weight: bold;
+  font-size: 14px;
+}
 </style>

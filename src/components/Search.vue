@@ -90,9 +90,23 @@ export default {
         this.$store.getters.endMarker[1];
     });
 
-    eventBus.$on("input",(text,type)=>{
-        this.handleSuggestion(text,type);
-    })
+    eventBus.$on("setPoint1", () => {
+      this.start =
+        this.$store.getters.point1[0] +
+        ", " +
+        this.$store.getters.point1[1];
+    });
+
+    eventBus.$on("setPoint2", () => {
+      this.end =
+        this.$store.getters.point2[0] +
+        ", " +
+        this.$store.getters.point2[1];
+    });
+
+    eventBus.$on("input", (text, type) => {
+      this.handleSuggestion(text, type);
+    });
   },
   computed: {
     startLabel() {
@@ -164,14 +178,20 @@ export default {
       eventBus.$emit("switch");
     },
 
-    async handleSuggestion(text,type) {
-
-      let bbox = this.$store.getters.bbox;
-
-      const query = await axios.get(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${text}.json?bbox=${bbox[0]},${bbox[1]},${bbox[2]},${bbox[3]}&access_token=pk.eyJ1IjoiaGlsbHp5dGFwcyIsImEiOiJja2MxZ3dtankxNThpMnpsbXo1MG4zdHkzIn0.mxO9d6EI9Xcr6d9RmmR3Jg`
-      );
-      eventBus.$emit('searchResult',query.data.features,type);
+    async handleSuggestion(text, type) {
+      if (text.length !== 0) {
+        let bbox = this.$store.getters.bbox;
+        try {
+          const query = await axios.get(
+              `https://api.mapbox.com/geocoding/v5/mapbox.places/${text}.json?bbox=${bbox[0]},${bbox[1]},${bbox[2]},${bbox[3]}&access_token=pk.eyJ1IjoiaGlsbHp5dGFwcyIsImEiOiJja2MxZ3dtankxNThpMnpsbXo1MG4zdHkzIn0.mxO9d6EI9Xcr6d9RmmR3Jg`
+          );
+            eventBus.$emit("searchResult", query.data.features, type);
+        } catch (error) {
+          eventBus.$emit("searchResult", [], type);
+        }       
+      } else {
+        eventBus.$emit("searchResult", [], type);
+      }
     },
     toPrecision(x) {
       return toPrecision(x);

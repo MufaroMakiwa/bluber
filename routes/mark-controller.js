@@ -123,7 +123,7 @@ function getDistance(start, end) {
   let deltaLng = lng2 - lng1;
   let a = Math.pow(Math.sin(deltaLat / 2), 2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(deltaLng / 2), 2);
   let c = 2 * Math.asin(Math.sqrt(a));
-  return c * EARTH_RADIUS * 1000;
+  return c * EARTH_RADIUS
 }
 
 
