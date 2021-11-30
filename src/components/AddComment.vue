@@ -1,7 +1,11 @@
 <template>
   <div class="add-comment-container">
     <div class="comment-inner">
-      <UserIcon v-if="!isReply" username="Mufaro Makiwa" class="icon" />
+      <UserIcon 
+        v-if="!isReply" 
+        :imageUrl="imageUrl"
+        :username="name" 
+        class="icon" />
       <v-textarea
         rows="1"
         dense
@@ -70,6 +74,22 @@ export default {
     buttonLabel() {
       return this.isReply ? "Reply" : "Comment";
     },
+
+    isSignedIn() {
+      return this.$store.getters.isSignedIn;
+    },
+
+    user() {
+      return this.$store.getters.user;
+    },
+
+    name() {     
+      return this.isSignedIn ? this.user.name : "";
+    },
+
+    imageUrl() {
+      return this.isSignedIn ? this.user.imageUrl : "";
+    }
   },
 
   data() {

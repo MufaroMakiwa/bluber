@@ -17,7 +17,7 @@ export default {
 
 html {
   --border-radius: 8px;
-  --overlay-z-index: 999;
+  --overlay-z-index: 100;
   font: 16px sans-serif;
 }
 

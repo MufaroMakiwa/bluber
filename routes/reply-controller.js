@@ -50,18 +50,6 @@ async function findAllByTargetUserId(targetUserId){
     }
 }
 
-async function updateOne(replyId, content){
-    try{
-        const reply = await Reply.find({_id: replyId});
-        reply.content = content;
-        reply.dateModified = new Date();
-        reply.save();
-        return reply;
-    } catch(err){
-        return false;
-    }
-}
-
 async function deleteOne(replyId){
     try{
       const reply = await Reply.deleteOne({_id: replyId});
@@ -90,7 +78,6 @@ module.exports = Object.freeze({
     findAllByUserId,
     findAllByCommentId,
     findAllByTargetUserId,
-    updateOne,
     deleteOne,
     deleteMany
   });

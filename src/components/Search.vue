@@ -1,7 +1,7 @@
 <template>
   <div class="search-container">
     <div class="search-inner">
-      <span class="search-greeting"> Hello, Mufaro </span>
+      <span class="search-greeting" v-if="isSignedIn">Hello, {{ username }}</span>
 
       <h2 class="search-heading">
         <slot name="heading"></slot>
@@ -108,6 +108,7 @@ export default {
       this.handleSuggestion(text, type);
     });
   },
+
   computed: {
     startLabel() {
       let directive;
@@ -136,6 +137,18 @@ export default {
     isSwitchButtonDisabled() {
       return this.start.trim() === "" && this.end.trim() === "";
     },
+
+    isSignedIn() {
+      return this.$store.getters.isSignedIn;
+    },
+
+    user() {
+      return this.$store.getters.user;
+    },
+
+    username() {
+      return this.isSignedIn ? this.user.name : "";
+    }
   },
 
   data() {
@@ -227,7 +240,7 @@ export default {
 .search-inner {
   width: 100%;
   flex-grow: 1;
-  padding: 1rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -237,10 +250,11 @@ export default {
 
 .search-greeting {
   width: 100%;
+  margin-bottom: 1rem;
 }
 
 .search-heading {
-  margin: 1rem 0;
+  margin-bottom: 1rem;
 }
 
 .input-container {

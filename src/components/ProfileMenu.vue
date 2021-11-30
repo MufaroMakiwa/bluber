@@ -20,18 +20,35 @@
             fab
             color="white"
             v-bind="attrs"
-            v-on="on">        
-            <font-awesome-icon icon="user-circle" class="user-icon"/>  
+            v-on="on">   
+            <img 
+              v-if="imageUrl !== ''"
+              class="profile-image-icon"
+              :src="imageUrl"
+              alt=""/>
+
+            <font-awesome-icon 
+              v-else
+              icon="user-circle" 
+              class="user-icon"/>  
           </v-btn>
         </v-badge>         
       </template>
 
       <v-card>      
         <div class="header-container">
-          <font-awesome-icon icon="user-circle" class="user-icon-menu"/> 
-          <span class="name">Mufaro Makiwa</span>
-          <span class="email">mufaroemakiwa@gmail.com</span>
-          <Rating class="rating-margin" :rating="0"/>
+          <font-awesome-icon 
+            v-if="imageUrl === ''"
+            icon="user-circle" 
+            class="user-icon-menu"/> 
+          <img 
+            v-else
+            class="profile-image"
+            :src="imageUrl"
+            alt=""/>
+          <span class="name">{{ name }}</span>
+          <span class="email">{{ email }}</span>
+          <Rating class="rating-margin" :rating="rating"/>
         </div>
           
         <v-divider></v-divider>
@@ -88,7 +105,7 @@
 
 <script>
 import Rating from './Rating.vue';
-
+import axios from 'axios';
 
 export default {
   name: "ProfileMenu",
@@ -104,8 +121,6 @@ export default {
   },
 
   props: {
-    username: String,
-    
     notificationCount: {
       default: 0,
       type: Number
@@ -126,6 +141,30 @@ export default {
     template() {
       return this.$store.getters.template;
     },
+
+    isSignedIn() {
+      return this.$store.getters.isSignedIn;
+    },
+
+    user() {
+      return this.$store.getters.user;
+    },
+
+    name() {     
+      return this.isSignedIn ? this.user.name : "";
+    },
+
+    email() {
+      return this.isSignedIn ? this.user.email : "";
+    },
+
+    rating() {
+      return this.isSignedIn ? this.user.rating : 0;
+    },
+
+    imageUrl() {
+      return this.isSignedIn ? this.user.imageUrl : "";
+    }
   },
 
   methods: {
@@ -142,7 +181,14 @@ export default {
     },
 
     signOut() {
-      alert("Handle signout");
+      axios.delete('/api/user/session')
+        .then(() => {
+          this.$store.dispatch('setUser', null);
+          this.$store.dispatch('setTemplate', 'authentication');
+        })
+        .catch(error => {
+          console.log(error);
+        })
     }
   }
 }
@@ -150,12 +196,27 @@ export default {
 
 <style scoped>
 .user-icon {
-  font-size: 3rem;
+  width: 50px;
+  height: 50px;
   color: gray;
 }
 
+.profile-image-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.profile-image {
+  border-radius: 50%;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+  width: 90px;
+  height: 90px;
+}
+
 .user-icon-menu {
-  font-size: 4rem;
+  width: 90px;
+  height: 90px;
   color: gray;
 }
 

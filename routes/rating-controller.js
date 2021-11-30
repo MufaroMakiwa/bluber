@@ -1,5 +1,4 @@
 const Rating = require("../models/rating");
-const { v4: uuidv4 } = require("uuid");
 
 async function findOne(userId, markId){
     try{
@@ -49,6 +48,7 @@ async function findAllByTargetUserId(targetUserId){
     }
 }
 
+// TODO
 async function updateOne(userId, markId, ratingContent){
     try{
         const rating = await Rating.find({markId: markId, userId: userId});

@@ -18,16 +18,17 @@ const UserSchema = new Schema(
             required: false,
             default: new Date(),
         },
-        // reference to _id field in the User collection
-        "userId": {
-            // type: Schema.Types.ObjectId, 
-            // ref: "User",
-            // required: false,
+        // user image url
+        "imageUrl": {
             type: String,
             required: false
         },
+        // the user password.
+        "password": {
+          type: String,
+          required: false,
+        }
     }
 );
 
-// mongoose will automatically create the collection for our DB
 module.exports = mongoose.model("users", UserSchema);

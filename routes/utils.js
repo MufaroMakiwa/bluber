@@ -1,70 +1,105 @@
-
 const commentController = require("./comment-controller");
 const markController = require("./mark-controller.js");
 const replyController = require("./reply-controller");
 const ratingController = require("./rating-controller");
+const userController = require("./user-controller");
 
 
-async function constructMarkResponse(mark){
-    let comments = await commentController.findAllByMarkId(mark._id);
-    comments = await Promise.all(comments.map(async(comment)=>await constructCommentResponse(comment)));
-    comments =  sortResponsesByKey(comments);
-    let ratings  = await ratingController.findAllByMarkId(mark._id);
+async function constructMarkResponse(mark, userId) {
+  // get the comments
+  let comments = await commentController.findAllByMarkId(mark._id);
+  comments = await Promise.all(comments.map(async (comment) => await constructCommentResponse(comment)));
 
-    mark.ratingCount = 0 
-    if (ratings){
-        mark.ratingCount = ratings.length;
-    }
-
-    let markRating = 0;
-    let reducer = (accumulator,ratingObj) => accumulator + ratingObj.rating;
-    if (mark.ratingCount!==0){
-        markRating = ratings.reduce(reducer,markRating)/mark.ratingCount;
-    }
-
-    mark.rating = markRating;
-    mark.comments = comments;
-    return mark;
+  // get the rating
+  const markRatings = await ratingController.findAllByMarkId(mark._id);
+  const rating = markRatings.reduce((prev, curr) => prev + curr.rating, 0);
+  const ratingCount = markRatings.length;
+  const isCurrentUserRating = markRatings.filter(rating => rating.userId === userId)[0];
+  
+  return {
+    _id: mark._id,
+    user: await constructUserResponseFromUserId(mark.userId),
+    dateAdded: mark.dateAdded,
+    tags: mark.tags,
+    caption: mark.caption,
+    start: mark.start,
+    end: mark.end,
+    path: mark.path,
+    comments: sortResponsesByKey(comments),
+    rating: ratingCount == 0 ? 0 : rating / ratingCount,
+    ratingCount: ratingCount,
+    isCurrentUserRating: isCurrentUserRating !== undefined
+  };
 }
 
-async function constructCommentResponse(comment){
-    let replies =  await replyController.findAllByCommentId(comment._id)
-    replies = sortResponsesByKey(replies);
-    return {...comment._doc, replies:replies}
+async function constructCommentResponse(comment) {
+  let replies =  await replyController.findAllByCommentId(comment._id);
+  replies = await Promise.all(replies.map(async (reply) => await constructReplyResponse(reply)));
+ 
+  return {
+    _id: comment._id,
+    user: await constructUserResponseFromUserId(comment.userId),
+    markId: comment.markId,
+    dateAdded: comment.dateAdded,
+    content: comment.content,
+    targetUser: await constructUserResponseFromUserId(comment.targetUserId),
+    replies: sortResponsesByKey(replies)
+  }
 }
 
-
-function constructUserResponse(user){
-
-
+async function constructReplyResponse(reply) {
+  return {
+    _id: reply._id,
+    user: await constructUserResponseFromUserId(reply.userId),
+    dateAdded: reply.dateAdded,
+    commentId: reply.commentId,
+    content: reply.content, 
+    targetUser: await constructUserResponseFromUserId(reply.targetUserId),
+  }
 }
 
-function sortResponsesByKey(responses,key="dateAdded"){
-    let sorted = responses.sort((mark1,mark2)=>(mark2[key] - mark1[key]));
-    return sorted
+async function constructUserResponseFromUserId(userId) {
+  const user = await userController.findOne(userId);
+  const response = await constructUserResponse(user);
+  return response 
 }
 
+async function constructUserResponse(user) {
+  const userRatings = await ratingController.findAllByTargetUserId(user._id);
+  const rating = userRatings.reduce((prev, curr) => prev + curr.rating, 0);
+  const ratingCount = userRatings.length;
+  
+  return {
+    userId: user._id,
+    name: user.name,
+    email: user.email,
+    imageUrl: user.imageUrl,
+    rating: ratingCount === 0 ? 0 : rating / userRatings.length,
+  };
+}
 
-async function deleteMark(markId){
-    let comments = await commentController.findAllByMarkId(markId)
-    // console.log(comments)
-    await Promise.all(comments.map(async(comment)=> await replyController.deleteMany(comment._id)))
-    await commentController.deleteMany(markId);
-    await ratingController.deleteMany(markId);
-    await markController.deleteOne(markId)
+function sortResponsesByKey(responses, key="dateAdded"){
+  return responses.sort((mark1,mark2) => (mark2[key] - mark1[key]));
+}
+
+async function deleteMark(markId){ 
+  let comments = await commentController.findAllByMarkId(markId)
+  await Promise.all(comments.forEach(async(comment)=> await replyController.deleteMany(comment._id)))
+  await commentController.deleteMany(markId);
+  await markController.deleteOne(markId)
 }
 
 async function deleteComment(commentId){
-    await commentController.deleteOne(commentId);
-    await replyController.deleteMany(commentId)
+  await commentController.deleteOne(commentId);
+  await replyController.deleteMany(commentId)
 }
-
 
 
 
 module.exports = Object.freeze({
     constructMarkResponse,
     constructCommentResponse,
+    constructReplyResponse,
     constructUserResponse,
     sortResponsesByKey,
     deleteMark,

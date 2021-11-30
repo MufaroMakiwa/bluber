@@ -3,13 +3,22 @@
     <Map class="map"/>  
     <Navigator />   
 
-    <div class="main-app-section shadow">
-      <AddMark v-if="template === 'mark'"/>
-      <PlanTrip v-if="template === 'plan'"/>
-      <MarksList v-if="template === 'user-marks'" title="My Marks"/>
-      <SavedPlans v-if="template === 'user-saved'"/>
-      <Notifications v-if="template === 'notifications'"/>
-      <Locator v-if="template === 'locator'"/>
+    <div class="shadow main-app-section">
+      <div 
+        v-if="!isSignedIn && template !== 'authentication'" 
+        class="sign-in-container">
+        <h3>Enjoying Bluber?</h3>
+        <GoogleLoginButton />
+      </div>
+      <div class="app-inner">
+        <AddMark v-if="template === 'mark'"/>
+        <PlanTrip v-if="template === 'plan'"/>
+        <MarksList v-if="template === 'user-marks'" title="My Marks"/>
+        <SavedPlans v-if="template === 'user-saved'"/>
+        <Notifications v-if="template === 'notifications'"/>
+        <Locator v-if="template === 'locator'"/>
+        <Authentication v-if="template === 'authentication'"/>
+      </div>
     </div>   
   </div>
 </template>
@@ -21,11 +30,12 @@ import PlanTrip from "../components/PlanTrip";
 import Notifications from "../components/Notifications";
 import MarksList from "../components/MarksList";
 import SavedPlans from "../components/SavedPlans";
+import Authentication from "../components/Authentication";
 import AddMark from "../components/AddMark";
 import Map from '../components/Map';
 import Locator from '../components/Locator'
 import { eventBus } from '../main.js';
-// import axios from 'axios';
+import GoogleLoginButton from "../components/GoogleLoginButton";
 
 
 export default {
@@ -37,9 +47,10 @@ export default {
     AddMark,
     Notifications,
     MarksList,
-    // UserSaved,
+    Authentication,
     Locator,
-    SavedPlans
+    SavedPlans,
+    GoogleLoginButton,
   },
 
   data() {
@@ -56,6 +67,10 @@ export default {
     template() {
       return this.$store.getters.template;
     },
+
+    isSignedIn() {
+      return this.$store.getters.isSignedIn;
+    }
   },
 
 
@@ -105,8 +120,35 @@ export default {
   right: 1rem;
   bottom: 1rem;
   width: 500px;
+  overflow: hidden;
   background-color: white;
-  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  border: none;
+}
+
+.app-inner {
+  width: 100%;
+  flex-grow: 1;
+  overflow: scroll;
+  position: relative;
+}
+
+.sign-in-container {
+  width: 100%;
+  padding: 0.5rem;
+  padding-left: 1rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  background: #d7e6e9;
+}
+
+.sign-in-container h3 {
+  color: #137d8d;
 }
 
 </style>
