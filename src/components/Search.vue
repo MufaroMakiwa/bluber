@@ -371,4 +371,9 @@ export default {
   display: flex;
   flex-direction: column;
 }
+
+.suggestions-container {
+  width: 100%;
+  margin-top: 1rem;
+}
 </style>

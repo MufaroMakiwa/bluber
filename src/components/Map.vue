@@ -75,8 +75,8 @@ export default {
   },
 
   watch: {
-    mapStyle(oldVal, newValue) {
-      this.map.setStyle('mapbox://styles/mapbox/' + newValue);
+    mapStyle(val) {
+      this.map.setStyle('mapbox://styles/mapbox/' + val);
     }
   },
 
@@ -109,9 +109,7 @@ export default {
 
     this.map.on("click", (e) => {
       const coords = Object.keys(e.lngLat).map((key) => e.lngLat[key]);
-      console.log("this state", this.getMapState());
       if (this.getMapState() === "planning") {
-        // console.log("always clciking", this.routing_state.length);
         if (!this.routesDisplayed) {
           if (
             this.routing_state.length === 0 ||
@@ -301,7 +299,6 @@ export default {
           }
 
           if (this.planMarkers[routeId]) {
-            // console.log("I'm removing plan markers");
             this.planMarkers[routeId].remove();
           }
         });
@@ -376,7 +373,6 @@ export default {
           };
 
           if (this.map.getSource("point-" + mark._id)) {
-            // console.log("source exists");
             this.map.getSource("point-" + mark._id).setData(geojsonStart);
           } else {
             this.map.addSource("point-" + mark._id, {
@@ -386,9 +382,8 @@ export default {
           }
 
           if (this.map.getLayer("point-" + mark._id)) {
-            console.log("layer exists");
+            //
           } else {
-            console.log("adding layer");
             this.map.addLayer({
               id: "point-" + mark._id,
               type: "circle",
@@ -415,7 +410,6 @@ export default {
           };
 
           if (this.map.getSource("end-" + mark._id)) {
-            console.log("source exists");
             this.map.getSource("end-" + mark._id).setData(geojsonEnd);
           } else {
             this.map.addSource("end-" + mark._id, {
@@ -425,9 +419,8 @@ export default {
           }
 
           if (this.map.getLayer("end-" + mark._id)) {
-            console.log("layer exists");
+            //
           } else {
-            // console.log("adding layer");
             this.map.addLayer({
               id: "end-" + mark._id,
               type: "circle",
@@ -478,12 +471,10 @@ export default {
           });
         }
 
-        this.map.on("mouseenter", mark._id, (e) => {
-          console.log(e);
+        this.map.on("mouseenter", mark._id, () => {
           this.map.getCanvas().style.cursor = "pointer";
         });
-        this.map.on("mouseleave", mark._id, (e) => {
-          console.log(e);
+        this.map.on("mouseleave", mark._id, () => {
           this.map.getCanvas().style.cursor = "";
         });
 
@@ -515,7 +506,6 @@ export default {
         this.map.removeSource("circleData");
       }
 
-      // console.log(center,radius, "from save")
       let center1 = turf.point([center.lng, center.lat]);
 
       let options = {
@@ -657,7 +647,6 @@ export default {
     });
 
     eventBus.$on("clearPlan", () => {
-      // console.log("I'm clearing the plan")
       this.point1 = [];
       this.point2 = [];
       this.$store.dispatch("setPoint1", []);
@@ -722,7 +711,6 @@ export default {
         }
 
         if (this.planMarkers[routeId]) {
-          // console.log("I'm removing plan markers");
           this.planMarkers[routeId].remove();
         }
       });
@@ -997,7 +985,6 @@ export default {
 
         const coordinates = e.features[0].geometry.coordinates.slice();
 
-        // console.log(e)
         // Ensure that if the map is zoomed out such that
         // multiple copies of the feature are visible, the
         // popup appears over the copy being pointed to.
@@ -1005,7 +992,6 @@ export default {
           coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
         }
 
-        // console.log(e)
         new mapboxgl.Popup()
           .setLngLat(coordinates)
           .setHTML(
@@ -1191,7 +1177,6 @@ export default {
       );
 
       const data = query.data.routes;
-      // console.log(data)
       if (data.length !== 0) {
         const route = data[0].geometry.coordinates;
         const geojson = {
@@ -1311,7 +1296,6 @@ export default {
       };
 
       if (this.map.getSource("point")) {
-        // console.log("source exists");
         this.map.getSource("point").setData(geojson);
       } else {
         this.map.addSource("point", {
@@ -1321,9 +1305,8 @@ export default {
       }
 
       if (this.map.getLayer("point")) {
-        console.log("layer exists");
+        //
       } else {
-        console.log("adding layer");
         this.map.addLayer({
           id: "point",
           type: "circle",
@@ -1422,7 +1405,6 @@ export default {
         };
 
         if (this.map.getLayer("point")){
-          console.log("removing a layer")
           this.map.removeLayer("point")
         }
         if (this.map.getSource("point")){
@@ -1524,8 +1506,6 @@ export default {
     },
 
     listenForPlanningMarkers() {
-      // console.log("listening for markers");
-      // console.log("listenforMarkers")
       eventBus.$on("navigateToStart", (coords) => {
         this.point1 = coords;
         this.$store.dispatch("setPoint1", coords);

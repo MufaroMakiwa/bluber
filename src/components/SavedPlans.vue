@@ -95,9 +95,6 @@ export default {
         this.marks = marksInSpannedArea;
         eventBus.$emit("drawRoutes",this.marks)
         eventBus.$emit("draw-plan-radius", center, radius);
-        
-        // console.log(radius,center)
-        // eventBus.$emit("draw-plan-radius",center,radius)
       })
       .catch((err) => {
         console.log(err)

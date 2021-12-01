@@ -176,19 +176,19 @@ export default {
 .result-item {
   display: flex;
   flex-direction: column;
-  padding: 8px;
-  margin: 8px 0;
+  align-items: flex-start;
+  padding: 0.5rem;
+  margin-top: 1rem;
   width: 100%;
   cursor: pointer;
   box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px,
     rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
   border-radius: 3px;
+  transition: all 0.3s;
 }
-.result-item:hover {
-  background-color: #74adb6;
-  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
-    rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
-  transform: scale(1.01);
+
+.result-item:first-of-type {
+  margin-top: 0;
 }
 
 .result-item:hover .place-text {
@@ -201,11 +201,10 @@ export default {
 .place-text {
   color: #74adb6;
   font-weight: bold;
-  font-size: 18px;
+  font-size: 1.15rem;
 }
 
 .place-name {
   font-weight: bold;
-  font-size: 14px;
 }
 </style>

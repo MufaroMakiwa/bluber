@@ -26,7 +26,6 @@ export default {
   methods: {
     handleInput(input) {
       const emitValue = input === null ? '' : input;
-      console.log(emitValue,"here")
       eventBus.$emit('input', emitValue,this.type);
     }
   }
