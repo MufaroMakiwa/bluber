@@ -12,11 +12,12 @@
         <slot name="header-control"></slot>
       </div>  
 
-      <slot name="header-second-row"></slot>   
+      <slot name="header-second-row"></slot>  
     </div>
-    <v-divider></v-divider>
 
-    <slot name="content"></slot>
+    <div class="content">
+      <slot name="content"></slot>
+    </div>
   </div>
 </template>
 
@@ -45,12 +46,12 @@ export default {
 .view-container {
   width: 100%;
   height: 100%;
-  padding: 1.25rem;
   overflow: scroll;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
+  position: relative;
 }
 
 .view-container > * {
@@ -62,7 +63,16 @@ export default {
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
+  padding: 1.25rem;
   padding-bottom: 1rem;
+  position: sticky;
+  background-color: white;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid lightgray;
 }
 
 .header-inner {
@@ -82,5 +92,10 @@ export default {
 
 .heading {
   margin-left: 1rem;
+}
+
+.content {
+  padding: 0 1.5rem;
+  padding-bottom: 1.5rem;
 }
 </style>

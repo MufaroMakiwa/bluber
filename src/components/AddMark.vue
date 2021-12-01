@@ -1,7 +1,7 @@
 <template>
   <div class="outer">
     <transition name="fade">
-      <Search mode="mark" v-if="!addingMarkDetails">
+      <Search mode="mark" v-if="!addingMarkDetails" @search-type="updateSearchType">
         <template v-slot:heading> Where do you want to mark? </template>
         <template v-slot:content>
           <div class="search-results">
@@ -20,6 +20,7 @@
           <v-btn
             depressed
             rounded
+            :disabled="!canSubmit"
             color="primary"
             class="submit-button font-weight-bold"
             @click="handleSubmit"
@@ -43,30 +44,41 @@
 import Search from "./Search";
 import CreateMarkDetails from "./CreateMarkDetails";
 import { eventBus } from "../main";
+import { toPrecision } from "../utils";
 
 export default {
   name: "AddMark",
 
-  beforeCreate() {
-    eventBus.$on("searchResult", (results, type) => {
+  beforeMount() {
+    eventBus.$on("searchResultMark", (results, type) => {
       this.type = type;
       this.results = results;
     });
 
-    eventBus.$on("back",()=>{
-      // console.log("back")
+    eventBus.$on("mark-created", () => {
       this.addingMarkDetails = false;
+      this.$store.dispatch('setMapState', 'marking');
+      eventBus.$emit("marking");
       this.results = [];
     });
-    eventBus.$on("input", (text) => {
+
+    eventBus.$on("inputMark", (text) => {
       if (text.length === 0) {
         this.results = [];
       }
     });
 
-    eventBus.$on("clearSuggestions", () => {
+    eventBus.$on("clearSuggestionsMark", () => {
       this.results = [];
     });
+
+  },
+  beforeDestroy() {
+    eventBus.$off("mark-created");
+    eventBus.$off("inputMark");
+    eventBus.$off("clearSuggestionsMark");
+    eventBus.$off("searchResultMark");
+    eventBus.$emit("clearAddMark");
   },
   components: {
     Search,
@@ -78,26 +90,28 @@ export default {
       addingMarkDetails: false,
       results: [],
       type: "start",
+      searchType: "intersection"
     };
   },
 
   computed: {
     start: function () {
-      if (this.$store.getters.startMarker.length===0) return ""
-      return (
-        this.$store.getters.startMarker[0] +
-        ", " +
-        this.$store.getters.startMarker[1]
-      );
+      if (this.$store.getters.startMarker.length === 0) return "";
+      return `lat: ${toPrecision(this.$store.getters.startMarker[0], 8)} -- 
+              lng: ${toPrecision(this.$store.getters.startMarker[1], 8)}`
     },
+
     end: function () {
-      if (this.$store.getters.endMarker.length===0) return ""
-      return (
-        this.$store.getters.endMarker[0] +
-        ", " +
-        this.$store.getters.endMarker[1]
-      );
+      if (this.$store.getters.endMarker.length === 0) return "";
+      return `lat: ${toPrecision(this.$store.getters.endMarker[0], 8)} -- 
+              lng: ${toPrecision(this.$store.getters.endMarker[1], 8)}`
     },
+
+    canSubmit() {
+      const hasStart = this.$store.getters.startMarker.length > 0;
+      const hasEnd = this.$store.getters.endMarker.length > 0;
+      return this.searchType === 'intersection' ? hasStart : hasStart && hasEnd;
+    }
   },
   methods: {
     handleSubmit() {
@@ -105,22 +119,20 @@ export default {
     },
 
     navigateTo(suggestion) {
-      // console.log("this is my suggestion",suggestion)
+      this.results = [];
       if (this.type === "start") {
-        // console.log("navigating", suggestion.center, this.type);
-        eventBus.$emit("navigateToStart", suggestion.center);
+        eventBus.$emit("setStartInput", suggestion.place_name);
+        eventBus.$emit("navigateToStartMark", suggestion.center);
       } else {
-        eventBus.$emit("navigateToEnd", suggestion.center);
+        eventBus.$emit("navigateToEndMark", suggestion.center);
+        eventBus.$emit("setEndInput", suggestion.place_name);
       }
     },
-  },
 
-  // watch:{
-
-  //   addingMarkDetails: function(val){
-  //     this.addingMarkDetails = val;
-  //   }
-  // }
+    updateSearchType(type) {
+      this.searchType = type;
+    }
+  }
 };
 </script>
 
@@ -138,19 +150,19 @@ export default {
 .result-item {
   display: flex;
   flex-direction: column;
-  padding: 8px;
-  margin: 8px 0;
+  align-items: flex-start;
+  padding: 0.5rem;
+  margin-top: 1rem;
   width: 100%;
   cursor: pointer;
   box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px,
     rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
   border-radius: 3px;
+  transition: all 0.3s;
 }
-.result-item:hover {
-  background-color: #74adb6;
-  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
-    rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
-  transform: scale(1.01);
+
+.result-item:first-of-type {
+  margin-top: 0;
 }
 
 .result-item:hover .place-text {

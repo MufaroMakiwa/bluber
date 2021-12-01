@@ -1,20 +1,18 @@
 const Rating = require("../models/rating");
-const { v4: uuidv4 } = require("uuid");
 
 async function findOne(userId, markId){
     try{
-    const rating = await Rating.find({rating_id: markId, user_id: userId});
-    return rating;
+      const rating = await Rating.findOne({markId: markId, userId: userId});
+      return rating;
     } catch(err){
-    return false;
+      return false;
     }
   }
   
 async function addOne(userId, markId, ratingContent, targetUserId){
     const date = new Date();
-    const ratingId = uuidv4();
     
-    const rating = new Rating({rating_id: ratingId, user_id: userId, mark_id: markId, date_added: date, date_modified: date, rating: ratingContent, target_user_id: targetUserId});
+    const rating = new Rating({userId: userId, markId: markId, dateAdded: date, rating: ratingContent, targetUserId: targetUserId});
     try {
         await rating.save();
         return rating;
@@ -25,7 +23,7 @@ async function addOne(userId, markId, ratingContent, targetUserId){
 
 async function findAllByUserId(userId){
     try{
-      const rating = await Rating.find({user_id: userId});
+      const rating = await Rating.find({userId: userId});
       return rating;
     } catch(err){
       return false;
@@ -34,7 +32,7 @@ async function findAllByUserId(userId){
 
 async function findAllByMarkId(markId){
     try{
-        const rating = await Rating.find({mark_id: markId});
+        const rating = await Rating.find({markId: markId});
         return rating;
     } catch(err){
         return false;
@@ -43,16 +41,17 @@ async function findAllByMarkId(markId){
 
 async function findAllByTargetUserId(targetUserId){
     try{
-        const rating = await Rating.find({target_user_id: targetUserId});
+        const rating = await Rating.find({targetUserId: targetUserId});
         return rating;
     } catch(err){
         return false;
     }
 }
 
+// TODO
 async function updateOne(userId, markId, ratingContent){
     try{
-        const rating = await Rating.find({rating_id: markId, user_id: userId});
+        const rating = await Rating.find({markId: markId, userId: userId});
         rating.rating = ratingContent;
         rating.dateModified = new Date();
         rating.save();
@@ -64,12 +63,25 @@ async function updateOne(userId, markId, ratingContent){
 
 async function deleteOne(userId, markId){
     try{
-      const rating = await Rating.remove({rating_id: markId, user_id: userId});
+      const rating = await Rating.deleteOne({markId: markId, userId: userId});
       return rating;
     } catch(err){
       return false;
     }
+}
+
+/**
+ * 
+ * @param {*} markId 
+ */
+async function deleteMany(markId){
+  try{
+    const rating = await Rating.deleteMany({markId: markId});
+    return rating;
+  } catch(err){
+    return false;
   }
+}
 
 module.exports = Object.freeze({
     findOne,
@@ -78,5 +90,6 @@ module.exports = Object.freeze({
     findAllByMarkId,
     findAllByTargetUserId,
     updateOne,
-    deleteOne
+    deleteOne,
+    deleteMany,
   });

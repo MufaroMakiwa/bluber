@@ -2,16 +2,22 @@ const express = require("express");
 const router = express.Router();
 const validator = require("./middleware");
 const markController = require("./mark-controller.js");
+const { constructMarkResponse, sortResponsesByKey, deleteMark }  = require("./utils");
 
 
-const userId = "gangoffour";
-
-// get the start and end as objects
+/**
+ * Get marks in a given area
+ * 
+ * @name GET /mark
+ * @param {string} startLat - the lat for the start point
+ * @param {string} startLng - the lng for the start point
+ * @param {string} endLat - the lat for the end point
+ * @param {string} endLng - the lng for the end point
+ * @returns {Mark[]} - An array of marks in an area
+ * 
+ */
 router.get(
   '/',
-  [
-    // validator.isUserLoggedIn
-  ],
   async (req, res) => {
     const start = {
       lat: parseFloat(req.query.startLat), 
@@ -22,71 +28,64 @@ router.get(
       lat: parseFloat(req.query.endLat),
       lng: parseFloat(req.query.endLng)
     }
-    const response = await markController.getMarksInSpannedArea(start, end);
+  
+    let response = await markController.getMarksInSpannedArea(start, end);
+    response.marksInSpannedArea = await Promise.all(response.marksInSpannedArea.map(async (mark) => await constructMarkResponse(mark, req.session.userId)))
+    response.marksInSpannedArea = sortResponsesByKey(response.marksInSpannedArea)
     res.status(200).json(response).end();
   }
 );
 
 
-router.get(
-  '/path',
-  [
-    // validator.isUserLoggedIn
-  ],
-  async(req, res) => {
-    // console.log(req)
-    const start = {
-      lat: parseFloat(req.query.startLat), 
-      lng: parseFloat(req.query.startLng)
-    };
-
-    const end = {
-      lat: parseFloat(req.query.endLat),
-      lng: parseFloat(req.query.endLng)
-    }
-    const path = await markController.getPath(start, end);
-    res.status(200).json(path).end();
-  }
-);
-
-
+/**
+ * Create a mark
+ * 
+ * @name POST /mark
+ * 
+ * @param {string} caption - the caption for the mark
+ * @param {array} tags - a list of tags associated with the mark
+ * @param {Object} start - the start of the mark
+ * @param {Object} end - the end of the mark
+ * @return {Mark} - the created mark
+ * @throws {403} - if user is not logged logged in
+ * @throws {400} - if caption or tags are invalid
+ */
 router.post(
   '/',
   [
-    // validator.isUserLoggedIn
+    validator.isUserLoggedIn,
+    validator.isValidMarkCaption,
+    validator.isValidMarkTags
   ],
   async (req, res) => {
     const { tags, caption, start, end, path } = req.body;
     
     const st = {
-      lat: start[0],
-      lng: start[1]
+      lat: start[1],
+      lng: start[0]
     };
 
     const en = {
-      lat: end[0],
-      lng: end[1]
+      lat: end[1],
+      lng: end[0]
     }
-    const mark = await markController.addOne(userId, tags, caption, st, en, path);
-    res.status(201).json(mark).end();
+    const mark = await markController.addOne(req.session.userId, tags, caption, st, en, path);
+    res.status(201).json({
+      mark: await constructMarkResponse(mark, req.session.userId)
+    }).end();
   }
 );
 
 
-router.patch(
-  '/:markId?',
-  [
-    validator.isUserLoggedIn,
-    validator.isMarkIdInParamsExists,
-    validator.isValidMarkModifier
-  ],
-  async (req, res) => {
-    const mark = await markController.updateOne(req.params.markId, req.body);
-    res.status(200).json(mark).end();
-  }
-);
-
-
+/**
+ * Delete a mark
+ * 
+ * @name DELETE /mark/:markId?
+ * 
+ * @param {string} markId - the Id of mark to delete 
+ * @throws {403} - if user is not logged logged in or not the owner of the mark
+ * @throws {400} - if mark with given id does not exist
+ */
 router.delete(
   '/:markId?',
   [
@@ -95,7 +94,7 @@ router.delete(
     validator.isValidMarkModifier
   ],
   async (req, res) => {
-    await markController.deleteOne(req.params.markId);
+    await deleteMark(req.params.markId);
     res.status(200).json({
       message: "Mark deleted successfully"
     }).end();

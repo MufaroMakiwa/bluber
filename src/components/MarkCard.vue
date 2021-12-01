@@ -1,8 +1,9 @@
 <template>
   <div class="card">
     <MarkUserDetails 
-      :username="mark.username"
-      :dateAdded="mark.dateAdded"/>
+      :username="mark.user.name"
+      :imageUrl="mark.user.imageUrl"
+      :dateAdded="formatDate(mark.dateAdded)"/>
 
     <div class="mark-details">
       <MarkDescription 
@@ -12,7 +13,7 @@
       <div class="interaction-details">
        <div class="comment-summary">
          <font-awesome-icon icon="comment" class="comment-icon"/>
-         <span class="comment-count">{{ mark.comments }}</span>
+         <span class="comment-count">{{ commentCount }}</span>
        </div>
         <Rating :rating="mark.rating"/>
       </div>
@@ -24,6 +25,8 @@
 import Rating from "./Rating.vue"
 import MarkUserDetails from "./MarkUserDetails.vue";
 import MarkDescription from "./MarkDescription.vue"
+
+import {formatDate} from "../utils";
 
 export default {
   name: "MarkCard",
@@ -42,9 +45,23 @@ export default {
     }
   },
 
+  methods:{
+
+    formatDate(d){
+      return formatDate(d);
+    }
+
+  },
   computed: {
     userIcon() {
-      return this.mark.username.charAt(0).toUpperCase();
+      return this.mark.userId.charAt(0).toUpperCase();
+    },
+
+    commentCount(){
+      const replyCount = this.mark.comments.reduce(
+        (prev, curr) => prev + curr.replies.length, 0
+      )
+      return this.mark.comments.length + replyCount;
     }
   }
 }

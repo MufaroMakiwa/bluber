@@ -2,13 +2,17 @@
   <Response
     :response="comment"
     :isLast="isLast"
-    :isReply="false">
+    :isReply="false"
+    :commentId="comment._id"
+    :commentUserId="comment.user.userId" >
 
     <Response 
       v-for="(reply, index) in comment.replies"
       :key="index"
       :response="reply"
       :isReply="true"
+      :commentId="comment._id"
+      :commentUserId="comment.user.userId"
       :isLast="index === comment.replies.length - 1"/>
   </Response>
 </template>
@@ -26,8 +30,7 @@ export default {
 
   props: {
     comment: Object,
-    isLast: Boolean,
-    isReply: Boolean
+    isLast: Boolean
   },
 
   data() {
@@ -122,7 +125,6 @@ export default {
 }
 
 .reply-button {
-  text-transform: none;
   color: #1ba9bf;
   font-size: 0.9rem;
   transition: all 0.3s;

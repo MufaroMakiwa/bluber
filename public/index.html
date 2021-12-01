@@ -15,33 +15,6 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css">
     <style type="text/css">
-      .mapboxgl-control-container
-        {
-        position: absolute;
-        top: 6vw;
-        left: 24px;
-        background-color: white;
-        }
-      .result-list {
-      display: flex;
-      align-items: center;
-      flex-direction: column;
-      padding-top: 16px;
-      text-align: center;
-    }
-
-    .result-header {
-      display: flex;
-      flex-direction: column;
-      margin-bottom: 12px;
-      position: sticky;
-      top: 0px;
-      left: 12px;
-      background-color: white;
-      z-index: 999;
-      width: 100%;
-      padding: 12px;
-    }
 
     .location-name {
       color: #1da1f2;
@@ -66,21 +39,20 @@
 
     .name {
       color: #1ba9bf;
-      font-weight: 700;
-      font-size: 14px;
+      font-weight: bold;
+      font-size: 1rem;
     }
 
     .popup-locator-card {
       display: flex;
       padding: 16px;
       flex-direction: column;
-      width: 400px;
+      width: 275px;
       box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px,
         rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
       cursor: pointer;
       position: relative;
-      margin: 16px;
-      border-radius: 6px;
+      border-radius: 8px;
     }
 
     .card-body {
@@ -98,12 +70,12 @@
     }
 
     .docks-num {
-      font-size: 20px;
+      font-size: 1.5rem;
       font-weight: bold;
     }
 
     .bikes-num {
-      font-size: 20px;
+      font-size: 1.5rem;
       font-weight: bold;
     }
 
@@ -117,11 +89,12 @@
     .card-footer {
       padding-top: 6px;
     }
+
     .card-header {
       margin-top: 12px;
     }
+    
     .milage {
-      font-size: 12px;
       position: absolute;
       top: 8px;
       left: 8px;
@@ -136,10 +109,6 @@
       right: 8px;
       font-weight: bold;
       color: #808080;
-    }
-
-    .locator-card:hover {
-      box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
     }
     </style>
   </head>

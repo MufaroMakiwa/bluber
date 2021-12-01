@@ -1,6 +1,8 @@
 <template>
   <div class="user-details-container">
-    <UserIcon :username="username"/>
+    <UserIcon 
+      :username="username"
+      :imageUrl="imageUrl"/>
 
     <div class="details-inner">
       <span class="username">{{ username }}</span>
@@ -21,7 +23,8 @@ export default {
 
   props: {
     username: String,
-    dateAdded: String
+    dateAdded: String,
+    imageUrl: String
   },
 
   computed: {

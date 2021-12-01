@@ -1,14 +1,13 @@
-const userModel = require("../models/user");
-const commentModel = require("../models/comment");
-const markModel = require("../models/mark");
-const ratingModel = require("../models/rating");
-const savedModel = require("../models/saved");
-const replyModel = require("../models/reply");
+const userController = require("./user-controller");
+const commentController = require("./comment-controller");
+const markController = require("./mark-controller");
+const ratingController = require("./rating-controller");
+const savedController = require("./saved-controller");
+const replyController = require("./reply-controller");
 
-// TODO add a middleware for mark fields 
 
 // checks if the markId in params is valid
-const isMarkIdInParamsExists = (req, res, next) => {
+const isMarkIdInParamsExists = async (req, res, next) => {
   if (!req.params.markId) {
     res.status(400).json({
       error: {
@@ -18,7 +17,8 @@ const isMarkIdInParamsExists = (req, res, next) => {
     return;
   }
 
-  if (markModel.findOne(req.params.markId) === undefined) {
+  const mark = await markController.findOne(req.params.markId);
+  if (!mark) {
     res.status(400).json({
       error: {
         markId: `A mark with id ${req.params.markId} does not exist`
@@ -31,7 +31,7 @@ const isMarkIdInParamsExists = (req, res, next) => {
 
 
 // checks if the markid in the body is valid
-const isMarkIdInBodyExists = (req, res, next) => {
+const isMarkIdInBodyExists = async (req, res, next) => {
   if (!req.body.markId) {
     res.status(400).json({
       error: {
@@ -41,7 +41,8 @@ const isMarkIdInBodyExists = (req, res, next) => {
     return;
   }
 
-  if (markModel.findOne(req.body.markId) === undefined) {
+  const mark = await markController.findOne(req.body.markId);
+  if (!mark) {
     res.status(400).json({
       error: {
         markId: `A mark with id ${req.body.markId} does not exist`
@@ -66,11 +67,24 @@ const isUserLoggedIn = (req, res, next) => {
   next();
 }
 
+// checks if there an active user session
+const isActiveUserSessionExists = (req, res, next) => {
+  if (req.session.userId !== undefined) {
+    res.status(403).json({
+      error: {
+        auth: 'There is already an active session.'
+      }
+    }).end();
+    return;
+  }
+  next();
+}
+
 
 // checks if the user is allowed to rate or update a rating
-const checkMarkRatingStatus = (req, res, next, expected) => {
-  const rating = ratingModel.findOne(req.session.userId, req.params.markId);
-  const isRating = (rating !== undefined);
+const checkMarkRatingStatus = async (req, res, next, expected) => {
+  const rating = await ratingController.findOne(req.session.userId, req.params.markId);
+  const isRating = (rating !== null);
 
   // if expected is true, the user is expected to be rating, false otherwise
   if (!expected && isRating) {
@@ -95,8 +109,8 @@ const checkMarkRatingStatus = (req, res, next, expected) => {
 
 
 // checks if the user is allowed to rate (user who made the marking cannot rate)
-const isMarkRatingAllowed = (req, res, next) => {
-  const mark = markModel.findOne(req.body.markId);
+const isMarkRatingAllowed = async (req, res, next) => {
+  const mark = await markController.findOne(req.body.markId);
   if (mark.userId === req.session.userId) {
     res.status(400).json({
       error: {
@@ -110,8 +124,8 @@ const isMarkRatingAllowed = (req, res, next) => {
 
 
 // checks if the current user is the one who made the mark
-const isValidMarkModifier = (req, res, next) => {
-  const mark = markModel.findOne(req.params.markId);
+const isValidMarkModifier = async (req, res, next) => {
+  const mark = await markController.findOne(req.params.markId);
   if (req.session.userId !== mark.userId) {
     res.status(403).json({
       error: "You cannot edit this mark because you are not its creator."
@@ -123,7 +137,7 @@ const isValidMarkModifier = (req, res, next) => {
 
 
 // checks if the comment id in the params is valid
-const isCommentIdInParamsExists = (req, res, next) => {
+const isCommentIdInParamsExists = async (req, res, next) => {
   if (!req.params.commentId) {
     res.status(400).json({
       error: {
@@ -132,8 +146,8 @@ const isCommentIdInParamsExists = (req, res, next) => {
     }).end();
     return;
   }
-
-  if (commentModel.findOne(req.params.commentId) === undefined) {
+  const comment = await commentController.findOne(req.params.commentId);
+  if (!comment) {
     res.status(400).json({
       error: {
         commentId: `A comment with id ${req.params.commentId} does not exist`
@@ -146,7 +160,7 @@ const isCommentIdInParamsExists = (req, res, next) => {
 
 
 // checks if the comment id in the body is valid
-const isCommentIdInBodyExists = (req, res, next) => {
+const isCommentIdInBodyExists = async (req, res, next) => {
   if (!req.body.commentId) {
     res.status(400).json({
       error: {
@@ -155,8 +169,8 @@ const isCommentIdInBodyExists = (req, res, next) => {
     }).end();
     return;
   }
-
-  if (commentModel.findOne(req.body.commentId) === undefined) {
+  const comment = await commentController.findOne(req.body.commentId);
+  if (!comment) {
     res.status(400).json({
       error: {
         commentId: `A comment with id ${req.body.commentId} does not exist`
@@ -169,11 +183,11 @@ const isCommentIdInBodyExists = (req, res, next) => {
 
 
 // checks if the current user is the author of the comment 
-const isValidCommentModifier = (req, res, next) => {
-  const comment = commentModel.findOne(req.params.commentId);
+const isValidCommentModifier = async (req, res, next) => {
+  const comment = await commentController.findOne(req.params.commentId);
   if (req.session.userId !== comment.userId) {
     res.status(403).json({
-      error: "You cannot edit this comment because you are not its creator."
+      error: "You cannot modify this comment because you are not its creator."
     }).end();
     return;
   }
@@ -182,20 +196,34 @@ const isValidCommentModifier = (req, res, next) => {
 
 
 // checks if the current user is the author of the reply 
-const isValidReplyModifier = (req, res, next) => {
-  const reply = replyModel.findOne(req.params.replyId);
+const isValidReplyModifier = async (req, res, next) => {
+  const reply = await replyController.findOne(req.params.replyId);
   if (req.session.userId !== reply.userId) {
     res.status(403).json({
-      error: "You cannot edit this reply because you are not its creator."
+      error: "You cannot modify this reply because you are not its creator."
     }).end();
     return;
   }
   next();
 }
 
+// check if the reply or comment content is valid
+const isValidResponseContent = (req, res, next) => {
+  const content = req.body.content;
+  if (!content || content.trim().length === 0) {
+    res.status(400).json({
+      error: {
+        response: "The response is invalid"
+      },
+    }).end();
+    return;
+  }
+  next()
+}
+
 
 // check if the reply id in the params in valid
-const isReplyIdInParamsExists = (req, res, next) => {
+const isReplyIdInParamsExists = async (req, res, next) => {
   if (!req.params.replyId) {
     res.status(400).json({
       error: {
@@ -204,8 +232,8 @@ const isReplyIdInParamsExists = (req, res, next) => {
     }).end();
     return;
   }
-
-  if (replyModel.findOne(req.params.replyId) === undefined) {
+  const reply = await replyController.findOne(req.params.replyId);
+  if (!reply) {
     res.status(400).json({
       error: {
         replyId: `A reply with id ${req.params.replyId} does not exist`
@@ -218,7 +246,7 @@ const isReplyIdInParamsExists = (req, res, next) => {
 
 
 // checks if the saved id in params in valid
-const isSavedIdInParamsExists = (req, res, next) => {
+const isSavedIdInParamsExists = async (req, res, next) => {
   if (!req.params.savedId) {
     res.status(400).json({
       error: {
@@ -227,8 +255,8 @@ const isSavedIdInParamsExists = (req, res, next) => {
     }).end();
     return;
   }
-
-  if (savedModel.findOne(req.params.savedId) === undefined) {
+  const saved = await savedController.findOne(req.params.savedId);
+  if (!saved) {
     res.status(400).json({
       error: {
         savedId: `A saved object with id ${req.params.savedId} does not exist`
@@ -239,13 +267,69 @@ const isSavedIdInParamsExists = (req, res, next) => {
   next();
 }
 
-
 // checks if the user trying to modify a saved object is the creator
-const isValidSavedModifier = (req, res, next) => {
-  const saved = savedModel.findOne(req.params.savedId);
+const isValidSavedModifier = async (req, res, next) => {
+  const saved = await savedController.findOne(req.params.savedId);
   if (saved.userId !== req.session.userId) {
     res.status(403).json({
-      error: "You cannot edit this saved object because you are not its creator."
+      error: "You cannot edit modify saved object because you are not its creator."
+    }).end();
+    return;
+  }
+  next();
+}
+
+// check if the name of a saved object is valid
+const isSavedNameValid = (req, res, next) => {
+  const name = req.body.name;
+  if (!name || name.trim().length === 0) {
+    res.status(400).json({
+      error: {
+        name: "The saved name is invalid"
+      },
+    }).end();
+    return;
+  }
+  next()
+}
+
+
+// check if the name of a saved object is valid
+const isValidMarkCaption = (req, res, next) => {
+  const caption = req.body.caption;
+  if (!caption || caption.trim().length === 0) {
+    res.status(400).json({
+      error: {
+        caption: "The caption is invalid"
+      },
+    }).end();
+    return;
+  }
+  next()
+}
+
+// check if the name of a saved object is valid
+const isValidMarkTags = (req, res, next) => {
+  const tags = req.body.tags;
+  if (!tags || tags.length === 0) {
+    res.status(400).json({
+      error: {
+        response: "You have not provided any tags"
+      },
+    }).end();
+    return;
+  }
+  next()
+}
+
+
+// checks if the name given to a saved object already exists (case insensitive)
+const isSavedNameAlreadyExists = async (req, res, next) => {
+  // need to allow renaming same object with same name but different case as in Fritter
+  const saved = await savedController.findOneByName(req.body.name);
+  if (saved) {
+    res.status(403).json({
+      error: "This saved object with this name already exists"
     }).end();
     return;
   }
@@ -253,15 +337,17 @@ const isValidSavedModifier = (req, res, next) => {
 }
 
 
-// checks if the name given to a saved object already exists (case insensitive)
-const isSavedNameAlreadyExists = (req, res, next) => {
-  // need to allow renaming same object with same name but different case as in Fritter
-  next();
-}
-
-
 // checks if the target user id is valid (rating, comment, reply)
-const isTargetUserIdExists = (req, res, next) => {
+const isTargetUserIdExists = async (req, res, next) => {
+  const user = await userController.findOne(req.body.targetUserId);
+  if (!user) {
+    res.status(400).json({
+      error: {
+        userId: `A user with id ${req.body.targetUserId} does not exist`
+      },
+    }).end();
+    return;
+  }
   next();
 }
 
@@ -278,9 +364,9 @@ const isValidUsername = (req, res, next) => {
 }
 
 // checks if the target user id is valid (rating, comment, reply)
-const isUsernameAvailable = (req, res, next) => {
+const isUsernameAvailable = async (req, res, next) => {
   let username = req.body.username.trim();
-  const user = userModel.findOneByName(username);
+  const user = await userController.findOneByName(username);
   if (user !== undefined) {
     res.status(403).json({
       error: "Username not available. Try a different one"
@@ -289,6 +375,8 @@ const isUsernameAvailable = (req, res, next) => {
   }
   next();
 }
+
+
 
 
 module.exports = Object.freeze({
@@ -308,5 +396,10 @@ module.exports = Object.freeze({
   isSavedNameAlreadyExists,
   isTargetUserIdExists,
   isValidUsername,
-  isUsernameAvailable
+  isUsernameAvailable,
+  isValidResponseContent,
+  isActiveUserSessionExists,
+  isSavedNameValid,
+  isValidMarkCaption,
+  isValidMarkTags
 });

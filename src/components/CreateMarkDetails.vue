@@ -4,15 +4,11 @@
       <template v-slot:heading> Create Mark </template>
 
       <template v-slot:content>
-        <div class="point-container start">
-          <span class="point-label">{{ startLabel }}:</span>
-          <span class="point-details">{{ start }}</span>
-        </div>
-
-        <div class="point-container end" v-if="displayEnd">
-          <span class="point-label">End:</span>
-          <span class="point-details">{{ end }}</span>
-        </div>
+        <MarkPoints 
+          :dense="false"
+          class="mark-points"
+          :startName="start"
+          :endName="end"/>
 
         <div class="mark-details">
           <h3>Mark details</h3>
@@ -50,6 +46,7 @@
       <v-btn
         depressed
         rounded
+        :disabled="!canSubmit"
         color="primary"
         class="submit-button font-weight-bold"
         @click="handleSubmit"
@@ -61,16 +58,17 @@
 </template>
 
 <script>
-// import BackButton from "./BackButton.vue";
 import axios from "axios";
 import { eventBus } from "../main";
 import ViewTemplate from "./ViewTemplate.vue";
+import MarkPoints from "./MarkPoints.vue";
+
 
 export default {
   name: "CreateMarkDetails",
 
   components: {
-    ViewTemplate,
+    ViewTemplate, MarkPoints
   },
 
   props: {
@@ -82,15 +80,6 @@ export default {
     },
   },
 
-  computed: {
-    displayEnd() {
-      return this.end.trim() !== "";
-    },
-
-    startLabel() {
-      return this.displayEnd ? "Start" : "Intersection";
-    },
-  },
 
   data() {
     return {
@@ -98,6 +87,20 @@ export default {
       selectedTags: [],
       caption: "",
     };
+  },
+
+  computed: {
+    hasCaption() {
+      return this.caption !== null && this.caption.trim().length > 0;
+    },
+
+    hasTags() {
+      return this.selectedTags.length > 0;
+    },
+
+    canSubmit() {
+      return this.hasCaption && this.hasTags;
+    }
   },
 
   methods: {
@@ -110,16 +113,17 @@ export default {
         path: this.$store.getters.route,
       };
 
-      // console.log(mark);
       axios
         .post("/api/mark", mark)
-        .then((mark) => {
-          console.log(mark, "mark successfully posted");
-          eventBus.$emit("back");
+        .then(async () => {
+          await this.$store.dispatch('getUser');
+          eventBus.$emit("mark-created");
+          eventBus.$emit("display-snackbar", "Mark created successfully");
         })
         .catch((err) => {
           console.log(err);
         });
+      eventBus.$emit("clearAddMark");
     },
 
     tagClick(tag) {
@@ -145,29 +149,8 @@ export default {
   margin-bottom: 80px;
 }
 
-.point-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: flex-start;
-}
-
-.point-container.start {
-  margin-top: 1rem;
-}
-
-.point-container.end {
-  margin-top: 0.5rem;
-}
-
-.point-label {
-  width: 100px;
-  flex-shrink: 0;
-  font-weight: bold;
-}
-
-.point-details {
-  flex-grow: 1;
+.mark-points {
+  margin-top: 1.5rem;
 }
 
 .mark-details {

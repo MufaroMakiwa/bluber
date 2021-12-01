@@ -10,19 +10,36 @@
         </template>
 
         <template v-slot:header-control>
-          <v-tooltip left>
-            <template v-slot:activator="{ on, attrs }">
-            <v-btn
-              icon
-              :color="hasFilters ? 'primary' : 'gray'"
-              @click="displayFilters=true"
-              v-on="on"
-              v-bind="attrs">
-              <font-awesome-icon icon="filter" class="filter-icon"/>
-            </v-btn>
-            </template>
-            <span>Filter</span>
-          </v-tooltip>
+          <div class="control-container">
+            <v-tooltip z-index="999" bottom v-if="isSignedIn && canSaveThisPlan"> 
+              <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                icon
+                color="gray"
+                @click="displaySaveDialog=true"
+                v-on="on"
+                class="left-header-icon"
+                v-bind="attrs">
+                <font-awesome-icon icon="save" class="header-control-icon"/>
+              </v-btn>
+              </template>
+              <span>Save</span>
+            </v-tooltip>
+
+            <v-tooltip z-index="999" bottom> 
+              <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                icon
+                :color="hasFilters ? 'primary' : 'gray'"
+                @click="displayFilters=true"
+                v-on="on"
+                v-bind="attrs">
+                <font-awesome-icon icon="filter" class="header-control-icon"/>
+              </v-btn>
+              </template>
+              <span>Filter</span>
+            </v-tooltip>
+          </div>
         </template>
 
         <template v-slot:header-second-row>
@@ -40,15 +57,17 @@
         </template>
 
         <template v-slot:content>
-          <div class="marks" v-if="hasDisplayedMarks">
+          <div class="marks" v-if="hasDisplayedMarks" >
           <MarkCard 
             v-for="mark in filteredMarks"
-            :key="mark.markId"
+            :key="mark.mark_id"
             :mark="mark" 
             @click.native="handleMarkClick(mark)"/>
           </div>
 
-          <span v-else class="no-marks">{{ emptyMessage }}</span>
+          <div class="no-marks-container" v-else>
+            <span class="no-marks">{{ emptyMessage }}</span>
+          </div>
         </template>
       </ViewTemplate>
     </transition>
@@ -62,78 +81,66 @@
     <MarkDetails 
       v-if="displayedMark !== null"
       :mark="displayedMark"
+      :userMarks="userMarks"
       @back="displayedMark=null"/>
+
+    <SavePlanDialog 
+      :display="displaySaveDialog"
+      @cancel="displaySaveDialog=false"
+      @save-plan="handleSavePlan"/>
   </div>
 </template>
 
 <script>
+import { eventBus } from '../main';
 import Filters from "./Filters.vue";
 import MarkCard from "./MarkCard.vue";
 import MarkDetails from "./MarkDetails.vue";
 import ViewTemplate from "./ViewTemplate.vue";
+import SavePlanDialog from "./SavePlanDialog.vue";
+import axios from 'axios';
 
 export default {
   name: "MarksList",
 
   components: {
-    Filters, MarkCard, MarkDetails, ViewTemplate
+    Filters, MarkCard, MarkDetails, ViewTemplate, SavePlanDialog
   },
 
   props: {
     title: String,
+    marks: Array,
     requiresBackButton: {
       default: false,
       type: Boolean,
+    },
+    userMarks: {
+      default: false,
+      type: Boolean,
+    },
+    displaySaveIcon: {
+      default: true,
+      type: Boolean,
     }
   },
-
+  beforeMount(){
+    eventBus.$on("openMarkDetails",(mark)=>{
+      this.displayedMark = mark;
+    });
+  }
+  ,
   data() {
-    const dummyMarks = [
-      { 
-        markId: 0,
-        username: "Mufaro Makiwa",
-        dateAdded: "Nov 8",
-        comments: 2,
-        rating: 2,
-        ratingCount: 1,
-        caption: "I hate this place because I cannot navigate well",
-        tags: ["Blocked"]
-      },
-
-      {
-        markId: 1,
-        username: "Hillary Tamirepi",
-        dateAdded: "Dec 1",
-        comments: 17,
-        rating: 4,
-        ratingCount: 10,
-        caption: "I do not know why this has not been fixed yet",
-        tags: ["Busy", "Not Safe"]
-      },
-
-      { 
-        markId: 2,
-        username: "Jianna Liu",
-        dateAdded: "Jan 5",
-        comments: 5,
-        rating: 4.5,
-        ratingCount: 100,
-        caption: "The intersection has been blocked for over a year now",
-        tags: ["Blocked"]
-      },
-    ];
-    
     return {
       displayFilters: false,
-      displayedMark: null,   
-      marks: [...dummyMarks],
-      filteredMarks: [...dummyMarks],
+      displaySaveDialog: false,
+      displayedMark: null,  
       filters: {
         sortBy: "dateAdded",
         tags: [],
         sortOrder: "descending",
         minimumRating: 0
-      }
+      },
+      planSaved: false,
     }    
   },
 
@@ -150,15 +157,38 @@ export default {
       return this.filteredMarks.length > 0;
     },
 
+    filteredMarks() {
+      const filtered = this.marks.filter(mark => {
+        const aboveRatingBound = mark.rating >= this.filters.minimumRating;
+        const hasFilterTags = this.filters.tags.length === 0 
+                              ? true
+                              : mark.tags.some(tag => this.filters.tags.includes(tag));
+        return aboveRatingBound && hasFilterTags;
+      })
+      
+      // sort the marks
+      const sortDirection = this.filters.sortOrder === "descending" ? -1 : 1;
+      const property = this.filters.sortBy;
+      return filtered.sort((a, b) => (a[property] > b[property] ? sortDirection : -sortDirection));  
+    },
+
     emptyMessage() {
       return this.hasFilters ? 'There are marks with these filters in area.' : 'There are no marks in this area.'
     },
 
     displayAllMarks() {
       return !this.displayFilters && this.displayedMark === null;
+    },
+
+    canSaveThisPlan() {
+      return this.displaySaveIcon && this.hasDisplayedMarks && !this.planSaved;
+    },
+
+    isSignedIn() {
+      return this.$store.getters.isSignedIn;
     }
-  },
-  
+  }
+  ,
   methods: {
     clearFilters() {
       this.filters = {
@@ -169,6 +199,31 @@ export default {
       }
     },
 
+    handleSavePlan(name) {
+      this.displaySaveDialog = false;
+      const body = {
+        name: name,
+        start: {
+          lat: this.$store.getters.point1[1],
+          lng: this.$store.getters.point1[0],
+        },
+        end: {
+          lat: this.$store.getters.point2[1],
+          lng: this.$store.getters.point2[0]
+        }
+      };
+
+      axios.post('/api/saved', body)
+        .then(() => {
+          this.planSaved = true;
+          this.$store.dispatch('getUser');
+          eventBus.$emit("display-snackbar", "Plan saved successfully");
+        })
+        .catch(err => {
+          console.log(err);
+        })
+    },
+
     handleUpdateFilters(filters) {
       this.displayFilters = false;
       this.filters = filters;
@@ -177,7 +232,16 @@ export default {
     handleMarkClick(mark) {
       this.displayedMark = mark;
     }
+  },
+
+  watch: {
+      marks: function(newMarks){
+        if (this.displayedMark){
+          this.displayedMark = newMarks.filter((m)=>(this.displayedMark._id===m._id))[0]
+        }
+      }
   }
+
 }
 </script>
 
@@ -191,8 +255,12 @@ export default {
   margin-top: 0.5rem;
 }
 
-.filter-icon {
+.header-control-icon {
   font-size: 1rem;
+}
+
+.left-header-icon {
+  margin-right: 1rem
 }
 
 .clear-icon {
@@ -206,9 +274,21 @@ export default {
   margin-top: 1.5rem;
 }
 
-.no-marks {
+.no-marks-container {
+  display: flex;
   margin-top: 1.5rem;
+  width: 100%;
+}
+
+.no-marks {
   font-weight: bold;
   color: gray;
+}
+
+.control-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 }
 </style>

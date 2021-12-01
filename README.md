@@ -26,59 +26,47 @@ then you will find the application at `localhost:8080` in the browser
 ### Authorship:
 
 - **Jianna Liu**:
+
   - src
-    - Map.vue
+    <<<<<<< HEAD - Map.vue
   - models (mongo conversion)
-  - routes
-    - comment-controller.js
-    - reply-controller.js
-    - user-controller.js
-    - saved-controller.js
-    - rating-controller.js
+  - routes - comment-controller.js - reply-controller.js - user-controller.js - saved-controller.js - rating-controller.js
+    ======= - Mapbox.vue
+  - models/ \*
+  - routes/ \*
+
+> > > > > > > safety
+
 - **Hophin Kibona**:
+
   - components
     - LogIn.vue
-    - Mark.vue
     - MarksList.vue
-    - Menu.vue
-    - Navigation.vue
+    - Navigator.vue
+    - MarkCard.vue
   - routes
-    -  user.js 
+    - user.js
+    - middleware.js
+    - user.js
+    - util.js
+    - user-controller.js
   - models
+
     - user.js
 
   - bluber-server/
 
 - **Hillary Tamirepi**:
-  - components
-    - Map.vue
-    - Mark.vue
-    - Marking.vue
-    - MarksList.vue
-    - Navigation.vue
 
-  - routes:
-    - mark-controller.js
-    - mark.js
-
-  - bluber-server/
+  - src/ \*
+  - models/ \*
+  - routes/ \*
+  - db /\*
+  - public/ \*
 
 - **Mufaro Makiwa**:
-  - components:
-    - comment.js
-    - mark.js
-    - rating.js
-    - reply.js
-    - saved.js
-    - user.js
-  - routes:
-    - comment.js
-    - mark-controller.js
-    - rating.js
-    - mark.js
-    - reply.js
-    - user.js
-    - saved.js
-    - middleware.js
-    - rating.js
-  - bluber-server/
+  - routes/ \*
+  - models/ \*
+  - srs/ \*
+  - app.js
+  - API.md

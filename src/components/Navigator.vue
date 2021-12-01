@@ -1,6 +1,6 @@
 <template>
   <nav class="navbar">
-    <ProfileMenu />
+    <ProfileMenu class="profile" v-if="isSignedIn"/>
 
     <v-btn 
       rounded
@@ -28,6 +28,14 @@
       <img class="button-bike-icon" alt="" src="https://img.icons8.com/external-wanicon-lineal-color-wanicon/64/000000/external-bike-healthy-wanicon-lineal-color-wanicon.png">
       Bluebikes
     </v-btn>
+
+    <MapStyleSelector class="padded"/>
+
+    <AuthenticationDialog 
+      :dialog="displayAuthDialog" 
+      action="add a mark"
+      @close-auth-dialog="displayAuthDialog=false"
+      redirect="mark"/>
   </nav>
 </template>
 
@@ -35,22 +43,38 @@
 import ProfileMenu from './ProfileMenu.vue';
 import axios from 'axios';
 import {eventBus} from '../main';
+import AuthenticationDialog from "./AuthenticationDialog.vue";
+import MapStyleSelector from "./MapStyleSelector.vue";
 
 export default {
   name: "Navigator",
 
   components: {
-    ProfileMenu
+    ProfileMenu, AuthenticationDialog, MapStyleSelector
   },
 
   computed: {
     template() {
       return this.$store.getters.template;
+    },
+
+    isSignedIn() {
+      return this.$store.getters.isSignedIn;
+    }
+  },
+
+  data() {
+    return {
+      displayAuthDialog: false
     }
   },
 
   methods: {
     addMark() {
+      if (!this.isSignedIn) {
+        this.displayAuthDialog = true;
+        return;
+      }
       this.$store.dispatch('setTemplate', 'mark');
       this.$store.dispatch('setMapState', 'marking');
       eventBus.$emit("marking");
@@ -65,11 +89,11 @@ export default {
     getBluebikes() {
       this.$store.dispatch('setTemplate', 'locator');
       axios
-            .get("/api/bluebikes")
-            .then((res) => { eventBus.$emit("mark-stations",res.data)})
-            .catch((err) => {
-                console.log(err);
-            });
+        .get("/api/bluebikes")
+        .then((res) => { eventBus.$emit("mark-stations",res.data)})
+        .catch((err) => {
+            console.log(err);
+        });
       }
     }
   }
@@ -87,26 +111,20 @@ export default {
   justify-content: space-between;
 }
 
-.user-container {
-  padding: 0.25rem;
-  border-radius: 50%;
-  cursor: pointer;
-  max-width: 200px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  background-color: white;
-  transition: all 0.3s;
+.padded {
+  margin-left: 1rem;
 }
 
-.username {
-  margin-left: 1rem;
-  margin-right: 0.5rem;
+.profile {
+  margin-right: 1rem;
 }
 
 .nav-button {
   margin-left: 1rem;
+}
+
+.nav-button:first-of-type {
+  margin-left: 0;
 }
 
 .button-icon {
@@ -114,11 +132,10 @@ export default {
   margin-right: 0.75rem;
 }
 
-.button-bike-icon
-{
+.button-bike-icon {
   margin-right: 0.75rem;
-  width: 30px;
-  height: 30px;
+  width: 25px;
+  height: 25px;
   padding-bottom: 4px;
 }
 

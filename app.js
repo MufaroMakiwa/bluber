@@ -4,7 +4,7 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 var cors = require('cors');
 const logger = require('morgan');
-const history = require('connect-history-api-fallback');
+// const history = require('connect-history-api-fallback');
 const db = require('./db/db_config');
 
 // require dotenv which allows setting variables in .env file
@@ -13,11 +13,11 @@ require('dotenv').config();
 // require routers
 const userRouter = require("./routes/user");
 const bluebikeRouter = require("./routes/bluebikes");
-// const commentRouter = require("./routes/comment");
+const commentRouter = require("./routes/comment");
 const markRouter = require("./routes/mark");
-// const ratingRouter = require("./routes/rating");
-// const replyRouter = require("./routes/reply");
-// const savedRouter = require("./routes/reply");
+const ratingRouter = require("./routes/rating");
+const replyRouter = require("./routes/reply");
+const savedRouter = require("./routes/saved");
 
 
 // initalize an express app
@@ -70,11 +70,10 @@ app.use(express.static(path.join(__dirname, isProduction ? 'dist' : 'public')));
 app.use("/api/bluebikes", bluebikeRouter);
 app.use("/api/user", userRouter);
 app.use("/api/mark", markRouter);
-
-// app.use("/api/comment", commentRouter);
-// app.use("/api/rating", ratingRouter);
-// app.use("/api/reply", replyRouter);
-// app.use("/api/saved", savedRouter);
+app.use("/api/comment", commentRouter);
+app.use("/api/rating", ratingRouter);
+app.use("/api/reply", replyRouter);
+app.use("/api/saved", savedRouter);
 
 
 // catch all the other routes and display error message

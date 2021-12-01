@@ -1,13 +1,17 @@
 <template>
   <div class="search-container">
     <div class="search-inner">
-      <span class="search-greeting"> Hello, Mufaro </span>
+      <span class="search-greeting" v-if="isSignedIn">Hello, {{ username }}</span>
 
       <h2 class="search-heading">
         <slot name="heading"></slot>
       </h2>
 
       <div class="input-container start">
+        <div 
+          :class="['search-icon-container', searchType === 'path' ? 'icon-line top' : '']">
+          <div class="icon start"></div>
+        </div>
         <SearchInputField
           v-model="start"
           :label="startLabel"
@@ -29,6 +33,11 @@
         </v-btn>
       </div>
       <div class="input-container end" v-if="displayEndPointInput">
+        <div 
+          :class="['search-icon-container', searchType === 'path' ? 'icon-line bottom' : '']">
+          <div class="icon end"></div>
+        </div>
+
         <SearchInputField
           v-model="end"
           :label="endLabel"
@@ -75,7 +84,7 @@ export default {
     mode: String,
   },
 
-  beforeCreate() {
+  beforeMount() {
     eventBus.$on("setStart", () => {
       this.start =
         this.$store.getters.startMarker[0] +
@@ -90,10 +99,28 @@ export default {
         this.$store.getters.endMarker[1];
     });
 
-    eventBus.$on("input",(text,type)=>{
-        this.handleSuggestion(text,type);
-    })
+    eventBus.$on("setPoint1", () => {
+      this.start =
+        this.$store.getters.point1[0] +
+        ", " +
+        this.$store.getters.point1[1];
+    });
+
+    eventBus.$on("setPoint2", () => {
+      this.end =
+        this.$store.getters.point2[0] +
+        ", " +
+        this.$store.getters.point2[1];
+    });
+
+    eventBus.$on("input", (text, type) => {
+      this.handleSuggestion(text, type);
+    });
+
+    eventBus.$on("setStartInput",(text)=> this.start =text);
+    eventBus.$on("setEndInput",(text)=>this.end = text);
   },
+
   computed: {
     startLabel() {
       let directive;
@@ -104,11 +131,17 @@ export default {
         directive =
           this.searchType === "intersection" ? "intersection" : "start";
       }
-      return `Enter ${directive} point, or click on the map`;
+      return this.template === "mark" 
+              ? `Enter ${directive} point, or drag the red marker`
+              : `Enter ${directive} point, or click on the map`
     },
 
     endLabel() {
       return "Enter end point...";
+    },
+
+    template() {
+      return this.$store.getters.template;
     },
 
     displayEndPointInput() {
@@ -122,6 +155,18 @@ export default {
     isSwitchButtonDisabled() {
       return this.start.trim() === "" && this.end.trim() === "";
     },
+
+    isSignedIn() {
+      return this.$store.getters.isSignedIn;
+    },
+
+    user() {
+      return this.$store.getters.user;
+    },
+
+    username() {
+      return this.isSignedIn ? this.user.name : "";
+    }
   },
 
   data() {
@@ -135,12 +180,26 @@ export default {
     };
   },
 
+  created() {
+    // this helps to show the dots when the searchType is plan
+    this.mode === 'plan' && (this.searchType = 'path');
+
+    this.mode === 'mark' && (this.start =
+      this.$store.getters.startMarker[0] +
+      ", " +
+      this.$store.getters.startMarker[1]);
+  },
+
   methods: {
     setSearchType() {
       let prevType = this.searchType;
       this.searchType === "intersection"
         ? (this.searchType = "path")
         : (this.searchType = "intersection");
+
+      // emit searchtype to the addMark parent to know how to block submit button
+      this.$emit('search-type', this.searchType);
+
       this.$store.dispatch("setMarkType", this.searchType);
       if (this.searchType === "intersection" && prevType === "path") {
         eventBus.$emit("removeEnd");
@@ -164,14 +223,34 @@ export default {
       eventBus.$emit("switch");
     },
 
-    async handleSuggestion(text,type) {
+    async handleSuggestion(text, type) {
+     
+      if (text.length !== 0) {
+        let bbox = this.$store.getters.bbox;
+       
+        try {
+           
+          const query = await axios.get(
+              `https://api.mapbox.com/geocoding/v5/mapbox.places/${text}.json?bbox=${bbox[0]},${bbox[1]},${bbox[2]},${bbox[3]}&access_token=pk.eyJ1IjoiaGlsbHp5dGFwcyIsImEiOiJja2MxZ3dtankxNThpMnpsbXo1MG4zdHkzIn0.mxO9d6EI9Xcr6d9RmmR3Jg`
+          );
 
-      let bbox = this.$store.getters.bbox;
+          eventBus.$emit("searchResultPlan", query.data.features, type);
+          eventBus.$emit("searchResultMark", query.data.features, type);
+          eventBus.$emit("searchResultLocator", query.data.features, type);
+          // eventBus.$emit("searchRes", query.data.features, type);
+        } catch (error) {
+          eventBus.$emit("searchResultPlan", [], type);
+          eventBus.$emit("searchResultLocator", [], type);
+          eventBus.$emit("searchResultMark", [], type);
+          
+        }       
+      } 
+      // else {
 
-      const query = await axios.get(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${text}.json?bbox=${bbox[0]},${bbox[1]},${bbox[2]},${bbox[3]}&access_token=pk.eyJ1IjoiaGlsbHp5dGFwcyIsImEiOiJja2MxZ3dtankxNThpMnpsbXo1MG4zdHkzIn0.mxO9d6EI9Xcr6d9RmmR3Jg`
-      );
-      eventBus.$emit('searchResult',query.data.features,type);
+      //     eventBus.$emit("searchResultPlan", [], type);
+      //     eventBus.$emit("searchResultLocator", [], type);
+      //     eventBus.$emit("searchResultMark", [], type);
+      // }
     },
     toPrecision(x) {
       return toPrecision(x);
@@ -207,7 +286,7 @@ export default {
 .search-inner {
   width: 100%;
   flex-grow: 1;
-  padding: 1rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -217,10 +296,55 @@ export default {
 
 .search-greeting {
   width: 100%;
+  margin-bottom: 1rem;
 }
 
 .search-heading {
-  margin: 1rem 0;
+  margin-bottom: 1rem;
+}
+
+.search-icon-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-right: 1.5rem;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.search-icon-container .icon {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.search-icon-container .icon.end {
+  background-color: rgb(57, 135, 190);
+}
+
+.search-icon-container .icon.start {
+  background-color: rgb(248, 76, 76);
+}
+
+.icon-line::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-100%);
+  border: 1px dashed rgb(57, 135, 190);
+  height: 100%;
+  z-index: 0;
+}
+
+.icon-line.top::before {
+  top: 50%;
+}
+
+.icon-line.bottom::before {
+  bottom: 50%;
 }
 
 .input-container {
@@ -246,5 +370,10 @@ export default {
 .suggestions {
   display: flex;
   flex-direction: column;
+}
+
+.suggestions-container {
+  width: 100%;
+  margin-top: 1rem;
 }
 </style>
