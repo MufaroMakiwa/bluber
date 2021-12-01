@@ -60,6 +60,7 @@ export default {
   justify-content: center;
   flex-direction: column;
   margin-bottom: 1rem;
+  margin-top: 2rem;
 }
 
 .login-container {

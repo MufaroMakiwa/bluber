@@ -30,6 +30,7 @@ import {
   faEllipsisH,
   faTrashAlt,
   faEdit,
+  faSave,
   faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { faStar as faStarRegular } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -40,7 +41,7 @@ library.add(
   faMapMarked, faExchangeAlt, faMinus, faStarHalf, faEdit,
   faStarRegular, faBell, faMapMarker, faMap, faEllipsisH,
   faTimesCircle, faTimes, faArrowLeft, faFilter, faTrashAlt,
-  faSignOutAlt
+  faSignOutAlt, faSave
 );
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 

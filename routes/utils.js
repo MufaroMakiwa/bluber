@@ -1,8 +1,9 @@
 const commentController = require("./comment-controller");
-const markController = require("./mark-controller.js");
+const markController = require("./mark-controller");
 const replyController = require("./reply-controller");
 const ratingController = require("./rating-controller");
 const userController = require("./user-controller");
+const savedController = require("./saved-controller")
 
 
 async function constructMarkResponse(mark, userId) {
@@ -74,7 +75,8 @@ async function constructUserResponse(user, includePersonalInfo=true) {
   
   // get saved plans
   const getSaved = async () => {
-    return [];
+    let saved = await savedController.findAllByUserId(user._id);
+    return sortResponsesByKey(saved);
   }
 
   // get the rating
@@ -103,6 +105,7 @@ function sortResponsesByKey(responses, key="dateAdded"){
 async function deleteMark(markId){ 
   let comments = await commentController.findAllByMarkId(markId);
   await Promise.all(comments.map(async (comment) => await replyController.deleteMany(comment._id)));
+  await ratingController.deleteMany(markId);
   await commentController.deleteMany(markId);
   await markController.deleteOne(markId);
 }

@@ -43,6 +43,7 @@
 import Search from "./Search";
 import CreateMarkDetails from "./CreateMarkDetails";
 import { eventBus } from "../main";
+import { toPrecision } from "../utils";
 
 export default {
   name: "AddMark",
@@ -92,19 +93,13 @@ export default {
   computed: {
     start: function () {
       if (this.$store.getters.startMarker.length === 0) return "";
-      return (
-        this.$store.getters.startMarker[0] +
-        ", " +
-        this.$store.getters.startMarker[1]
-      );
+      return `lat: ${toPrecision(this.$store.getters.startMarker[0], 8)} -- 
+              lng: ${toPrecision(this.$store.getters.startMarker[1], 8)}`
     },
     end: function () {
       if (this.$store.getters.endMarker.length === 0) return "";
-      return (
-        this.$store.getters.endMarker[0] +
-        ", " +
-        this.$store.getters.endMarker[1]
-      );
+      return `lat: ${toPrecision(this.$store.getters.endMarker[0], 8)} -- 
+              lng: ${toPrecision(this.$store.getters.endMarker[1], 8)}`
     },
   },
   methods: {

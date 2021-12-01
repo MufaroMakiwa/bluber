@@ -1,26 +1,25 @@
 <template>
   <PageModalTemplate
     :display="display">
-    <div class="add-rating">
-      <h3 class="rate-title">Rate this mark</h3>
-      <v-divider></v-divider>
-      <v-rating
-        class="rating"
-        v-model="rating"
-        color="yellow darken-3"
-        background-color="grey darken-1"
-        empty-icon="$ratingFull"
-        hover
-        size="28"></v-rating>
-
-
-      <div class="rating-buttons-container">
+    <div class="save-container">
+      <h3 class="save-title">Save this plan</h3>
+        <v-text-field
+          label="Plan Name"
+          placeholder="e.g Home Route"
+          outlined
+          clearable
+          dense
+          class="name-field"
+          v-model="name">
+      </v-text-field>
+     
+      <div class="save-buttons-container">
         <v-btn
           rounded
           outlined
           color="primary"
           small
-          class="rating-button"
+          class="save-button"
           @click="$emit('cancel')">
           Cancel
         </v-btn>
@@ -30,9 +29,9 @@
           depressed
           color="primary"
           small
-          class="rating-button"
+          class="save-button"
           @click="submit">
-          Rate
+          Save
         </v-btn>
       </div>
     </div>
@@ -43,7 +42,7 @@
 import PageModalTemplate from "./PageModalTemplate.vue";
 
 export default {
-  name: "RateMarkDialog",
+  name: "SavePlanDialog",
 
   components: {
     PageModalTemplate
@@ -55,22 +54,23 @@ export default {
 
   data() {
     return {
-      rating: 0
+      name: "",
+      includeFilters: false
     }
   },
 
   methods: {
     submit() {
-      this.$emit('submit-rating', this.rating);
-      this.rating = 0;
+      this.$emit('save-plan', this.name);
+      this.name = "";
     }
   }
 }
 </script>
 
 <style scoped>
-.add-rating {
-  width: 250px;
+.save-container {
+  width: 300px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -80,21 +80,20 @@ export default {
   border-radius: 8px;
 }
 
-.add-rating > hr {
+.save-container > hr {
   width: 100%;
 }
 
-.rating {
-  margin: 1rem 0;
-  padding: 0;
-  display: flex;
-}
-
-.rate-title {
+.save-title {
   padding-bottom: 0.5rem;
 }
 
-.rating-buttons-container {
+.name-field {
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.save-buttons-container {
   width: 100%;
   margin-top: 1rem;
   display: flex;
@@ -103,16 +102,15 @@ export default {
   justify-content: center;
 }
 
-.rating-button {
+.save-button {
   flex-grow: 1;
 }
 
-.rating-button:first-of-type {
+.save-button:first-of-type {
   margin-right: 0.5rem;
 }
 
-
-.rating-button:last-of-type {
+.save-button:last-of-type {
   margin-left: 0.5rem;
 }
 </style>

@@ -84,6 +84,20 @@ export default {
       antialias: true,
     });
 
+    // add zoom controls
+    this.map.addControl(new mapboxgl.NavigationControl(), 'bottom-left');
+
+    // add current location button
+    this.map.addControl(
+      new mapboxgl.GeolocateControl({
+        positionOptions: {
+          enableHighAccuracy: true
+        },
+        trackUserLocation: true,
+        showUserHeading: true
+      })
+    , 'bottom-left');
+
     this.map.on("click", (e) => {
       const coords = Object.keys(e.lngLat).map((key) => e.lngLat[key]);
       console.log("this state", this.getMapState());

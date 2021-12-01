@@ -29,5 +29,5 @@ const SavedSchema = new Schema(
  );
  
  // mongoose will automatically create the collection for our DB
- module.exports = mongoose.model("saved", SavedSchema);
+ module.exports = mongoose.model("saved_plan", SavedSchema);
  

@@ -10,13 +10,15 @@
         <template v-slot:content>
           <div class="saved-plans-container" v-if="hasSavedPlans">
             <SavedPlanCard 
-              v-for="(plan, index) in savedPlans"
+              v-for="(plan, index) in user.saved"
               :key="index"
               :plan="plan"
-              @click.native="displayPlan=true"/>
+              @click.native="renderPlan(plan)"/>
           </div>
 
-          <span v-else class="no-plans">You currently do not have any saved plans</span>
+          <div v-else class="no-saved-container">
+            <span class="no-plans">You currently do not have any saved plans</span>
+          </div>
         </template>
       </ViewTemplate>
     </transition>
@@ -25,7 +27,9 @@
       v-if="displayPlan" 
       :requiresBackButton="true" 
       title="Marks in area"
-      @back="displayPlan=false"/>
+      :marks="marks"
+      :displaySaveIcon="false"
+      @back="hidePlan"/>
     
   </div>
 </template>
@@ -34,6 +38,8 @@
 import ViewTemplate from "./ViewTemplate.vue";
 import SavedPlanCard from "./SavedPlanCard.vue";
 import MarksList from "./MarksList.vue";
+import axios from 'axios';
+import { eventBus } from "../main";
 
 export default {
   name: "SavedPlans",
@@ -44,36 +50,51 @@ export default {
 
   computed: {
     hasSavedPlans() {
-      return this.savedPlans.length > 0;
+      return this.isSignedIn ? this.user.saved.length > 0 : false;
+    },
+
+    user() {
+      return this.$store.getters.user;
+    },
+
+    isSignedIn() {
+      return this.$store.getters.isSignedIn;
     }
   },
 
   data() {
-    const savedPlans = [
-        {
-          start: "77 Massachusetts Avenue",
-          end: "189 Vassar Street",
-          name: "Home Route",
-          dateAdded: "Nov 8"
-        },
-
-        {
-          start: "Stata Center",
-          end: "Maseeh Hall",
-          name: "6.036 route",
-          dateAdded: "Jan 4"
-        },
-
-        {
-          start: "New House",
-          end: "McGregor",
-          name: "Dininghall Route",
-          dateAdded: "Jan 1"
-        }
-      ]
     return {
-      savedPlans: [...savedPlans],
-      displayPlan: false
+      displayPlan: false,
+      marks: []
+    }
+  },
+
+  methods: {
+    hidePlan() {
+      this.displayPlan=false;
+      this.marks = [];
+    },
+
+    renderPlan(plan) {
+      let params = {
+        startLat: plan.start.lat,
+        startLng: plan.start.lng,
+        endLat: plan.end.lat, 
+        endLng: plan.end.lng,
+      }
+
+      axios.get("/api/mark",{params:params})
+      .then((res) => {
+        this.displayPlan = true;
+        let {marksInSpannedArea, radius, center } = res.data
+        this.marks = marksInSpannedArea;
+        eventBus.$emit("drawRoutes",this.marks)
+        console.log(radius,center)
+        // eventBus.$emit("draw-plan-radius",center,radius)
+      })
+      .catch((err) => {
+        console.log(err)
+      });
     }
   }
 }
@@ -94,8 +115,13 @@ export default {
   margin-top: 1.5rem;
 }
 
+.no-saved-container {
+  display: flex;
+  margin-top: 1.5rem;
+  width: 100%;
+}
+
 .no-plans {
-  margin-top: 1rem;
   font-weight: bold;
   color: gray;
 }

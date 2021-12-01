@@ -42,7 +42,9 @@
       <v-divider v-if="isSignedIn"></v-divider>
 
       <div class="add-comment" v-if="isSignedIn">
-        <AddComment :markUserId="mark.userId" :markId="mark._id"/>
+        <AddComment 
+          :markUserId="mark.user.userId" 
+          :markId="mark._id"/>
       </div>
       <v-divider></v-divider>
       <v-divider></v-divider>

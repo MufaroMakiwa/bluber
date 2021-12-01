@@ -17,13 +17,30 @@
           v-if="template === 'user-marks'" 
           title="My Marks" 
           :marks="marks"
+          :displaySaveIcon="false"
           :userMarks="true"/>
         <SavedPlans v-if="template === 'user-saved'"/>
         <Notifications v-if="template === 'notifications'"/>
         <Locator v-if="template === 'locator'"/>
         <Authentication v-if="template === 'authentication'"/>
       </div>
-    </div>   
+    </div>
+
+    <v-snackbar
+      v-model="snackbar"
+      :timeout="timeout">
+      {{ text }}
+
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          color="blue"
+          text
+          v-bind="attrs"
+          @click="snackbar = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>  
   </div>
 </template>
 
@@ -54,15 +71,17 @@ export default {
     Authentication,
     Locator,
     SavedPlans,
-    GoogleLoginButton,
+    GoogleLoginButton
   },
 
   data() {
     return {
-      username: "Hillary",
       showMarks:false,
       isLoggedIn: false,
-      showMarker: false
+      showMarker: false,
+      snackbar: false,
+      snackbarText: '',
+      timeout: 5000,
     };
   },
 
@@ -84,8 +103,17 @@ export default {
     }
   },
 
+  methods: {
+    snackbarHandler(text) {
+      this.snackbarText = text;
+      this.snackbar = true;
+    }
+  },
+
 
   created() {
+    eventBus.$on('display-snackbar', this.snackbarHandler);
+
     eventBus.$on("toggle-marks", () => {
       this.showMarks = !this.showMarks;
       this.showMarker = false;

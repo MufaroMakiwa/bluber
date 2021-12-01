@@ -10,23 +10,23 @@ export function formatDate(date) {
       return 'right now';
     }
   
-    let sec = Math.floor(diff / 1000); // convert diff to seconds
+    let sec = Math.round(diff / 1000); // convert diff to seconds
   
     if (sec < 60) {
       return sec + ' sec. ago';
     }
   
-    let min = Math.floor(diff / 60000); // convert diff to minutes
+    let min = Math.round(diff / (1000 * 60)); // convert diff to minutes
     if (min < 60) {
       return min + ' min. ago';
     }
 
-    let hr = Math.floor(diff / (60000*24)); // convert diff to hrs
+    let hr = Math.round(diff / (1000 * 60 * 60)); // convert diff to hrs
     if (hr < 24) {
       return hr + ' hr. ago';
     }
   
-    let day = Math.floor(diff / (60000*24*31)); // convert diff to days
+    let day = Math.floor(diff / (1000 * 60 * 60 * 24)); // convert diff to days
     if (day < 31) {
       return day + ' day. ago';
     }
@@ -46,7 +46,7 @@ export function formatDate(date) {
     return d.slice(0, 3).join('.') + ' ' + d.slice(3).join(':');
   }
 
-export function toPrecision(x) {
-  if (typeof x === "number"){return Number.parseFloat(x.toPrecision(2))}
-  else if (typeof x === "string") {return Number.parseFloat(Number.parseFloat(x).toPrecision(2))}
+export function toPrecision(x, precision=2) {
+  if (typeof x === "number") {return Number.parseFloat(x.toPrecision(precision))}
+  else if (typeof x === "string") {return Number.parseFloat(Number.parseFloat(x).toPrecision(precision))}
 }
