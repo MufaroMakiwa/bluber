@@ -92,8 +92,9 @@ export default {
         .then((res) => {
           let { marksInSpannedArea, radius, center } = res.data;
           this.marks = marksInSpannedArea;
-          // eventBus.$emit("drawRoutes",this.marks)
-          eventBus.$emit("drawCircle", center, radius);
+          eventBus.$emit("drawRoutes",this.marks)
+          eventBus.$emit("draw-plan-radius", center, radius);
+          // eventBus.$emit("drawCircle", center, radius);
         })
         .catch((err) => {
           console.log("this is my err", err);

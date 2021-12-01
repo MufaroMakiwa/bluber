@@ -72,7 +72,8 @@ export default {
   methods: {
     hidePlan() {
       this.displayPlan=false;
-      this.marks = [];
+      this.marks = [];   
+      eventBus.$emit("clearPlan");
     },
 
     renderPlan(plan) {
@@ -89,7 +90,9 @@ export default {
         let {marksInSpannedArea, radius, center } = res.data
         this.marks = marksInSpannedArea;
         eventBus.$emit("drawRoutes",this.marks)
-        console.log(radius,center)
+        eventBus.$emit("draw-plan-radius", center, radius);
+        
+        // console.log(radius,center)
         // eventBus.$emit("draw-plan-radius",center,radius)
       })
       .catch((err) => {

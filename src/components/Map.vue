@@ -443,6 +443,8 @@ export default {
     });
 
     eventBus.$on("draw-plan-radius", (center, radius) => {
+
+      console.log(center,radius, "from save")
       let center1 = turf.point([center.lng, center.lat]);
 
       let options = {
@@ -503,12 +505,12 @@ export default {
         this.map.removeSource("point2");
       }
 
-      this.routing_state = [];
-      this.point1 = [];
-      this.point2 = [];
+      // this.routing_state = [];
+      // this.point1 = [];
+      // this.point2 = [];
 
-      this.$store.dispatch("setPoint1", []);
-      this.$store.dispatch("setPoint2", []);
+      // this.$store.dispatch("setPoint1", []);
+      // this.$store.dispatch("setPoint2", []);
     });
     /**
      * clear Locator listener
