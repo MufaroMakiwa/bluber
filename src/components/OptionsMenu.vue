@@ -21,20 +21,15 @@
       </template>
 
       <v-list class="menu-options">
-        <v-list-item @click="$emit('edit')" class="list-item">
-          <v-list-item-avatar class="avatar">
-            <font-awesome-icon icon="edit" class="menu-icon"/> 
-          </v-list-item-avatar>
-          <v-list-item-title>{{ editTitle }}</v-list-item-title>
-        </v-list-item>
 
-        <v-divider></v-divider>
-
-        <v-list-item @click="$emit('delete')" class="list-item">
+        <v-list-item 
+          v-for="(option, index) in options"
+          :key="index"
+          @click="$emit(option.event)" class="list-item">
           <v-list-item-avatar class="avatar">
-            <font-awesome-icon icon="trash-alt" class="menu-icon"/> 
+            <font-awesome-icon :icon="option.icon" class="menu-icon"/> 
           </v-list-item-avatar>
-          <v-list-item-title>{{ deleteTitle }}</v-list-item-title>
+          <v-list-item-title>{{ option.title }}</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-menu>
@@ -47,8 +42,7 @@ export default {
   name: "OptionsMenu",
 
   props: {
-    editTitle: String,
-    deleteTitle: String,
+    options: Array
   }
 }
 </script>

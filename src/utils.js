@@ -47,5 +47,6 @@ export function formatDate(date) {
   }
 
 export function toPrecision(x) {
-  return Number.parseFloat(x).toPrecision(2);
+  if (typeof x === "number"){return Number.parseFloat(x.toPrecision(2))}
+  else if (typeof x === "string") {return Number.parseFloat(Number.parseFloat(x).toPrecision(2))}
 }

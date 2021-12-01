@@ -267,6 +267,7 @@ const isSavedNameAlreadyExists = async (req, res, next) => {
 
 // checks if the target user id is valid (rating, comment, reply)
 const isTargetUserIdExists = (req, res, next) => {
+  // const targetUserId = req.body.targetUserId;
   next();
 }
 

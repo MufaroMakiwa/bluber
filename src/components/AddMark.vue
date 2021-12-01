@@ -53,8 +53,8 @@ export default {
       this.results = results;
     });
 
-    eventBus.$on("back",()=>{
-      // console.log("back")
+    eventBus.$on("mark-created", () => {
+      console.log("mark created");
       this.addingMarkDetails = false;
       this.results = [];
     });
@@ -67,6 +67,13 @@ export default {
     eventBus.$on("clearSuggestions", () => {
       this.results = [];
     });
+  },
+  beforeDestroy() {
+    eventBus.$off("mark-created");
+    eventBus.$off("input");
+    eventBus.$off("clearSuggestions");
+    eventBus.$off("searchResult");
+    eventBus.$emit("clearAddMark");
   },
   components: {
     Search,
@@ -83,7 +90,7 @@ export default {
 
   computed: {
     start: function () {
-      if (this.$store.getters.startMarker.length===0) return ""
+      if (this.$store.getters.startMarker.length === 0) return "";
       return (
         this.$store.getters.startMarker[0] +
         ", " +
@@ -91,7 +98,7 @@ export default {
       );
     },
     end: function () {
-      if (this.$store.getters.endMarker.length===0) return ""
+      if (this.$store.getters.endMarker.length === 0) return "";
       return (
         this.$store.getters.endMarker[0] +
         ", " +

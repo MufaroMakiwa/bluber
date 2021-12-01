@@ -2,23 +2,44 @@
   <div class="response-container">
     <div class="response-wrapper">
       <div class="icon-wrapper">
-        <UserIcon :username="response.username" />
+        <UserIcon :username="response.userId" />
         <hr v-if="!isLast" class="divider"/>
       </div>
       <div class="response-details">
         <div class="name-time-container">
-          <span class="username">{{ response.username }}</span>
-          <span class="date">{{ response.dateAdded }}</span>
+          <span class="username">{{ response.userId }}</span>
+          <span class="date">{{ formatDate(response.dateAdded) }}</span>
         </div>
 
         <span class="response">{{ response.content }}</span>
 
         <div class="reply-container" v-if="!isReply">
-          <span 
-            class="reply-button" 
-            v-if="!isReplying"
-            @click="toggleReply">Reply</span>
-          <AddComment v-else :isReply="true" @cancel="cancelReply"/>
+          <div class="modify-buttons" v-if="!isReplying">
+            <span 
+              class="modify-button reply"       
+              @click="toggleReply">
+              Reply
+            </span>
+
+            <span 
+              v-if="isCurrentUserResponse"
+              class="modify-button delete"
+              @click="handleDeleteComment">
+              Delete
+            </span>
+          </div>
+          
+          <AddComment v-else :commentId="commentId" :commentUserId="commentUserId" :isReply="true" @cancel="cancelReply"/>
+        </div>
+
+        <div v-if="isReply && isCurrentUserResponse(response.userId)" class="modify-reply-container">
+          <div class="modify-buttons">
+            <span 
+              class="modify-button delete"
+              @click="handleDeleteReply">
+              Delete
+            </span>
+          </div>
         </div>
 
         <div v-if="hasReplies" class="replies">
@@ -32,6 +53,9 @@
 <script>
 import UserIcon from "./UserIcon.vue";
 import AddComment from "./AddComment.vue";
+import {formatDate} from "../utils";
+import axios from "axios";
+import { eventBus } from '../main';
 
 
 export default {
@@ -44,7 +68,9 @@ export default {
   props: {
     response: Object,
     isLast: Boolean,
-    isReply: Boolean
+    isReply: Boolean,
+    commentId: String,
+    commentUserId: String
   },
 
   data() {
@@ -55,7 +81,14 @@ export default {
 
   computed: {
     hasReplies() {
+      // TODO this is causing an error because the replies field is not in the response
       return !this.isReply && this.response.replies.length > 0;
+    },
+
+    isCurrentUserResponse(otherUserId) {
+      // TODO. Check against the userId in the reply or comment
+      // return true;
+      return otherUserId===this.$store.getters.userId
     }
   },
 
@@ -66,6 +99,21 @@ export default {
 
     cancelReply() {
       this.isReplying = false;
+    },
+
+    handleDeleteComment() {
+
+      axios.delete('/api/comment/'+this.response._id).then(()=>{ eventBus.$emit("refresh");console.log("comment successfully deleted")}).catch((err)=>{console.log(err)});
+
+    },
+
+    handleDeleteReply() {
+
+      axios.delete('/api/reply/'+this.response._id).then(()=>{ eventBus.$emit("refresh");console.log("reply successfully deleted")}).catch((err)=>{console.log(err)});
+    },
+
+    formatDate(d){
+      return formatDate(d);
     }
   }
 }
@@ -139,17 +187,45 @@ export default {
   padding-bottom: 1rem;
 }
 
-.reply-button {
+.modifiy-buttons {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.modify-button {
   text-transform: none;
-  color: #1ba9bf;
   font-size: 0.9rem;
   transition: all 0.3s;
   cursor: pointer;
 }
 
+.modify-button.reply {
+  color: #1ba9bf;
+}
 
-.reply-button:hover {
+.modify-button.reply:hover {
   color: gray;
+}
+
+.modify-button.delete {
+  color: gray;
+  margin-left: 0.5rem;
+}
+
+.modify-button.delete:hover {
+  color: darkgray;
+}
+
+.modify-reply-container {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.modify-reply-container .delete {
+  margin-left: 0;
 }
 
 .replies {

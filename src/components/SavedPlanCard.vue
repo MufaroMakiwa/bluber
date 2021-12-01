@@ -6,7 +6,6 @@
         <span class="date">Saved {{ plan.dateAdded }}</span>
       </div>
       <OptionsMenu 
-        editTitle="Edit plan"
         deleteTitle="Delete plan"
         @edit="editSavedPlan"
         @delete="deleteSavedPlan"/>
@@ -102,6 +101,7 @@ export default {
   align-items: center;
   justify-content: center;
   position: relative;
+  padding: 0.5rem 0;
 }
 
 .point-icon {

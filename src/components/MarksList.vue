@@ -40,15 +40,17 @@
         </template>
 
         <template v-slot:content>
-          <div class="marks" v-if="hasDisplayedMarks">
+          <div class="marks" v-if="hasDisplayedMarks" >
           <MarkCard 
             v-for="mark in filteredMarks"
-            :key="mark.markId"
+            :key="mark.mark_id"
             :mark="mark" 
             @click.native="handleMarkClick(mark)"/>
           </div>
 
-          <span v-else class="no-marks">{{ emptyMessage }}</span>
+          <div class="no-marks-container" v-else>
+            <span class="no-marks">{{ emptyMessage }}</span>
+          </div>
         </template>
       </ViewTemplate>
     </transition>
@@ -62,11 +64,13 @@
     <MarkDetails 
       v-if="displayedMark !== null"
       :mark="displayedMark"
+      :userMarks="userMarks"
       @back="displayedMark=null"/>
   </div>
 </template>
 
 <script>
+import { eventBus } from '../main';
 import Filters from "./Filters.vue";
 import MarkCard from "./MarkCard.vue";
 import MarkDetails from "./MarkDetails.vue";
@@ -81,59 +85,32 @@ export default {
 
   props: {
     title: String,
+    marks: Array,
     requiresBackButton: {
+      default: false,
+      type: Boolean,
+    },
+    userMarks: {
       default: false,
       type: Boolean,
     }
   },
-
+  beforeMount(){
+    eventBus.$on("openMarkDetails",(mark)=>{
+      this.displayedMark = mark;
+    });
+  }
+  ,
   data() {
-    const dummyMarks = [
-      { 
-        markId: 0,
-        username: "Mufaro Makiwa",
-        dateAdded: "Nov 8",
-        comments: 2,
-        rating: 2,
-        ratingCount: 1,
-        caption: "I hate this place because I cannot navigate well",
-        tags: ["Blocked"]
-      },
-
-      {
-        markId: 1,
-        username: "Hillary Tamirepi",
-        dateAdded: "Dec 1",
-        comments: 17,
-        rating: 4,
-        ratingCount: 10,
-        caption: "I do not know why this has not been fixed yet",
-        tags: ["Busy", "Not Safe"]
-      },
-
-      { 
-        markId: 2,
-        username: "Jianna Liu",
-        dateAdded: "Jan 5",
-        comments: 5,
-        rating: 4.5,
-        ratingCount: 100,
-        caption: "The intersection has been blocked for over a year now",
-        tags: ["Blocked"]
-      },
-    ];
-    
     return {
       displayFilters: false,
-      displayedMark: null,   
-      marks: [...dummyMarks],
-      filteredMarks: [...dummyMarks],
+      displayedMark: null,  
       filters: {
         sortBy: "dateAdded",
         tags: [],
         sortOrder: "descending",
         minimumRating: 0
-      }
+      },
     }    
   },
 
@@ -150,6 +127,10 @@ export default {
       return this.filteredMarks.length > 0;
     },
 
+    filteredMarks() {
+      return this.filter();
+    },
+
     emptyMessage() {
       return this.hasFilters ? 'There are marks with these filters in area.' : 'There are no marks in this area.'
     },
@@ -157,8 +138,8 @@ export default {
     displayAllMarks() {
       return !this.displayFilters && this.displayedMark === null;
     }
-  },
-  
+  }
+  ,
   methods: {
     clearFilters() {
       this.filters = {
@@ -176,8 +157,28 @@ export default {
 
     handleMarkClick(mark) {
       this.displayedMark = mark;
+    },
+
+    filter() {
+      const filtered = this.marks.filter(mark => {
+        const aboveRatingBound = mark.rating >= this.filters.minimumRating;
+        const hasFilterTags = this.filters.tags.length === 0 
+                              ? true
+                              : mark.tags.some(tag => this.filters.tags.includes(tag));
+        return aboveRatingBound && hasFilterTags;
+      })
+      return filtered;
     }
+  },
+
+  watch: {
+      marks: function(newMarks){
+        if (this.displayedMark){
+          this.displayedMark = newMarks.filter((m)=>(this.displayedMark._id===m._id))[0]
+        }
+      }
   }
+
 }
 </script>
 
@@ -206,8 +207,13 @@ export default {
   margin-top: 1.5rem;
 }
 
-.no-marks {
+.no-marks-container {
+  display: flex;
   margin-top: 1.5rem;
+  width: 100%;
+}
+
+.no-marks {
   font-weight: bold;
   color: gray;
 }

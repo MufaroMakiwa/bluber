@@ -7,14 +7,15 @@
     <template v-slot:content>
       <div class="mark-header">
         <MarkUserDetails 
-          :username="mark.username"
-          :dateAdded="mark.dateAdded"/>
+          :username="mark.user.name"
+          :imageUrl="mark.user.imageUrl"
+          :dateAdded="formatDate(mark.dateAdded)"/>
 
         <OptionsMenu 
-          editTitle="Edit mark"
-          deleteTitle="Delete mark"
-          @edit="editMark"
-          @delete="deleteMark"/>
+          v-if="displayOptions"
+          :options="options"
+          @delete-mark="deleteMark"
+          @remove-rating="removeRating"/>
       </div>
 
       <div class="mark-details">
@@ -23,26 +24,42 @@
           :tags="mark.tags"/>
 
         <div class="ratings-container">
-          <Rating :rating="mark.rating" :ratingCount="mark.ratingCount"/>
-        </div>
-      </div>
-      <v-divider></v-divider>
-      <v-divider></v-divider>
+    
+          <Rating 
+            :rating="toPrecision(mark.rating)" 
+            :addTooltip="canRate"
+            :ratingCount="mark.ratingCount"
+            @open-rating-dialog="triggerRating"/>
 
-      <div class="add-comment">
-        <AddComment />
+          <RateMarkDialog 
+            :display="isRating"
+            @cancel="isRating=false"
+            @submit-rating="submitRating"/>
+        </div>
+
+      </div>
+      <v-divider v-if="isSignedIn"></v-divider>
+      <v-divider v-if="isSignedIn"></v-divider>
+
+      <div class="add-comment" v-if="isSignedIn">
+        <AddComment :markUserId="mark.userId" :markId="mark._id"/>
       </div>
       <v-divider></v-divider>
       <v-divider></v-divider>
 
       <div class="comments-section">
         <Comment 
-          v-for="(comment, index) in comments" 
+          v-for="(comment, index) in mark.comments" 
           :key="index"
           :comment="comment"
-          :isLast="index === comments.length - 1"
-          :isReply="false"/>
+          :isLast="index === mark.comments.length - 1"/>
       </div>
+
+      <AuthenticationDialog 
+        :dialog="displayAuthDialog" 
+        action="rate this mark"
+        @close-auth-dialog="displayAuthDialog=false"/>
+
 
     </template>
   </ViewTemplate>
@@ -52,10 +69,16 @@
 import Rating from "./Rating.vue"
 import ViewTemplate from "./ViewTemplate.vue";
 import MarkUserDetails from "./MarkUserDetails.vue";
+import RateMarkDialog from "./RateMarkDialog.vue";
 import MarkDescription from "./MarkDescription.vue";
 import OptionsMenu from "./OptionsMenu.vue";
 import AddComment from "./AddComment.vue";
+import AuthenticationDialog from "./AuthenticationDialog.vue";
 import Comment from "./Comment.vue";
+import { formatDate, toPrecision } from '../utils';
+
+import axios from "axios";
+import { eventBus } from '../main';
 
 
 export default {
@@ -68,65 +91,134 @@ export default {
     Rating,
     OptionsMenu,
     AddComment,
-    Comment
+    Comment,
+    RateMarkDialog,
+    AuthenticationDialog
   },
 
   props: {
     mark: Object,
+    userMarks: {
+      default: false,
+      type: Boolean,
+    }
   },
 
   data() {
     return {
-      comments: [
-        {
-          username: "Mufaro Makiwa",
-          dateAdded: "Today at 5.42PM",
-          content: "I think this place is now okay",
-          replies: [
-            {
-              username: "Hophin Kibona",
-              dateAdded: "Today at 6.42PM",
-              content: "I will update after I pass by again"
-            },
-            
-            {
-              username: "Jianna Liu",
-              dateAdded: "Today at 7.20PM",
-              content: "This is missleading, I just gave you a low rating"
-            }
-          ]
-        },
-
-        {
-          username: "Hillary Tamirepi",
-          dateAdded: "Yesterday at 6.02PM",
-          content: "I came across this place and I think it is fine now",
-          replies: [
-            {
-              username: "Jianna Liu",
-              dateAdded: "Today at 7.20PM",
-              content: "This is disgusting"
-            }
-          ]
-        },
-
-        {
-          username: "Hophin Kibona",
-          dateAdded: "Tuesday at 6.02PM",
-          content: "Please update this now",
-          replies: []
-        }
-      ]
+      isRating: false,
+      displayAuthDialog: false
     }
   },
 
+  computed: {
+    options() {
+      return this.isCurrentUserMark 
+      ? 
+        [
+          {
+            title: "Delete mark",
+            icon: "trash-alt",
+            event: "delete-mark"
+          }
+        ]
+      :
+        [
+          {
+            title: "Remove rating",
+            icon: "star",
+            event: "remove-rating"
+          }
+        ]
+    },
+
+    displayOptions() {
+      if (this.isCurrentUserMark) {
+        return true;
+      } else if (this.mark.isCurrentUserRating) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    isSignedIn() {
+      return this.$store.getters.isSignedIn;
+    },
+
+    user() {
+      return this.$store.getters.user;
+    },
+ 
+    isCurrentUserMark() {
+      return this.isSignedIn && this.mark.user.userId === this.user.userId;
+    },
+
+    canRate() {
+      return !this.isCurrentUserMark && !this.mark.isCurrentUserRating;
+    }
+  },
+
+
   methods: {
-    editMark() {
-      console.log("Editing mark");
+    triggerRating() {
+      if (!this.canRate) {
+        return;
+      }
+      if (this.isSignedIn) {
+        this.isRating = true;
+      } else {
+        this.displayAuthDialog = true;
+      }
+    },
+
+    submitRating(rating) {
+      this.isRating = false;
+      axios.post("/api/rating", {
+        markId: this.mark._id,
+        rating: rating,
+        targetUserId: this.mark.user.userId
+      })
+      .then(() => {
+        this.userMarks 
+        ? this.$store.dispatch('getUser')
+        : eventBus.$emit("refresh");
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    },
+
+    toPrecision(d){
+      return toPrecision(d);
+    },
+    
+    removeRating(){
+      axios.delete('/api/rating/' + this.mark._id)
+        .then(() => {
+          this.userMarks 
+          ? this.$store.dispatch('getUser')
+          : eventBus.$emit("refresh");
+        })
+        .catch(err => {
+          console.log(err)
+        })
+
     },
 
     deleteMark() {
-      console.log("Deleting mark")
+      axios.delete('/api/mark/' + this.mark._id)
+        .then(() => {
+          this.userMarks 
+          ? this.$store.dispatch('getUser')
+          : eventBus.$emit("refresh");
+          this.$emit('back');
+        })
+        .catch((err) => console.log(err))
+    },
+
+    formatDate(d){
+      return formatDate(d)
     }
   }
 }
@@ -176,5 +268,14 @@ export default {
   width: 100%;
   align-items: flex-start;
   justify-content: flex-start;
+}
+
+.add-rating-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  flex-grow: 1;
+  margin-right: 1rem
 }
 </style>
