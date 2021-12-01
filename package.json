@@ -38,7 +38,6 @@
     "moment": "^2.29.1",
     "mongoose": "^6.0.13",
     "morgan": "~1.9.0",
-    "node": "^17.1.0",
     "node-fetch": "^3.1.0",
     "nodemon": "^2.0.15",
     "nuxt-leaflet": "^0.0.25",
