@@ -2,10 +2,10 @@ const Rating = require("../models/rating");
 
 async function findOne(userId, markId){
     try{
-    const rating = await Rating.find({ratingId: markId, userId: userId});
-    return rating;
+      const rating = await Rating.findOne({markId: markId, userId: userId});
+      return rating;
     } catch(err){
-    return false;
+      return false;
     }
   }
   

@@ -9,7 +9,7 @@ const { constructUserResponse } = require('./utils');
  * Get the current session user details if one exists
  * 
  * @name GET /user/session
- * @returns {User | undefined} - The current session user if one exists
+ * @returns {User | null} - The current session user if one exists
  */
 router.get('/session', async (req, res) => {
   if (req.session.userId) {
@@ -42,7 +42,9 @@ router.delete('/session', [ validator.isUserLoggedIn ], async (req, res) => {
  * 
  * @name POST /user
  * 
- * @param {string} username - username of user 
+ * @param {string} name - name of user 
+ * @param {string} email - email of user
+ * @param {string} imageUrl - imageUrl of the user
  * @return {User} - the created user
  * @throws {403} - if user is already logged in
  * @throws {400} - if username is already taken and when password or username
@@ -50,6 +52,9 @@ router.delete('/session', [ validator.isUserLoggedIn ], async (req, res) => {
  */
 router.post(
   '/', 
+  [
+    validator.isActiveUserSessionExists
+  ],
   async (req, res) => {
     try {
       const existingUser = await controller.findOneByEmail(req.body.email);
@@ -64,7 +69,6 @@ router.post(
         return;
       }
       
-      // TODO the body will need to be updated when adding passwords etc
       const user = await controller.addOne(req.body.name, req.body.email, req.body.imageUrl);
       req.session.userId = user._id;
       console.log(req.session.userId);
@@ -73,6 +77,7 @@ router.post(
         message: 'Your account was created successfully.', 
         user: await constructUserResponse(user)
       }).end();
+
     } catch (error) {
       res.status(503).json({ error }).end();
     }

@@ -2,7 +2,7 @@ const Reply = require("../models/reply");
 
 async function findOne(replyId){
     try{
-    const reply = await Reply.find({replyId: replyId});
+    const reply = await Reply.findOne({replyId: replyId});
     return reply;
     } catch(err){
     return false;

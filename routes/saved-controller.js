@@ -2,7 +2,7 @@ const Saved = require("../models/saved");
 
 async function findOne(savedId){
     try{
-    const saved = await Saved.find({savedId: savedId});
+    const saved = await Saved.findOne({_id: savedId});
     return saved;
     } catch(err){
     return false;
@@ -11,7 +11,7 @@ async function findOne(savedId){
 
   async function findOneByName(name){
     try{
-    const saved = await Saved.find({name: name});
+    const saved = await Saved.findOne({name: name});
     return saved;
     } catch(err){
     return false;

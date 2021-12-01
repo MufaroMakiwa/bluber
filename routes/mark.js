@@ -1,16 +1,23 @@
 const express = require("express");
 const router = express.Router();
-// const validator = require("./middleware");
+const validator = require("./middleware");
 const markController = require("./mark-controller.js");
 const { constructMarkResponse, sortResponsesByKey, deleteMark }  = require("./utils");
 
 
-// get the start and end as objects
+/**
+ * Get marks in a given area
+ * 
+ * @name GET /mark
+ * @param {string} startLat - the lat for the start point
+ * @param {string} startLng - the lng for the start point
+ * @param {string} endLat - the lat for the end point
+ * @param {string} endLng - the lng for the end point
+ * @returns {Mark[]} - An array of marks in an area
+ * 
+ */
 router.get(
   '/',
-  [
-    // validator.isUserLoggedIn
-  ],
   async (req, res) => {
     const start = {
       lat: parseFloat(req.query.startLat), 
@@ -30,10 +37,25 @@ router.get(
 );
 
 
+/**
+ * Create a mark
+ * 
+ * @name POST /mark
+ * 
+ * @param {string} caption - the caption for the mark
+ * @param {array} tags - a list of tags associated with the mark
+ * @param {Object} start - the start of the mark
+ * @param {Object} end - the end of the mark
+ * @return {Mark} - the created mark
+ * @throws {403} - if user is not logged logged in
+ * @throws {400} - if caption or tags are invalid
+ */
 router.post(
   '/',
   [
-    // validator.isUserLoggedIn
+    validator.isUserLoggedIn,
+    validator.isValidMarkCaption,
+    validator.isValidMarkTags
   ],
   async (req, res) => {
     const { tags, caption, start, end, path } = req.body;
@@ -55,12 +77,21 @@ router.post(
 );
 
 
+/**
+ * Delete a mark
+ * 
+ * @name DELETE /mark/:markId?
+ * 
+ * @param {string} markId - the Id of mark to delete 
+ * @throws {403} - if user is not logged logged in or not the owner of the mark
+ * @throws {400} - if mark with given id does not exist
+ */
 router.delete(
   '/:markId?',
   [
-    // validator.isUserLoggedIn,
-    // validator.isMarkIdInParamsExists,
-    // validator.isValidMarkModifier
+    validator.isUserLoggedIn,
+    validator.isMarkIdInParamsExists,
+    validator.isValidMarkModifier
   ],
   async (req, res) => {
     await deleteMark(req.params.markId);

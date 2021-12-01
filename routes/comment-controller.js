@@ -2,7 +2,7 @@ const Comment = require("../models/comment");
 
 async function findOne(commentId){
     try{
-    const comment = await Comment.find({_id: commentId});
+    const comment = await Comment.findOne({_id: commentId});
     return comment;
     } catch(err){
     return false;

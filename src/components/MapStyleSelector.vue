@@ -27,6 +27,9 @@
           :input-value="style === 'satellite-v9'"
           color="primary"
           @click="updateMapStyle('satellite-v9')" class="list-item">
+           <v-list-item-avatar class="avatar">
+            <font-awesome-icon icon="satellite" class="menu-icon"/> 
+          </v-list-item-avatar>
           <v-list-item-title>Satellite view</v-list-item-title>
         </v-list-item>
         
@@ -36,6 +39,9 @@
           :input-value="style === 'dark-v10'"
           color="primary"
           @click="updateMapStyle('dark-v10')" class="list-item">
+          <v-list-item-avatar class="avatar">
+            <font-awesome-icon icon="moon" class="menu-icon"/> 
+          </v-list-item-avatar>
           <v-list-item-title>Dark overlay</v-list-item-title>
         </v-list-item>
 
@@ -45,6 +51,9 @@
           :input-value="style === 'streets-v11'"
           color="primary"
           @click="updateMapStyle('streets-v11')" class="list-item">
+          <v-list-item-avatar class="avatar">
+            <font-awesome-icon icon="street-view" class="menu-icon"/> 
+          </v-list-item-avatar>
           <v-list-item-title>Street view</v-list-item-title>
         </v-list-item>
 
@@ -61,25 +70,6 @@ export default {
   computed: {
     style() {
       return this.$store.getters.mapStyle;
-    }
-  },
-
-  data() {
-    return {
-      options: [
-        {
-          title: "Satellite",
-          type: "satellite"
-        },
-        {
-          title: "Dark",
-          type: "dark"
-        },
-        {
-          title: "Streets",
-          type: "streets"
-        }
-      ]
     }
   },
 
