@@ -69,6 +69,10 @@ export default {
     }
   },
 
+  beforeDestroy() {
+    eventBus.$emit("clearPlan");
+  },
+
   methods: {
     hidePlan() {
       this.displayPlan=false;

@@ -28,16 +28,17 @@
 
     <v-snackbar
       v-model="snackbar"
+      color="primary"
       :timeout="timeout">
       {{ snackbarText }}
 
       <template v-slot:action="{ attrs }">
         <v-btn
-          color="blue"
-          text
+          color="white"
+          icon
           v-bind="attrs"
           @click="snackbar = false">
-          Close
+          <font-awesome-icon icon="times"/>
         </v-btn>
       </template>
     </v-snackbar>  

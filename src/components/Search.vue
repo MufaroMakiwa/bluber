@@ -182,7 +182,12 @@ export default {
 
   created() {
     // this helps to show the dots when the searchType is plan
-    this.mode === 'plan' && this.setSearchType();
+    this.mode === 'plan' && (this.searchType = 'path');
+
+    this.mode === 'mark' && (this.start =
+      this.$store.getters.startMarker[0] +
+      ", " +
+      this.$store.getters.startMarker[1]);
   },
 
   methods: {
@@ -191,6 +196,10 @@ export default {
       this.searchType === "intersection"
         ? (this.searchType = "path")
         : (this.searchType = "intersection");
+
+      // emit searchtype to the addMark parent to know how to block submit button
+      this.$emit('search-type', this.searchType);
+
       this.$store.dispatch("setMarkType", this.searchType);
       if (this.searchType === "intersection" && prevType === "path") {
         eventBus.$emit("removeEnd");

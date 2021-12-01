@@ -20,10 +20,10 @@
           <v-btn
             depressed
             rounded
+            :disabled="!canSubmit"
             color="primary"
             class="submit-button font-weight-bold"
-            @click="handleSubmit"
-          >
+            @click="handleSubmit">
             Plan Trip
           </v-btn>
         </template>
@@ -52,6 +52,12 @@ export default {
   components: {
     Search,
     MarksList,
+  },
+
+  computed: {
+    canSubmit() {
+      return this.$store.getters.point1.length > 0 && this.$store.getters.point2.length > 0;
+    }
   },
 
   data() {
@@ -90,11 +96,10 @@ export default {
       axios
         .get("/api/mark", { params: params })
         .then((res) => {
-          let { marksInSpannedArea, radius, center } = res.data;
+          let { marksInSpannedArea } = res.data;
           this.marks = marksInSpannedArea;
-          eventBus.$emit("drawRoutes",this.marks)
-          eventBus.$emit("draw-plan-radius", center, radius);
-          // eventBus.$emit("drawCircle", center, radius);
+          eventBus.$emit("drawRoutes", this.marks)
+          // eventBus.$emit("draw-plan-radius", center, radius);
         })
         .catch((err) => {
           console.log("this is my err", err);
@@ -108,6 +113,7 @@ export default {
     eventBus.$off("refresh");
     eventBus.$emit("clearPlan");
   },
+
   methods: {
     handleSubmit() {
       this.displayPlan = true;
@@ -124,6 +130,7 @@ export default {
         .then((res) => {
           let { marksInSpannedArea, radius, center } = res.data;
           this.marks = marksInSpannedArea;
+          // eventBus.$emit("clearPlan");
           eventBus.$emit("drawRoutes", this.marks);
           eventBus.$emit("draw-plan-radius", center, radius);
         })
@@ -135,10 +142,12 @@ export default {
     hidePlan() {
       this.displayPlan = false;
       this.results = [];
+      this.marks = [];
       eventBus.$emit("clearPlan");
     },
+
     navigateTo(suggestion) {
-      this.results = []
+      this.results = [];
       if (suggestion.center){
         if (this.type === "start") {
           eventBus.$emit("navigateToStart", suggestion.center);

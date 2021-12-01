@@ -116,13 +116,14 @@ export default {
             this.routing_state.push(coords);
             this.point1 = coords;
             this.$store.dispatch("setPoint1", coords);
+            this.$store.dispatch("setPoint2", []);
             eventBus.$emit("setPoint1");
 
             if (this.map.getLayer("point2")) {
               this.map.removeLayer("point2");
               this.map.removeSource("point2");
             }
-
+            eventBus.$emit("setEndInput","");
             const geojson = {
               type: "FeatureCollection",
               features: [

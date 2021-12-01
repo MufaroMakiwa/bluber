@@ -46,6 +46,7 @@
       <v-btn
         depressed
         rounded
+        :disabled="!canSubmit"
         color="primary"
         class="submit-button font-weight-bold"
         @click="handleSubmit"
@@ -88,6 +89,20 @@ export default {
     };
   },
 
+  computed: {
+    hasCaption() {
+      return this.caption !== null && this.caption.trim().length > 0;
+    },
+
+    hasTags() {
+      return this.selectedTags.length > 0;
+    },
+
+    canSubmit() {
+      return this.hasCaption && this.hasTags;
+    }
+  },
+
   methods: {
     handleSubmit() {
       let mark = {
@@ -103,6 +118,7 @@ export default {
         .then(async () => {
           await this.$store.dispatch('getUser');
           eventBus.$emit("mark-created");
+          eventBus.$emit("display-snackbar", "Mark created successfully");
         })
         .catch((err) => {
           console.log(err);

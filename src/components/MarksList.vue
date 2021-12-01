@@ -181,7 +181,7 @@ export default {
     },
 
     canSaveThisPlan() {
-      return this.displaySaveIcon && !this.planSaved;
+      return this.displaySaveIcon && this.hasDisplayedMarks && !this.planSaved;
     },
 
     isSignedIn() {
@@ -217,6 +217,7 @@ export default {
         .then(() => {
           this.planSaved = true;
           this.$store.dispatch('getUser');
+          eventBus.$emit("display-snackbar", "Plan saved successfully");
         })
         .catch(err => {
           console.log(err);

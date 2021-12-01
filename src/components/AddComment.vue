@@ -36,7 +36,13 @@
         Cancel
       </v-btn>
 
-      <v-btn depressed small rounded color="primary" @click="handleSubmit">
+      <v-btn 
+        depressed 
+        small 
+        rounded 
+        color="primary" 
+        :disabled="!canSubmit"
+        @click="handleSubmit">
         {{ buttonLabel }}
       </v-btn>
     </div>
@@ -90,6 +96,10 @@ export default {
 
     imageUrl() {
       return this.isSignedIn ? this.user.imageUrl : "";
+    },
+
+    canSubmit() {
+      return this.comment.trim().length > 0;
     }
   },
 

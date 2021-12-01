@@ -4,6 +4,7 @@
     <div class="save-container">
       <h3 class="save-title">Save this plan</h3>
         <v-text-field
+          color="primary"
           label="Plan Name"
           placeholder="e.g Home Route"
           outlined
@@ -27,6 +28,7 @@
         <v-btn
           rounded
           depressed
+          :disabled="buttonDisabled"
           color="primary"
           small
           class="save-button"
@@ -63,6 +65,12 @@ export default {
     submit() {
       this.$emit('save-plan', this.name);
       this.name = "";
+    }
+  },
+
+  computed: {
+    buttonDisabled() {
+      return this.name === null || this.name.trim().length === 0;
     }
   }
 }

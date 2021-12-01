@@ -1,7 +1,7 @@
 <template>
   <div class="outer">
     <transition name="fade">
-      <Search mode="mark" v-if="!addingMarkDetails">
+      <Search mode="mark" v-if="!addingMarkDetails" @search-type="updateSearchType">
         <template v-slot:heading> Where do you want to mark? </template>
         <template v-slot:content>
           <div class="search-results">
@@ -20,6 +20,7 @@
           <v-btn
             depressed
             rounded
+            :disabled="!canSubmit"
             color="primary"
             class="submit-button font-weight-bold"
             @click="handleSubmit"
@@ -56,6 +57,8 @@ export default {
 
     eventBus.$on("mark-created", () => {
       this.addingMarkDetails = false;
+      this.$store.dispatch('setMapState', 'marking');
+      eventBus.$emit("marking");
       this.results = [];
     });
 
@@ -87,6 +90,7 @@ export default {
       addingMarkDetails: false,
       results: [],
       type: "start",
+      searchType: "intersection"
     };
   },
 
@@ -96,11 +100,18 @@ export default {
       return `lat: ${toPrecision(this.$store.getters.startMarker[0], 8)} -- 
               lng: ${toPrecision(this.$store.getters.startMarker[1], 8)}`
     },
+
     end: function () {
       if (this.$store.getters.endMarker.length === 0) return "";
       return `lat: ${toPrecision(this.$store.getters.endMarker[0], 8)} -- 
               lng: ${toPrecision(this.$store.getters.endMarker[1], 8)}`
     },
+
+    canSubmit() {
+      const hasStart = this.$store.getters.startMarker.length > 0;
+      const hasEnd = this.$store.getters.endMarker.length > 0;
+      return this.searchType === 'intersection' ? hasStart : hasStart && hasEnd;
+    }
   },
   methods: {
     handleSubmit() {
@@ -118,14 +129,11 @@ export default {
         eventBus.$emit("setEndInput", suggestion.place_name);
       }
     },
-  },
 
-  // watch:{
-
-  //   addingMarkDetails: function(val){
-  //     this.addingMarkDetails = val;
-  //   }
-  // }
+    updateSearchType(type) {
+      this.searchType = type;
+    }
+  }
 };
 </script>
 
