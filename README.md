@@ -28,6 +28,13 @@ then you will find the application at `localhost:8080` in the browser
 - **Jianna Liu**:
   - src
     - Map.vue
+  - models (mongo conversion)
+  - routes
+    - comment-controller.js
+    - reply-controller.js
+    - user-controller.js
+    - saved-controller.js
+    - rating-controller.js
 - **Hophin Kibona**:
   - components
     - LogIn.vue
