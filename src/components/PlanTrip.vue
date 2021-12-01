@@ -102,7 +102,6 @@ export default {
   ,
   methods: {
     handleSubmit() {
-      this.displayPlan = true;
       let params = {
         startLat: this.$store.getters.point1[1] ,
         startLng: this.$store.getters.point1[0] ,
@@ -111,6 +110,7 @@ export default {
       }
 
       axios.get("/api/mark",{params:params}).then((res)=>{
+        this.displayPlan = true;
         let {marksInSpannedArea, radius, center } = res.data
         this.marks = marksInSpannedArea;
         eventBus.$emit("drawRoutes",this.marks)

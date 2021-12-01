@@ -11,13 +11,14 @@
 
         <template v-slot:header-control>
           <div class="control-container">
-            <v-tooltip z-index="999" bottom v-if="canSaveThisPlan"> 
+            <v-tooltip z-index="999" bottom v-if="isSignedIn && canSaveThisPlan"> 
               <template v-slot:activator="{ on, attrs }">
               <v-btn
                 icon
                 color="gray"
                 @click="displaySaveDialog=true"
                 v-on="on"
+                class="left-header-icon"
                 v-bind="attrs">
                 <font-awesome-icon icon="save" class="header-control-icon"/>
               </v-btn>
@@ -97,6 +98,7 @@ import MarkCard from "./MarkCard.vue";
 import MarkDetails from "./MarkDetails.vue";
 import ViewTemplate from "./ViewTemplate.vue";
 import SavePlanDialog from "./SavePlanDialog.vue";
+import axios from 'axios';
 
 export default {
   name: "MarksList",
@@ -180,6 +182,10 @@ export default {
 
     canSaveThisPlan() {
       return this.displaySaveIcon && !this.planSaved;
+    },
+
+    isSignedIn() {
+      return this.$store.getters.isSignedIn;
     }
   }
   ,
@@ -193,9 +199,28 @@ export default {
       }
     },
 
-    handleSavePlan() {
+    handleSavePlan(name) {
       this.displaySaveDialog = false;
-      this.planSaved = true;
+      const body = {
+        name: name,
+        start: {
+          lat: this.$store.getters.point1[1],
+          lng: this.$store.getters.point1[0],
+        },
+        end: {
+          lat: this.$store.getters.point2[1],
+          lng: this.$store.getters.point2[0]
+        }
+      };
+
+      axios.post('/api/saved', body)
+        .then(() => {
+          this.planSaved = true;
+          this.$store.dispatch('getUser');
+        })
+        .catch(err => {
+          console.log(err);
+        })
     },
 
     handleUpdateFilters(filters) {
@@ -231,6 +256,10 @@ export default {
 
 .header-control-icon {
   font-size: 1rem;
+}
+
+.left-header-icon {
+  margin-right: 1rem
 }
 
 .clear-icon {

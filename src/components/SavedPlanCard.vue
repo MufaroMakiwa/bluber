@@ -3,7 +3,7 @@
     <div class="header-container">
       <div class="name-date-container">
         <h3>{{ plan.name }}</h3>
-        <span class="date">Saved {{ plan.dateAdded }}</span>
+        <span class="date">Saved {{ formatDate(plan.dateAdded) }}</span>
       </div>
       <OptionsMenu 
         :options="options"
@@ -16,7 +16,7 @@
           <div class="point-icon"></div>
         </div>
         <div class="name-container">
-          <span class="name">{{ plan.start }}</span>
+          <span class="name">{{ startName }}</span>
         </div>
       </div>
       <div class="plan-point end">
@@ -24,7 +24,7 @@
           <div class="point-icon"></div>
         </div>
         <div class="name-container">
-          <span class="name">{{ plan.end }}</span>
+          <span class="name">{{ endName }}</span>
         </div>
       </div>
     </div>
@@ -33,6 +33,8 @@
 
 <script>
 import OptionsMenu from "./OptionsMenu.vue"
+import { formatDate, toPrecision } from '../utils';
+import axios from 'axios';
 
 
 export default {
@@ -58,9 +60,30 @@ export default {
     }
   },
 
+  computed: {
+    startName() {
+      return `lat: ${toPrecision(this.plan.start.lat, 6)} - lng: ${toPrecision(this.plan.start.lng, 6)}`
+    },
+
+    endName() {
+      return `lat: ${toPrecision(this.plan.end.lat, 6)} - lng: ${toPrecision(this.plan.end.lng, 6)}`
+    }
+  },
+
   methods: {
     deleteSavedPlan() {
-      console.log("Plan deleted");
+      this.$emit('delete-plan', this.plan._id)
+      axios.delete('/api/saved/' + this.plan._id)
+        .then(async () => {
+          await this.$store.dispatch('getUser');
+        })
+        .catch(err => {
+          console.log(err);
+        })
+    },
+
+    formatDate(d){
+      return formatDate(d)
     }
   }
 }

@@ -33,7 +33,7 @@ async function findAllByUserId(userId){
 
 async function deleteOne(savedId){
     try{
-      const saved = await Saved.remove({savedId: savedId});
+      const saved = await Saved.deleteOne({_id: savedId});
       return saved;
     } catch(err){
       return false;

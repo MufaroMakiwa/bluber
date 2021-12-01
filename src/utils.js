@@ -46,7 +46,7 @@ export function formatDate(date) {
     return d.slice(0, 3).join('.') + ' ' + d.slice(3).join(':');
   }
 
-export function toPrecision(x) {
-  if (typeof x === "number"){return Number.parseFloat(x.toPrecision(2))}
-  else if (typeof x === "string") {return Number.parseFloat(Number.parseFloat(x).toPrecision(2))}
+export function toPrecision(x, precision=2) {
+  if (typeof x === "number") {return Number.parseFloat(x.toPrecision(precision))}
+  else if (typeof x === "string") {return Number.parseFloat(Number.parseFloat(x).toPrecision(precision))}
 }

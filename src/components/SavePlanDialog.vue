@@ -8,22 +8,10 @@
           placeholder="e.g Home Route"
           outlined
           clearable
-          autofocus
           dense
           class="name-field"
           v-model="name">
       </v-text-field>
-
-      <div class="switch-container">
-        <v-switch
-          class="switch"
-          v-model="includeFilters"
-          inset
-          dense
-          label="Include filters">
-        </v-switch>
-      </div>
-
      
       <div class="save-buttons-container">
         <v-btn
@@ -73,7 +61,7 @@ export default {
 
   methods: {
     submit() {
-      this.$emit('save-plan');
+      this.$emit('save-plan', this.name);
       this.name = "";
     }
   }
@@ -103,18 +91,6 @@ export default {
 .name-field {
   margin-top: 1rem;
   width: 100%;
-}
-
-.switch-container {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  justify-content: flex-start;
-  flex-direction: row;
-}
-
-.switch {
-  margin-top: 0;
 }
 
 .save-buttons-container {
