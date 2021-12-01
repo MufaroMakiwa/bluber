@@ -17,6 +17,7 @@
           v-if="template === 'user-marks'" 
           title="My Marks" 
           :marks="marks"
+          :displaySaveIcon="false"
           :userMarks="true"/>
         <SavedPlans v-if="template === 'user-saved'"/>
         <Notifications v-if="template === 'notifications'"/>

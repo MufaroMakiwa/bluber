@@ -8,6 +8,10 @@
       </h2>
 
       <div class="input-container start">
+        <div 
+          :class="['search-icon-container', searchType === 'path' ? 'icon-line top' : '']">
+          <div class="icon start"></div>
+        </div>
         <SearchInputField
           v-model="start"
           :label="startLabel"
@@ -29,6 +33,11 @@
         </v-btn>
       </div>
       <div class="input-container end" v-if="displayEndPointInput">
+        <div 
+          :class="['search-icon-container', searchType === 'path' ? 'icon-line bottom' : '']">
+          <div class="icon end"></div>
+        </div>
+
         <SearchInputField
           v-model="end"
           :label="endLabel"
@@ -172,6 +181,11 @@ export default {
     };
   },
 
+  created() {
+    // this helps to show the dots when the searchType is plan
+    this.mode === 'plan' && this.setSearchType();
+  },
+
   methods: {
     setSearchType() {
       let prevType = this.searchType;
@@ -265,6 +279,50 @@ export default {
 
 .search-heading {
   margin-bottom: 1rem;
+}
+
+.search-icon-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-right: 1.5rem;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.search-icon-container .icon {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.search-icon-container .icon.end {
+  background-color: rgb(57, 135, 190);
+}
+
+.search-icon-container .icon.start {
+  background-color: rgb(248, 76, 76);
+}
+
+.icon-line::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-100%);
+  border: 1px dashed rgb(57, 135, 190);
+  height: 100%;
+  z-index: 0;
+}
+
+.icon-line.top::before {
+  top: 50%;
+}
+
+.icon-line.bottom::before {
+  bottom: 50%;
 }
 
 .input-container {
