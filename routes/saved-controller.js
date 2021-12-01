@@ -8,6 +8,15 @@ async function findOne(savedId){
     return false;
     }
   }
+
+  async function findOneByName(name){
+    try{
+    const saved = await Saved.find({name: name});
+    return saved;
+    } catch(err){
+    return false;
+    }
+  }
   
 async function addOne(userId, start, end, name){
     const date = new Date();
@@ -44,5 +53,6 @@ module.exports = Object.freeze({
     findOne,
     addOne,
     findAllByUserId,
-    deleteOne
+    deleteOne,
+    findOneByName
   });
