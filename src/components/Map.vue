@@ -264,6 +264,43 @@ export default {
     });
 
     eventBus.$on("drawRoutes", (marks) => {
+
+
+        this.routes.forEach((routeId) => {
+          if (this.map.getLayer(routeId)) {
+            this.map.removeLayer(routeId);
+          }
+
+          if (this.map.getSource(routeId)) {
+            this.map.removeSource(routeId);
+          }
+
+          if (this.map.getLayer("point-" + routeId)) {
+            this.map.removeLayer("point-" + routeId);
+          }
+
+          if (this.map.getSource("point-" + routeId)) {
+            this.map.removeSource("point-" + routeId);
+          }
+          if (this.map.getLayer("end-" + routeId)) {
+            this.map.removeLayer("end-" + routeId);
+          }
+
+          if (this.map.getSource("end-" + routeId)) {
+            this.map.removeSource("end-" + routeId);
+          }
+
+          if (this.planMarkers[routeId]) {
+            // console.log("I'm removing plan markers");
+            this.planMarkers[routeId].remove();
+          }
+        });
+
+        this.planMarkers = [];
+        this.routes = [];
+
+
+
       this.routesDisplayed = true;
       const randomColor = (() => {
         "use strict";
@@ -280,33 +317,40 @@ export default {
         };
       })();
 
+
+
       marks.forEach((mark) => {
+
+
         if (mark.path.length !== 0) {
-          this.map.addLayer({
-            id: mark._id,
-            type: "line",
-            source: {
-              type: "geojson",
-              data: {
-                type: "Feature",
-                properties: {},
-                geometry: {
-                  type: "LineString",
-                  coordinates: mark.path,
+
+
+          if (!this.map.getLayer(mark._id)){
+            this.map.addLayer({
+              id: mark._id,
+              type: "line",
+              source: {
+                type: "geojson",
+                data: {
+                  type: "Feature",
+                  properties: {},
+                  geometry: {
+                    type: "LineString",
+                    coordinates: mark.path,
+                  },
                 },
               },
-            },
-            layout: {
-              "line-join": "round",
-              "line-cap": "round",
-            },
-            paint: {
-              "line-color": `${randomColor()}`,
-              "line-width": 10,
-            },
-          });
-
-          this.routes.push(mark._id);
+              layout: {
+                "line-join": "round",
+                "line-cap": "round",
+              },
+              paint: {
+                "line-color": `${randomColor()}`,
+                "line-width": 10,
+              },
+            });
+            this.routes.push(mark._id);
+        
 
           const geojsonStart = {
             type: "FeatureCollection",
@@ -386,7 +430,9 @@ export default {
               },
             });
           }
+        }
         } else {
+     
           const marker = new mapboxgl.Marker()
             .setLngLat([mark.start.lng, mark.start.lat])
             .addTo(this.map);
@@ -444,7 +490,22 @@ export default {
 
     eventBus.$on("draw-plan-radius", (center, radius) => {
 
-      console.log(center,radius, "from save")
+
+
+      if (this.map.getLayer("circle-outline")) {
+        this.map.removeLayer("circle-outline");
+      }
+      if (this.map.getSource("circle-outline")) {
+        this.map.removeSource("circle-outline");
+      }
+      if (this.map.getLayer("circleData")) {
+        this.map.removeLayer("circleData");
+      }
+      if (this.map.getSource("circleData")) {
+        this.map.removeSource("circleData");
+      }
+
+      // console.log(center,radius, "from save")
       let center1 = turf.point([center.lng, center.lat]);
 
       let options = {
@@ -462,6 +523,8 @@ export default {
           data: circle,
         });
       }
+
+  
 
       if (this.map.getLayer("circle-outline")){
         this.map.addSource("circleData", {
