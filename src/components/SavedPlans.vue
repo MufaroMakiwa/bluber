@@ -25,6 +25,7 @@
       v-if="displayPlan" 
       :requiresBackButton="true" 
       title="Marks in area"
+      :marks="[]"
       @back="displayPlan=false"/>
     
   </div>

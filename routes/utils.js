@@ -103,6 +103,7 @@ function sortResponsesByKey(responses, key="dateAdded"){
 async function deleteMark(markId){ 
   let comments = await commentController.findAllByMarkId(markId);
   await Promise.all(comments.map(async (comment) => await replyController.deleteMany(comment._id)));
+  await ratingController.deleteMany(markId);
   await commentController.deleteMany(markId);
   await markController.deleteOne(markId);
 }

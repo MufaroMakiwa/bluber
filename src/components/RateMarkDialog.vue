@@ -1,53 +1,53 @@
 <template>
-  <transition name="fade">
-    <div
-      v-if="display"
-      @wheel.prevent 
-      @scroll.prevent 
-      @touchmove.prevent 
-      class="modal">
-      <div class="add-rating">
-        <h3 class="rate-title">Rate this mark</h3>
-        <v-divider></v-divider>
-        <v-rating
-          class="rating"
-          v-model="rating"
-          color="yellow darken-3"
-          background-color="grey darken-1"
-          empty-icon="$ratingFull"
-          hover
-          size="28"></v-rating>
+  <PageModalTemplate
+    :display="display">
+    <div class="add-rating">
+      <h3 class="rate-title">Rate this mark</h3>
+      <v-divider></v-divider>
+      <v-rating
+        class="rating"
+        v-model="rating"
+        color="yellow darken-3"
+        background-color="grey darken-1"
+        empty-icon="$ratingFull"
+        hover
+        size="28"></v-rating>
 
 
-        <div class="rating-buttons-container">
-          <v-btn
-            rounded
-            outlined
-            color="primary"
-            small
-            class="rating-button"
-            @click="$emit('cancel')">
-            Cancel
-          </v-btn>
+      <div class="rating-buttons-container">
+        <v-btn
+          rounded
+          outlined
+          color="primary"
+          small
+          class="rating-button"
+          @click="$emit('cancel')">
+          Cancel
+        </v-btn>
 
-          <v-btn
-            rounded
-            depressed
-            color="primary"
-            small
-            class="rating-button"
-            @click="submit">
-            Rate
-          </v-btn>
-        </div>
+        <v-btn
+          rounded
+          depressed
+          color="primary"
+          small
+          class="rating-button"
+          @click="submit">
+          Rate
+        </v-btn>
       </div>
     </div>
-  </transition>
+  </PageModalTemplate>
 </template>
 
 <script>
+import PageModalTemplate from "./PageModalTemplate.vue";
+
 export default {
   name: "RateMarkDialog",
+
+  components: {
+    PageModalTemplate
+  },
 
   props: {
     display: Boolean
@@ -69,27 +69,13 @@ export default {
 </script>
 
 <style scoped>
-.modal {
-  background-color: rgba(0, 0, 0, 0.6);
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: default;
-}
-
 .add-rating {
   width: 250px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding: 1rem;
+  padding: 1.25rem;
   background-color: white;
   border-radius: 8px;
 }

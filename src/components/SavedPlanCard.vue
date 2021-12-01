@@ -6,9 +6,8 @@
         <span class="date">Saved {{ plan.dateAdded }}</span>
       </div>
       <OptionsMenu 
-        deleteTitle="Delete plan"
-        @edit="editSavedPlan"
-        @delete="deleteSavedPlan"/>
+        :options="options"
+        @delete-plan="deleteSavedPlan"/>
     </div>
 
     <div class="plan-details">
@@ -47,13 +46,21 @@ export default {
     plan: Object
   },
 
+  data() {
+    return {
+      options: [
+        {
+          title: "Delete plan",
+          icon: "trash-alt",
+          event: "delete-plan"
+        }
+      ]
+    }
+  },
+
   methods: {
-    editSavedPlan() {
-
-    },
-
     deleteSavedPlan() {
-
+      console.log("Plan deleted");
     }
   }
 }
