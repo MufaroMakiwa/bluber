@@ -48,7 +48,6 @@ export default {
       mapVectors: {},
       accessToken:
         "pk.eyJ1IjoiaGlsbHp5dGFwcyIsImEiOiJja2MxZ3dtankxNThpMnpsbXo1MG4zdHkzIn0.mxO9d6EI9Xcr6d9RmmR3Jg",
-      mapStyle: "mapbox://styles/mapbox/streets-v11",
       planningVectors: [],
       navigationControl: null,
       geocoderControl: null,
@@ -69,7 +68,17 @@ export default {
     eventBus.$off("fly-to");
   },
 
-  beforeCreate() {},
+  computed: {
+    mapStyle() {
+      return this.$store.getters.mapStyle;
+    }
+  },
+
+  watch: {
+    mapStyle(oldVal, newValue) {
+      this.map.setStyle('mapbox://styles/mapbox/' + newValue);
+    }
+  },
 
   mounted() {
     mapboxgl.accessToken = this.accessToken;

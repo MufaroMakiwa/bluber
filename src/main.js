@@ -33,7 +33,7 @@ import {
   faSave,
   faLayerGroup,
   faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
-import { faStar as faStarRegular } from '@fortawesome/free-regular-svg-icons';
+import { faStar as faStarRegular, faCircle, faDotCircle } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 
@@ -42,7 +42,7 @@ library.add(
   faMapMarked, faExchangeAlt, faMinus, faStarHalf, faEdit,
   faStarRegular, faBell, faMapMarker, faMap, faEllipsisH,
   faTimesCircle, faTimes, faArrowLeft, faFilter, faTrashAlt,
-  faSignOutAlt, faSave, faLayerGroup
+  faSignOutAlt, faSave, faLayerGroup, faCircle, faDotCircle
 );
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 

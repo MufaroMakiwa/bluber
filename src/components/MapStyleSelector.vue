@@ -24,33 +24,45 @@
       <v-list class="menu-options">
 
         <v-list-item 
-          @click="$emit('set-map-type', 'satelite')" class="list-item">
-          <v-list-item-title>Satellite</v-list-item-title>
+          :input-value="style === 'satellite-v9'"
+          color="primary"
+          @click="updateMapStyle('satellite-v9')" class="list-item">
+          <v-list-item-title>Satellite view</v-list-item-title>
         </v-list-item>
         
         <v-divider></v-divider>
 
         <v-list-item 
-          @click="$emit('set-map-type', 'dark')" class="list-item">
-          <v-list-item-title>Dark</v-list-item-title>
+          :input-value="style === 'dark-v10'"
+          color="primary"
+          @click="updateMapStyle('dark-v10')" class="list-item">
+          <v-list-item-title>Dark overlay</v-list-item-title>
         </v-list-item>
 
         <v-divider></v-divider>
 
         <v-list-item 
-          @click="$emit('set-map-type', 'street')" class="list-item">
-          <v-list-item-title>Street</v-list-item-title>
+          :input-value="style === 'streets-v11'"
+          color="primary"
+          @click="updateMapStyle('streets-v11')" class="list-item">
+          <v-list-item-title>Street view</v-list-item-title>
         </v-list-item>
 
       </v-list>
     </v-menu>
   </div>
 </template>
-
 <script>
+
 
 export default {
   name: "OptionsMenu",
+
+  computed: {
+    style() {
+      return this.$store.getters.mapStyle;
+    }
+  },
 
   data() {
     return {
@@ -68,6 +80,12 @@ export default {
           type: "streets"
         }
       ]
+    }
+  },
+
+  methods: {
+    updateMapStyle(style) {
+      this.$store.dispatch("setMapStyle", style);
     }
   }
 }

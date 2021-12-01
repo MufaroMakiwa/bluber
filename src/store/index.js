@@ -15,7 +15,8 @@ const store = new Vuex.Store({
     point2: [],
     bbox: [-73.508142, 41.237964, -69.928393, 42.886589], //xmin	ymin	xmax	ymax
     route: [],
-    user: null
+    user: null,
+    mapStyle: 'streets-v11'
   },
 
   mutations: {
@@ -42,6 +43,9 @@ const store = new Vuex.Store({
     },
     setRoute(state, payload) {
       state.route = payload;
+    },
+    setMapStyle(state, payload) {
+      state.mapStyle = payload;
     },
     setUser(state, payload) {
       state.user = payload;
@@ -79,10 +83,13 @@ const store = new Vuex.Store({
     setUser(state, payload) {
       state.commit('setUser', payload)
     },
+    setMapStyle(state, payload) {
+      state.commit('setMapStyle', payload);
+    },
     async getUser(state) {
       const response = await axios.get('/api/user/session');
       state.commit('setUser', response.data.user);
-    }
+    },
   },
 
   getters: {
@@ -95,8 +102,9 @@ const store = new Vuex.Store({
     route: state => state.route,
     isSignedIn: state => state.user !== null,
     user: state => state.user,
-    point1: (state) => state.point1,
-    point2: (state) => state.point2
+    point1: state => state.point1,
+    point2: state => state.point2,
+    mapStyle: state => state.mapStyle
   }
 });
 
