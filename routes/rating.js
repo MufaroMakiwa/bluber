@@ -39,7 +39,7 @@ router.post(
  * @name DELETE /rating/:markId?
  * 
  * @param {string} markid - the Id of mark to be remove a rating from
- *  @throws {403} - if user is not logged logged in, trying to rate their own mark or
+ * @throws {403} - if user is not logged logged in, trying to rate their own mark or
  *                  trying to rate when they are already rating
  * @throws {400} - if mark with given id does not exist
  */
