@@ -47,32 +47,33 @@ import { eventBus } from "../main";
 export default {
   name: "AddMark",
 
-  beforeCreate() {
-    eventBus.$on("searchResult", (results, type) => {
+  beforeMount() {
+    eventBus.$on("searchResultMark", (results, type) => {
       this.type = type;
       this.results = results;
     });
 
     eventBus.$on("mark-created", () => {
-      console.log("mark created");
       this.addingMarkDetails = false;
       this.results = [];
     });
-    eventBus.$on("input", (text) => {
+
+    eventBus.$on("inputMark", (text) => {
       if (text.length === 0) {
         this.results = [];
       }
     });
 
-    eventBus.$on("clearSuggestions", () => {
+    eventBus.$on("clearSuggestionsMark", () => {
       this.results = [];
     });
+
   },
   beforeDestroy() {
     eventBus.$off("mark-created");
-    eventBus.$off("input");
-    eventBus.$off("clearSuggestions");
-    eventBus.$off("searchResult");
+    eventBus.$off("inputMark");
+    eventBus.$off("clearSuggestionsMark");
+    eventBus.$off("searchResultMark");
     eventBus.$emit("clearAddMark");
   },
   components: {
@@ -112,12 +113,14 @@ export default {
     },
 
     navigateTo(suggestion) {
+      this.results = [];
       // console.log("this is my suggestion",suggestion)
       if (this.type === "start") {
-        // console.log("navigating", suggestion.center, this.type);
-        eventBus.$emit("navigateToStart", suggestion.center);
+        eventBus.$emit("setStartInput", suggestion.place_name);
+        eventBus.$emit("navigateToStartMark", suggestion.center);
       } else {
-        eventBus.$emit("navigateToEnd", suggestion.center);
+        eventBus.$emit("navigateToEndMark", suggestion.center);
+        eventBus.$emit("setEndInput", suggestion.place_name);
       }
     },
   },

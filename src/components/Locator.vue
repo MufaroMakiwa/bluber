@@ -94,7 +94,6 @@ export default {
   },
   beforeDestroy() {
     eventBus.$off("bikes-result");
-    eventBus.$off("input");
     eventBus.$emit("clearLocator");
   },
   methods: {

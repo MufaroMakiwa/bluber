@@ -110,7 +110,6 @@ export default {
         path: this.$store.getters.route,
       };
 
-      // console.log(mark);
       axios
         .post("/api/mark", mark)
         .then(async () => {
@@ -120,6 +119,7 @@ export default {
         .catch((err) => {
           console.log(err);
         });
+      eventBus.$emit("clearAddMark");
     },
 
     tagClick(tag) {

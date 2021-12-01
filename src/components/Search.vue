@@ -75,7 +75,7 @@ export default {
     mode: String,
   },
 
-  beforeCreate() {
+  beforeMount() {
     eventBus.$on("setStart", () => {
       this.start =
         this.$store.getters.startMarker[0] +
@@ -105,7 +105,6 @@ export default {
     });
 
     eventBus.$on("input", (text, type) => {
-      console.log("this is happening",type,text)
       this.handleSuggestion(text, type);
     });
 
@@ -202,19 +201,33 @@ export default {
     },
 
     async handleSuggestion(text, type) {
+     
       if (text.length !== 0) {
         let bbox = this.$store.getters.bbox;
+       
         try {
+           
           const query = await axios.get(
               `https://api.mapbox.com/geocoding/v5/mapbox.places/${text}.json?bbox=${bbox[0]},${bbox[1]},${bbox[2]},${bbox[3]}&access_token=pk.eyJ1IjoiaGlsbHp5dGFwcyIsImEiOiJja2MxZ3dtankxNThpMnpsbXo1MG4zdHkzIn0.mxO9d6EI9Xcr6d9RmmR3Jg`
           );
-            eventBus.$emit("searchResult", query.data.features, type);
+
+          eventBus.$emit("searchResultPlan", query.data.features, type);
+          eventBus.$emit("searchResultMark", query.data.features, type);
+          eventBus.$emit("searchResultLocator", query.data.features, type);
+          // eventBus.$emit("searchRes", query.data.features, type);
         } catch (error) {
-          eventBus.$emit("searchResult", [], type);
+          eventBus.$emit("searchResultPlan", [], type);
+          eventBus.$emit("searchResultLocator", [], type);
+          eventBus.$emit("searchResultMark", [], type);
+          
         }       
-      } else {
-        eventBus.$emit("searchResult", [], type);
-      }
+      } 
+      // else {
+
+      //     eventBus.$emit("searchResultPlan", [], type);
+      //     eventBus.$emit("searchResultLocator", [], type);
+      //     eventBus.$emit("searchResultMark", [], type);
+      // }
     },
     toPrecision(x) {
       return toPrecision(x);

@@ -2,9 +2,7 @@
   <div class="outer">
     <transition name="fade">
       <Search mode="plan" v-if="!displayPlan">
-        <template v-slot:heading>
-          Where are you going?
-        </template>
+        <template v-slot:heading> Where are you going? </template>
         <template v-slot:content>
           <div class="search-results">
             <div
@@ -24,47 +22,55 @@
             rounded
             color="primary"
             class="submit-button font-weight-bold"
-            @click="handleSubmit"> 
+            @click="handleSubmit"
+          >
             Plan Trip
           </v-btn>
         </template>
       </Search>
     </transition>
 
-    <MarksList 
+    <MarksList
       title="Marks in area"
       :marks="marks"
       @back="hidePlan"
       v-if="displayPlan"
-      :requiresBackButton="true"/>
+      :requiresBackButton="true"
+    />
   </div>
 </template>
 
 <script>
 import Search from "./Search.vue";
 import MarksList from "./MarksList.vue";
-import {eventBus} from "../main";
-import axios from 'axios';
+import { eventBus } from "../main";
+import axios from "axios";
 
 export default {
   name: "PlanTrip",
 
   components: {
-    Search, MarksList,
+    Search,
+    MarksList,
   },
 
   data() {
     return {
       displayPlan: false,
       type: "start",
-      results : [],
-      marks : [],
-    }
+      results: [],
+      marks: [],
+    };
   },
-  beforeCreate(){
-    eventBus.$on("searchResult", (results, type) => {
+
+  beforeCreate() {
+    eventBus.$on("searchResultPlan", (results, type) => {
       this.type = type;
-      this.results = results;
+      if (this.results.length === 0) {
+        this.results = [{place_name:"Try another input", text:"No places found that match your search"}]
+      } else {
+        this.results = results;
+      }
     });
 
     eventBus.$on("input", (text) => {
@@ -73,71 +79,77 @@ export default {
       }
     });
 
-    eventBus.$on("refresh",()=>{
+    eventBus.$on("refresh", () => {
       let params = {
-        startLat: this.$store.getters.point1[1] ,
-        startLng: this.$store.getters.point1[0] ,
-        endLat: this.$store.getters.point2[1] , 
+        startLat: this.$store.getters.point1[1],
+        startLng: this.$store.getters.point1[0],
+        endLat: this.$store.getters.point2[1],
         endLng: this.$store.getters.point2[0],
-      }
+      };
 
-        axios.get("/api/mark",{params:params}).then((res)=>{
-          let {marksInSpannedArea, radius, center } = res.data          
+      axios
+        .get("/api/mark", { params: params })
+        .then((res) => {
+          let { marksInSpannedArea, radius, center } = res.data;
           this.marks = marksInSpannedArea;
           // eventBus.$emit("drawRoutes",this.marks)
-          eventBus.$emit("drawCircle",center,radius);
-      }).catch((err)=>{
-        console.log("this is my err",err)
-      });
-    })
-
+          eventBus.$emit("drawCircle", center, radius);
+        })
+        .catch((err) => {
+          console.log("this is my err", err);
+        });
+    });
   },
-  
-  beforeDestroy(){
-      eventBus.$off("searchResult");
-      eventBus.$off("input");
-      eventBus.$off("refresh");
-      eventBus.$emit("clearPlan");
-  }
-  ,
+
+  beforeDestroy() {
+    eventBus.$off("searchResultPlan");
+    eventBus.$off("inputPlan");
+    eventBus.$off("refresh");
+    eventBus.$emit("clearPlan");
+  },
   methods: {
     handleSubmit() {
       this.displayPlan = true;
-      let params = {
-        startLat: this.$store.getters.point1[1] ,
-        startLng: this.$store.getters.point1[0] ,
-        endLat: this.$store.getters.point2[1] , 
-        endLng: this.$store.getters.point2[0],
-      }
 
-      axios.get("/api/mark",{params:params}).then((res)=>{
-        let {marksInSpannedArea, radius, center } = res.data
-        this.marks = marksInSpannedArea;
-        eventBus.$emit("drawRoutes",this.marks)
-        console.log(radius,center)
-        // eventBus.$emit("draw-plan-radius",center,radius)
-      }).catch((err)=>{
-        console.log("this is my err",err)
-      });
+      let params = {
+        startLat: this.$store.getters.point1[1],
+        startLng: this.$store.getters.point1[0],
+        endLat: this.$store.getters.point2[1],
+        endLng: this.$store.getters.point2[0],
+      };
+
+      axios
+        .get("/api/mark", { params: params })
+        .then((res) => {
+          let { marksInSpannedArea, radius, center } = res.data;
+          this.marks = marksInSpannedArea;
+          eventBus.$emit("drawRoutes", this.marks);
+          eventBus.$emit("draw-plan-radius", center, radius);
+        })
+        .catch((err) => {
+          console.log("this is my err", err);
+        });
     },
 
     hidePlan() {
       this.displayPlan = false;
       this.results = [];
-    } 
-    ,
+      eventBus.$emit("clearPlan");
+    },
     navigateTo(suggestion) {
-
-      if (this.type === "start") {
-        eventBus.$emit("navigateToStart", suggestion.center);
-        eventBus.$emit("setStartInput",suggestion.place_name);
-      } else {
-        eventBus.$emit("navigateToEnd", suggestion.center);
-        eventBus.$emit("setEndInput",suggestion.place_name);
+      this.results = []
+      if (suggestion.center){
+        if (this.type === "start") {
+          eventBus.$emit("navigateToStart", suggestion.center);
+          eventBus.$emit("setStartInput", suggestion.place_name);
+        } else {
+          eventBus.$emit("navigateToEnd", suggestion.center);
+          eventBus.$emit("setEndInput", suggestion.place_name);
+        }
       }
     },
-  }
-}
+  },
+};
 </script>
 
 <style scoped>
@@ -145,7 +157,6 @@ export default {
   width: 100%;
   height: 100%;
 }
-
 
 .search-results {
   width: 100%;
@@ -187,5 +198,4 @@ export default {
   font-weight: bold;
   font-size: 14px;
 }
-
 </style>

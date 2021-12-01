@@ -12,7 +12,8 @@ import MapboxDirections from "@mapbox/mapbox-gl-directions/dist/mapbox-gl-direct
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import * as turf from "@turf/turf";
-
+// import 'leaflet-arrowheads';
+// import L from "leaflet";
 import axios from "axios";
 import { latLng } from "leaflet";
 import { eventBus } from "../main";
@@ -56,6 +57,8 @@ export default {
       point2: [],
       startMarker: [-71.110558, 42.373611],
       endMarker: [],
+      planMarkers: {},
+      routes: [],
     };
   },
 
@@ -264,7 +267,7 @@ export default {
       })();
 
       marks.forEach((mark) => {
-        if (mark.path.length) {
+        if (mark.path.length !== 0) {
           this.map.addLayer({
             id: mark._id,
             type: "line",
@@ -288,13 +291,94 @@ export default {
               "line-width": 10,
             },
           });
-        } else {
 
+          this.routes.push(mark._id);
+
+          const geojsonStart = {
+            type: "FeatureCollection",
+            features: [
+              {
+                type: "Feature",
+                geometry: {
+                  type: "Point",
+                  coordinates: mark.path[0],
+                },
+              },
+            ],
+          };
+
+          if (this.map.getSource("point-" + mark._id)) {
+            // console.log("source exists");
+            this.map.getSource("point-" + mark._id).setData(geojsonStart);
+          } else {
+            this.map.addSource("point-" + mark._id, {
+              type: "geojson",
+              data: geojsonStart,
+            });
+          }
+
+          if (this.map.getLayer("point-" + mark._id)) {
+            console.log("layer exists");
+          } else {
+            console.log("adding layer");
+            this.map.addLayer({
+              id: "point-" + mark._id,
+              type: "circle",
+              source: "point-" + mark._id,
+              paint: {
+                "circle-radius": 10,
+                "circle-color": "#F84C4C", // red color
+                "circle-stroke-width": 3,
+                "circle-stroke-color": "#ffffff",
+              },
+            });
+          }
+          const geojsonEnd = {
+            type: "FeatureCollection",
+            features: [
+              {
+                type: "Feature",
+                geometry: {
+                  type: "Point",
+                  coordinates: mark.path[mark.path.length - 1],
+                },
+              },
+            ],
+          };
+
+          if (this.map.getSource("end-" + mark._id)) {
+            console.log("source exists");
+            this.map.getSource("end-" + mark._id).setData(geojsonEnd);
+          } else {
+            this.map.addSource("end-" + mark._id, {
+              type: "geojson",
+              data: geojsonEnd,
+            });
+          }
+
+          if (this.map.getLayer("end-" + mark._id)) {
+            console.log("layer exists");
+          } else {
+            // console.log("adding layer");
+            this.map.addLayer({
+              id: "end-" + mark._id,
+              type: "circle",
+              source: "end-" + mark._id,
+              paint: {
+                "circle-radius": 10,
+                "circle-color": "#3887be", // blue color
+                "circle-stroke-width": 3,
+                "circle-stroke-color": "#ffffff",
+              },
+            });
+          }
+        } else {
           const marker = new mapboxgl.Marker()
             .setLngLat([mark.start.lng, mark.start.lat])
             .addTo(this.map);
 
-          console.log(marker)
+          this.planMarkers[mark._id] = marker;
+          this.routes.push(mark._id);
 
           this.map.addLayer({
             id: mark._id,
@@ -318,12 +402,10 @@ export default {
             paint: {
               "circle-radius": 8,
               "circle-color": `${randomColor()}`,
-              'circle-stroke-width': 2,
-              'circle-stroke-color': '#ffffff'
+              "circle-stroke-width": 3,
+              "circle-stroke-color": "#ffffff",
             },
           });
-
-
         }
 
         this.map.on("mouseenter", mark._id, (e) => {
@@ -356,20 +438,63 @@ export default {
 
       let circle = turf.circle(center1, radius, options);
 
-      this.map.addSource("circleData", {
-        type: "geojson",
-        data: circle,
-      });
+      if (this.map.getSource("circleData")) {
+        this.map.getSource("circleData").setData(circle);
+      } else {
+        this.map.addSource("circleData", {
+          type: "geojson",
+          data: circle,
+        });
+      }
 
-      this.map.addLayer({
-        id: "circle-fill",
-        type: "fill",
-        source: "circleData",
-        paint: {
-          "fill-color": "#3887be",
-          "fill-opacity": 0.8,
-        },
-      });
+      if (this.map.getLayer("circle-outline")){
+        this.map.addSource("circleData", {
+          type: "geojson",
+          data: circle,
+        });
+
+      }else{
+        this.map.addLayer({
+          id: "circle-outline",
+          type: "line",
+          source: {
+            type: "geojson",
+            data: circle,
+          },
+          paint: {
+            "line-color": "blue",
+            "line-opacity": 0.5,
+            "line-width": 10,
+            "line-offset": 5,
+          },
+        });
+      }
+
+
+      //remove the start
+      if (this.map.getLayer("point1")) {
+        this.map.removeLayer("point1");
+      }
+
+      if (this.map.getSource("point1")) {
+        this.map.removeSource("point1");
+      }
+
+      // remove the ends
+      if (this.map.getLayer("point2")) {
+        this.map.removeLayer("point2");
+      }
+
+      if (this.map.getSource("point2")) {
+        this.map.removeSource("point2");
+      }
+
+      this.routing_state = [];
+      this.point1 = [];
+      this.point2 = [];
+
+      this.$store.dispatch("setPoint1", []);
+      this.$store.dispatch("setPoint2", []);
     });
     /**
      * clear Locator listener
@@ -443,6 +568,7 @@ export default {
     });
 
     eventBus.$on("clearPlan", () => {
+      // console.log("I'm clearing the plan")
       this.point1 = [];
       this.point2 = [];
       this.$store.dispatch("setPoint1", []);
@@ -467,13 +593,53 @@ export default {
         this.map.removeSource("point2");
       }
 
-      if (this.map.getLayer("circle-fill")) {
-        this.map.removeLayer("circle-fill");
+      if (this.map.getLayer("circle-outline")) {
+        this.map.removeLayer("circle-outline");
       }
-
+      if (this.map.getSource("circle-outline")) {
+        this.map.removeSource("circle-outline");
+      }
+      if (this.map.getLayer("circleData")) {
+        this.map.removeLayer("circleData");
+      }
       if (this.map.getSource("circleData")) {
         this.map.removeSource("circleData");
       }
+
+      this.routesDisplayed = false;
+
+      this.routes.forEach((routeId) => {
+        if (this.map.getLayer(routeId)) {
+          this.map.removeLayer(routeId);
+        }
+
+        if (this.map.getSource(routeId)) {
+          this.map.removeSource(routeId);
+        }
+
+        if (this.map.getLayer("point-" + routeId)) {
+          this.map.removeLayer("point-" + routeId);
+        }
+
+        if (this.map.getSource("point-" + routeId)) {
+          this.map.removeSource("point-" + routeId);
+        }
+        if (this.map.getLayer("end-" + routeId)) {
+          this.map.removeLayer("end-" + routeId);
+        }
+
+        if (this.map.getSource("end-" + routeId)) {
+          this.map.removeSource("end-" + routeId);
+        }
+
+        if (this.planMarkers[routeId]) {
+          // console.log("I'm removing plan markers");
+          this.planMarkers[routeId].remove();
+        }
+      });
+
+      this.planMarkers = [];
+      this.routes = [];
     });
 
     eventBus.$on("switch", () => {
@@ -528,8 +694,11 @@ export default {
       }
     });
 
+
+    // this.listenForPlanningMarkers()
+    // this.listenForMarkers()
     eventBus.$on("marking", this.listenForMarkers);
-    eventBus.$on("planning", this.listenForPlanningMarkers);
+    // eventBus.$on("planning", this.listenForPlanningMarkers);
 
     eventBus.$on("fly-to", (coords) => {
       this.map.flyTo({
@@ -898,6 +1067,8 @@ export default {
         },
         labelLayerId
       );
+        this.listenForPlanningMarkers()
+        // this.listenForMarkers()
     });
   },
 
@@ -1077,7 +1248,8 @@ export default {
 
       this.$store.dispatch("setStartMarker", this.startMarker);
       eventBus.$emit("setStart");
-      // this.$store.dispatch('setStartMarker', this.startMarker);
+
+
       this.map.on("mouseenter", "point", () => {
         // this.map.setPaintProperty("point", "circle-color", "#3bb2d0");
         canvas.style.cursor = "move";
@@ -1143,7 +1315,8 @@ export default {
     listenForMarkers() {
       this.initializeMarkingMap();
 
-      eventBus.$on("navigateToStart", (coords) => {
+      eventBus.$on("navigateToStartMark", (coords) => {
+
         this.startMarker = coords;
         this.$store.dispatch("setStartMarker", coords);
         const geojson = {
@@ -1159,7 +1332,15 @@ export default {
           ],
         };
 
-        if (this.map.getLayer("point") && this.map.getSource("point")) {
+        if (this.map.getLayer("point")){
+          console.log("removing a layer")
+          this.map.removeLayer("point")
+        }
+        if (this.map.getSource("point")){
+          this.map.removeSource("point")
+        }
+
+        if (this.map.getLayer("point")) {
           this.map.getSource("point").setData(geojson);
         } else {
           this.map.addLayer({
@@ -1196,9 +1377,10 @@ export default {
         if (!this.isIntersectionState()) {
           this.getRouteStart(coords);
         }
+
       });
 
-      eventBus.$on("navigateToEnd", (coords) => {
+      eventBus.$on("navigateToEndMark", (coords) => {
         this.$store.dispatch("setEndMarker", coords);
         // this.$store.dispatch('setMarkType', this.startMarker);
         // eventBus.$emit("setEnd");
@@ -1253,6 +1435,8 @@ export default {
     },
 
     listenForPlanningMarkers() {
+      // console.log("listening for markers");
+      // console.log("listenforMarkers")
       eventBus.$on("navigateToStart", (coords) => {
         this.point1 = coords;
         this.$store.dispatch("setPoint1", coords);

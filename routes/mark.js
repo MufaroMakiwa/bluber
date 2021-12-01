@@ -21,6 +21,7 @@ router.get(
       lat: parseFloat(req.query.endLat),
       lng: parseFloat(req.query.endLng)
     }
+
     let response = await markController.getMarksInSpannedArea(start, end);
     response.marksInSpannedArea = await Promise.all(response.marksInSpannedArea.map(async (mark) => await constructMarkResponse(mark, req.session.userId)))
     response.marksInSpannedArea = sortResponsesByKey(response.marksInSpannedArea)
