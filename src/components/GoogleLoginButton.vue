@@ -47,7 +47,7 @@ export default {
   data() {
     return {
       params: {
-        client_id: '622048437-gdm1h3v3uj49e3nhaj9b7b620i18ni02.apps.googleusercontent.com'
+        client_id: '617587199418-i6m15318ai2dbu1sj4a8ec2nrhu0d855.apps.googleusercontent.com'
       }
     }
   },
