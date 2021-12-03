@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const validator = require("./middleware");
 const replyController = require("./reply-controller");
-const { constructReplyResponse }  = require("./utils");
+const { constructReplyResponse, isCurrentUserComment }  = require("./utils");
 
 
 /**
@@ -27,7 +27,9 @@ router.post(
   ],
   async (req, res) => {
     const { commentId, content, targetUserId } = req.body;
-    const reply = await replyController.addOne(req.session.userId, commentId, content, targetUserId);
+    const userComment = await isCurrentUserComment(commentId, req.session.userId);
+    const notificationStatus = userComment ? "IGNORED" : "NEW";
+    const reply = await replyController.addOne(req.session.userId, commentId, content, targetUserId, notificationStatus);
     res.status(201).json({
       reply: await constructReplyResponse(reply)
     }).end();

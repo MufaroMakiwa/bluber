@@ -15,8 +15,7 @@ const CommentSchema = new Schema(
     },
       "dateAdded": {
         type: Date,
-        required: false,
-        default: new Date(),
+        required: true,
     },
       "content": {
         type: String,
@@ -26,6 +25,10 @@ const CommentSchema = new Schema(
         type: String,
         required: true,
     },
+      "notificationStatus": {
+        type: String,
+        required: true,
+    }
   }
 );
 

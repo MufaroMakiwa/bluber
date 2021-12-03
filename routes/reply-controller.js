@@ -9,10 +9,10 @@ async function findOne(replyId){
     }
   }
   
-async function addOne(userId, commentId ,content, targetUserId){
+async function addOne(userId, commentId ,content, targetUserId, notificationStatus){
     const date = new Date();
     
-    const reply = new Reply({userId: userId, dateAdded: date, commentId: commentId, content: content, targetUserId: targetUserId});
+    const reply = new Reply({userId: userId, dateAdded: date, commentId: commentId, content: content, targetUserId: targetUserId, notificationStatus: notificationStatus});
     try {
         await reply.save();
         return reply;

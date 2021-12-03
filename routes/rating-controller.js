@@ -12,7 +12,7 @@ async function findOne(userId, markId){
 async function addOne(userId, markId, ratingContent, targetUserId){
     const date = new Date();
     
-    const rating = new Rating({userId: userId, markId: markId, dateAdded: date, rating: ratingContent, targetUserId: targetUserId});
+    const rating = new Rating({userId: userId, markId: markId, dateAdded: date, rating: ratingContent, targetUserId: targetUserId, notificationStatus: "NEW"});
     try {
         await rating.save();
         return rating;

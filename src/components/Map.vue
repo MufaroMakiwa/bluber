@@ -1280,6 +1280,13 @@ export default {
     },
 
     initializeMarkingMap() {
+      // move the map to center on start
+      this.map.flyTo({
+        center: this.startMarker,
+        zoom: 16,
+        essential: true, // this animation is considered essential with respect to prefers-reduced-motion
+      });
+
       const canvas = this.map.getCanvasContainer();
 
       const geojson = {

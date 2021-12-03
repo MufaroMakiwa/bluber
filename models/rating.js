@@ -25,6 +25,10 @@ const RatingSchema = new Schema(
         type: String,
         required: true,
     },
+      "notificationStatus": {
+        type: String,
+        required: true,
+    }
   }
 );
 
