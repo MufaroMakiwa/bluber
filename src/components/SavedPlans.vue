@@ -16,9 +16,9 @@
               @click.native="renderPlan(plan)"/>
           </div>
 
-          <div v-else class="no-saved-container">
-            <span class="no-plans">You currently do not have any saved plans</span>
-          </div>
+          <NoContent 
+            v-else
+            message="You currently do not have any saved plans"/>
         </template>
       </ViewTemplate>
     </transition>
@@ -37,6 +37,7 @@
 <script>
 import ViewTemplate from "./ViewTemplate.vue";
 import SavedPlanCard from "./SavedPlanCard.vue";
+import NoContent from "./NoContent.vue";
 import MarksList from "./MarksList.vue";
 import axios from 'axios';
 import { eventBus } from "../main";
@@ -45,7 +46,7 @@ export default {
   name: "SavedPlans",
 
   components: {
-    ViewTemplate, SavedPlanCard, MarksList
+    ViewTemplate, SavedPlanCard, MarksList, NoContent
   },
 
   computed: {
@@ -120,16 +121,5 @@ export default {
   justify-content: flex-start;
   width: 100%;
   margin-top: 1.5rem;
-}
-
-.no-saved-container {
-  display: flex;
-  margin-top: 1.5rem;
-  width: 100%;
-}
-
-.no-plans {
-  font-weight: bold;
-  color: gray;
 }
 </style>

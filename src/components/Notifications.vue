@@ -1,21 +1,29 @@
 <template>
-  <ViewTemplate>
+  <ViewTemplate
+    :contentPadded="false">
     <template v-slot:heading>
       Notifications
     </template>
 
     <template v-slot:content>
-      <pre 
-        v-for="(notification, index) in notifications"
-        :key="index">
-        {{ JSON.stringify(notification, null, 4) }}
-      </pre>
+      <div class="notifications" v-if="hasNotifications">
+        <NotificationCard 
+          v-for="(notification, index) in notifications"
+          :key="notification._id"
+          :index="index"
+          :notification="notification"/>
+      </div>
+
+      <NoContent 
+        v-else
+        message="You do not have any notifications at the moment"/>
     </template>
   </ViewTemplate>
 </template>
 
 <script>
 import ViewTemplate from "./ViewTemplate.vue";
+import NotificationCard from "./NotificationCard.vue"
 import axios from 'axios';
 
 
@@ -23,7 +31,7 @@ export default {
   name: "Notifications",
 
   components: {
-    ViewTemplate
+    ViewTemplate, NotificationCard
   },
 
   computed: {
@@ -37,6 +45,10 @@ export default {
 
     notifications() {
       return this.isSignedIn ? this.user.notifications : [];
+    },
+
+    hasNotifications() {
+      return this.notifications.length > 0;
     },
 
     replyNotifications() {
@@ -77,4 +89,9 @@ export default {
 </script>
 
 <style scoped>
+.notifications {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
 </style>

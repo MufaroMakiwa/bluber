@@ -65,9 +65,7 @@
             @click.native="handleMarkClick(mark)"/>
           </div>
 
-          <div class="no-marks-container" v-else>
-            <span class="no-marks">{{ emptyMessage }}</span>
-          </div>
+          <NoContent :message="emptyMessage" v-else/>
         </template>
       </ViewTemplate>
     </transition>
@@ -95,6 +93,7 @@
 import { eventBus } from '../main';
 import Filters from "./Filters.vue";
 import MarkCard from "./MarkCard.vue";
+import NoContent from "./NoContent.vue";
 import MarkDetails from "./MarkDetails.vue";
 import ViewTemplate from "./ViewTemplate.vue";
 import SavePlanDialog from "./SavePlanDialog.vue";
@@ -104,7 +103,7 @@ export default {
   name: "MarksList",
 
   components: {
-    Filters, MarkCard, MarkDetails, ViewTemplate, SavePlanDialog
+    Filters, MarkCard, MarkDetails, ViewTemplate, SavePlanDialog, NoContent
   },
 
   props: {
@@ -272,17 +271,6 @@ export default {
   flex-direction: column;
   flex-grow: 1;
   margin-top: 1.5rem;
-}
-
-.no-marks-container {
-  display: flex;
-  margin-top: 1.5rem;
-  width: 100%;
-}
-
-.no-marks {
-  font-weight: bold;
-  color: gray;
 }
 
 .control-container {

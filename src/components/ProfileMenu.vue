@@ -120,13 +120,6 @@ export default {
     }
   },
 
-  props: {
-    notificationCount: {
-      default: 0,
-      type: Number
-    }
-  },
-
   computed: {
     displayedNotificationCount() {
     return this.notificationCount < 100 
@@ -164,6 +157,10 @@ export default {
 
     imageUrl() {
       return this.isSignedIn ? this.user.imageUrl : "";
+    },
+
+    notificationCount() {
+      return this.isSignedIn ? this.user.notifications.length : 0;
     }
   },
 

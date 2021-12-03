@@ -15,7 +15,7 @@
       <slot name="header-second-row"></slot>  
     </div>
 
-    <div class="content">
+    <div :class="[contentPadded ? 'content' : '']">
       <slot name="content"></slot>
     </div>
   </div>
@@ -35,6 +35,11 @@ export default {
   props: {
     backButton: {
       default: false,
+      type: Boolean,
+    },
+
+    contentPadded: {
+      default: true,
       type: Boolean,
     }
   }
