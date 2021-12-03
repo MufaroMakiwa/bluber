@@ -48,6 +48,18 @@ async function findAllByTargetUserId(targetUserId){
     }
 }
 
+async function updateOne(replyId, updates){
+  try{
+    const reply = await Reply.findOne({_id: replyId});
+    updates.notificationStatus && (reply.notificationStatus = updates.notificationStatus);
+    reply.save();
+    return reply;
+
+  } catch(err){
+    return false;
+  }
+}
+
 async function deleteOne(replyId){
     try{
       const reply = await Reply.deleteOne({_id: replyId});
@@ -77,5 +89,6 @@ module.exports = Object.freeze({
     findAllByCommentId,
     findAllByTargetUserId,
     deleteOne,
+    updateOne,
     deleteMany
   });

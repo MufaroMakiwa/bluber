@@ -113,6 +113,17 @@ export default {
     }
   },
 
+  created() {
+    this.userMarks &&  eventBus.$emit("drawRoutes", {
+      marks: [this.mark],
+      centerOnRender: true
+    });
+  },
+
+  beforeDestroy() {
+    eventBus.$emit("clearPlan");
+  },
+
   computed: {
     options() {
       return this.isCurrentUserMark 

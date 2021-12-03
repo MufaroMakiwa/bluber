@@ -126,9 +126,9 @@ export default {
   beforeMount(){
     eventBus.$on("openMarkDetails",(mark)=>{
       this.displayedMark = mark;
-    });
-  }
-  ,
+    }); 
+  },
+
   data() {
     return {
       displayFilters: false,

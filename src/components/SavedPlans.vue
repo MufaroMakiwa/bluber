@@ -93,7 +93,10 @@ export default {
         this.displayPlan = true;
         let {marksInSpannedArea, radius, center } = res.data
         this.marks = marksInSpannedArea;
-        eventBus.$emit("drawRoutes",this.marks)
+        eventBus.$emit("drawRoutes", {
+            marks: this.marks,
+            centerOnRender: false
+          })
         eventBus.$emit("draw-plan-radius", center, radius);
       })
       .catch((err) => {

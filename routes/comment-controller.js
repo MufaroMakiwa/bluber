@@ -1,53 +1,63 @@
 const Comment = require("../models/comment");
 
 async function findOne(commentId){
-    try{
+  try{
     const comment = await Comment.findOne({_id: commentId});
     return comment;
-    } catch(err){
+  } catch(err){
     return false;
-    }
   }
+}
   
 async function addOne(userId, markId, content, targetUserId, notificationStatus){
-    const date = new Date();    
-    const comment = new Comment({userId: userId,  markId: markId, dateAdded: date, content: content, targetUserId: targetUserId, notificationStatus: notificationStatus});
-    try {
-        await comment.save();
-        return comment;
-    } catch(err) {
-        return false;
-    }
+  const date = new Date();    
+  const comment = new Comment({userId: userId,  markId: markId, dateAdded: date, content: content, targetUserId: targetUserId, notificationStatus: notificationStatus});
+  try {
+      await comment.save();
+      return comment;
+  } catch(err) {
+      return false;
   }
+}
 
 async function findAllByUserId(userId){
-    try{
-      const comment = await Comment.find({userId: userId});
-      return comment;
-    } catch(err){
-      return false;
-    }
+  try{
+    const comment = await Comment.find({userId: userId});
+    return comment;
+  } catch(err){
+    return false;
   }
+}
 
 async function findAllByMarkId(markId){
-    try{
-        const comment = await Comment.find({markId: markId});
-        return comment;
-    } catch(err){
-        return false;
-    }
+  try{
+    const comment = await Comment.find({markId: markId});
+    return comment;
+  } catch(err){
+    return false;
+  }
 }
 
 async function findAllByTargetUserId(targetUserId){
     try{
-        const comment = await Comment.find({targetUserId: targetUserId});
-        return comment;
+      const comment = await Comment.find({targetUserId: targetUserId});
+      return comment;
     } catch(err){
-        return false;
+      return false;
     }
 }
 
+async function updateOne(commentId, updates){
+  try{
+    const comment = await Comment.findOne({_id: commentId});
+    updates.notificationStatus && (comment.notificationStatus = updates.notificationStatus);
+    comment.save();
+    return comment;
 
+  } catch(err){
+    return false;
+  }
+}
 
 async function deleteOne(commentId){
   try{
@@ -79,5 +89,6 @@ module.exports = Object.freeze({
   findAllByMarkId,
   findAllByTargetUserId,
   deleteOne,
-  deleteMany
+  deleteMany,
+  updateOne,
 });

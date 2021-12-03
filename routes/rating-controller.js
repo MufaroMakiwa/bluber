@@ -48,17 +48,16 @@ async function findAllByTargetUserId(targetUserId){
     }
 }
 
-// TODO
-async function updateOne(userId, markId, ratingContent){
-    try{
-        const rating = await Rating.find({markId: markId, userId: userId});
-        rating.rating = ratingContent;
-        rating.dateModified = new Date();
-        rating.save();
-        return rating;
-    } catch(err){
-        return false;
-    }
+async function updateOne(ratingId, updates){
+  try{
+    const rating = await Rating.findOne({_id: ratingId});
+    updates.notificationStatus && (rating.notificationStatus = updates.notificationStatus);
+    rating.save();
+    return rating;
+
+  } catch(err){
+    return false;
+  }
 }
 
 async function deleteOne(userId, markId){

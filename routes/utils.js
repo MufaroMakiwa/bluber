@@ -3,7 +3,7 @@ const markController = require("./mark-controller");
 const replyController = require("./reply-controller");
 const ratingController = require("./rating-controller");
 const userController = require("./user-controller");
-const savedController = require("./saved-controller")
+const savedController = require("./saved-controller");
 
 
 async function constructMarkResponse(mark, userId) {
@@ -208,6 +208,27 @@ async function isCurrentUserComment(commentId, userId) {
   return comment.userId === userId;
 }
 
+async function updateNotificationStatuses(body) {
+  const updates = {
+    notificationStatus: body.status
+  }
+
+  // update rating notificcations
+  body.ratingIds && (await Promise.all(
+    body.ratingIds.map(async (ratingId) => await ratingController.updateOne(ratingId, updates))
+  ));
+
+  // update reply notifications
+  body.replyIds && (await Promise.all(
+    body.replyIds.map(async (replyId) => await replyController.updateOne(replyId, updates))
+  ));
+
+  // update comment notifications
+  body.commentIds && (await Promise.all(
+    body.commentIds.map(async (commentId) => await commentController.updateOne(commentId, updates))
+  ));
+}
+
 
 module.exports = Object.freeze({
     constructMarkResponse,
@@ -218,5 +239,6 @@ module.exports = Object.freeze({
     deleteMark,
     deleteComment,
     isCurrentUserMark,
-    isCurrentUserComment
+    isCurrentUserComment,
+    updateNotificationStatuses
 });

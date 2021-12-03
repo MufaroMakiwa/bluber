@@ -31,6 +31,20 @@ Create a new user with given name, email and imageUrl
 
 ##### Success code: 201
 
+#### PATCH /api/user/notifications
+
+Update the notification status for given notifications
+
+- @param {string} updatedStatus - The new status to update the notifcations with
+- @param {String[]} likeIds - A list of likeIds for notifications to update
+- @param {String[]} refreetIds - A list of refreet ids for notifications to update
+- @param {String[]} acceptedRequestIds - A list of acceptedrequest ids to update
+- @param {String[]} newFollowerIds - A list of new follower notifications to update
+- @return {string} - a success message
+- @throws {403} - if the user is not logged in
+
+##### Success code: 200
+
 ### MARKING
 
 #### GET /api/mark

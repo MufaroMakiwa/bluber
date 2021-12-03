@@ -271,8 +271,10 @@ export default {
       }
     });
 
-    eventBus.$on("drawRoutes", (marks) => {
+    eventBus.$on("drawRoutes", (obj) => {
 
+        const marks = obj.marks;
+        const centerOnRender = obj.centerOnRender;
 
         this.routes.forEach((routeId) => {
           if (this.map.getLayer(routeId)) {
@@ -471,6 +473,16 @@ export default {
           });
         }
 
+        // center the camera if centerOnRender is true. This will only be true
+        // when displaying one mark
+        if (centerOnRender) {
+          this.map.flyTo({
+            center: [marks[0].start.lng, marks[0].start.lat],
+            zoom: 14,
+            essential: true, // this animation is considered essential with respect to prefers-reduced-motion
+          });
+        }
+
         this.map.on("mouseenter", mark._id, () => {
           this.map.getCanvas().style.cursor = "pointer";
         });
@@ -490,9 +502,6 @@ export default {
     });
 
     eventBus.$on("draw-plan-radius", (center, radius) => {
-
-
-
       if (this.map.getLayer("circle-outline")) {
         this.map.removeLayer("circle-outline");
       }
