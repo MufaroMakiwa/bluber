@@ -10,7 +10,7 @@
           <v-rating
             class="rating"
             :value="toPrecision(rating)"
-            :color="[!disabled ? 'yellow darken-3' : 'grey']"
+            color="yellow darken-3"
             background-color="grey darken-1"
             empty-icon="$ratingFull"
             half-increments
@@ -71,11 +71,6 @@ export default {
     },
 
     addTooltip: {
-      default: false,
-      type: Boolean
-    },
-
-    disabled: {
       default: false,
       type: Boolean
     }

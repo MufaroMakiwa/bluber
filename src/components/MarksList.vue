@@ -80,7 +80,7 @@
       v-if="displayedMark !== null"
       :mark="displayedMark"
       :userMarks="userMarks"
-      @back="displayedMark=null"/>
+      @back="handleBack"/>
 
     <SavePlanDialog 
       :display="displaySaveDialog"
@@ -122,6 +122,7 @@ export default {
       type: Boolean,
     }
   },
+
   beforeMount(){
     eventBus.$on("openMarkDetails",(mark)=>{
       this.displayedMark = mark;
@@ -189,6 +190,11 @@ export default {
   }
   ,
   methods: {
+    handleBack() {
+      this.displayedMark = null;
+      this.userMarks && eventBus.$emit('clearPlan');
+    },
+
     clearFilters() {
       this.filters = {
         sortBy: "dateAdded",
@@ -236,7 +242,7 @@ export default {
   watch: {
       marks: function(newMarks){
         if (this.displayedMark){
-          this.displayedMark = newMarks.filter((m)=>(this.displayedMark._id===m._id))[0]
+          this.displayedMark = newMarks.filter((m) => this.displayedMark._id===m._id)[0]
         }
       }
   }

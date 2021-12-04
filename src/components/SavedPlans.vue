@@ -2,7 +2,7 @@
   <div class="outer">
     <transition name="fade">
       <ViewTemplate 
-        v-if="!displayPlan">
+        v-if="displayedPlan === null">
         <template v-slot:heading>
           Saved Plans
         </template>
@@ -24,7 +24,7 @@
     </transition>
 
     <MarksList 
-      v-if="displayPlan" 
+      v-if="displayedPlan !== null" 
       :requiresBackButton="true" 
       title="Marks in area"
       :marks="marks"
@@ -65,18 +65,25 @@ export default {
 
   data() {
     return {
-      displayPlan: false,
+      displayedPlan: null,
       marks: []
     }
   },
 
+  mounted() {
+    eventBus.$on("refresh", () => {
+      this.displayedPlan !== null && this.renderPlan(this.displayedPlan);
+    })
+  },
+
   beforeDestroy() {
+    eventBus.$off("refresh");
     eventBus.$emit("clearPlan");
   },
 
   methods: {
     hidePlan() {
-      this.displayPlan=false;
+      this.displayedPlan = null;
       this.marks = [];   
       eventBus.$emit("clearPlan");
     },
@@ -91,7 +98,7 @@ export default {
 
       axios.get("/api/mark",{params:params})
       .then((res) => {
-        this.displayPlan = true;
+        this.displayedPlan = plan;
         let {marksInSpannedArea, radius, center } = res.data
         this.marks = marksInSpannedArea;
         eventBus.$emit("drawRoutes", {

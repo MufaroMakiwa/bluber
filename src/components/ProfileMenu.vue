@@ -160,7 +160,15 @@ export default {
     },
 
     notificationCount() {
-      return this.isSignedIn ? this.user.notifications.length : 0;
+      if (!this.isSignedIn) {
+        return 0
+      }
+
+      return this.user.notifications.reduce(
+        (prev, curr) => {
+          const toAdd = curr.notificationStatus === "NEW" ? 1 : 0;
+          return prev + toAdd;
+        }, 0)
     }
   },
 

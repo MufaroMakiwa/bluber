@@ -69,7 +69,7 @@ export default {
     };
   },
 
-  beforeCreate() {
+  mounted() {
     eventBus.$on("searchResultPlan", (results, type) => {
       this.type = type;
       if (this.results.length === 0) {
@@ -102,7 +102,6 @@ export default {
             marks: this.marks,
             centerOnRender: false
           })
-          // eventBus.$emit("draw-plan-radius", center, radius);
         })
         .catch((err) => {
           console.log("this is my err", err);
@@ -133,7 +132,6 @@ export default {
         .then((res) => {
           let { marksInSpannedArea, radius, center } = res.data;
           this.marks = marksInSpannedArea;
-          // eventBus.$emit("clearPlan");
           eventBus.$emit("drawRoutes", {
             marks: this.marks,
             centerOnRender: false

@@ -100,7 +100,14 @@ export default {
 
   props: {
     mark: Object,
+
     userMarks: {
+      default: false,
+      type: Boolean,
+    },
+
+    // TODO
+    notificationMark: {
       default: false,
       type: Boolean,
     }
@@ -114,14 +121,10 @@ export default {
   },
 
   created() {
-    this.userMarks &&  eventBus.$emit("drawRoutes", {
+    (this.userMarks || this.notificationMark) &&  eventBus.$emit("drawRoutes", {
       marks: [this.mark],
       centerOnRender: true
     });
-  },
-
-  beforeDestroy() {
-    eventBus.$emit("clearPlan");
   },
 
   computed: {
@@ -192,10 +195,8 @@ export default {
         rating: rating,
         targetUserId: this.mark.user.userId
       })
-      .then(() => {
-        this.userMarks 
-        ? this.$store.dispatch('getUser')
-        : eventBus.$emit("refresh");
+      .then(() => {       
+        eventBus.$emit("refresh");
       })
       .catch((err) => {
         console.log(err)
@@ -208,10 +209,8 @@ export default {
     
     removeRating(){
       axios.delete('/api/rating/' + this.mark._id)
-        .then(() => {
-          this.userMarks 
-          ? this.$store.dispatch('getUser')
-          : eventBus.$emit("refresh");
+        .then(() => {     
+          eventBus.$emit("refresh");
         })
         .catch(err => {
           console.log(err)

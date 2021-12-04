@@ -1,37 +1,58 @@
 <template>
-  <ViewTemplate
-    :contentPadded="false">
-    <template v-slot:heading>
-      Notifications
-    </template>
+  <div class="outer">
+    <transition name="fade">
+      <ViewTemplate
+        v-if="displayedMark === null"
+        :contentPadded="false">
+        <template v-slot:heading>
+          Notifications
+        </template>
 
-    <template v-slot:content>
-      <div class="notifications" v-if="hasNotifications">
-        <NotificationCard 
-          v-for="(notification, index) in notifications"
-          :key="notification._id"
-          :index="index"
-          :notification="notification"/>
-      </div>
+        <template v-slot:content>
+          <div class="notifications" v-if="hasNotifications">
+            <NotificationCard 
+              v-for="(notification, index) in notifications"
+              :key="notification._id"
+              :index="index"
+              :notification="notification"
+              @click.native="handleNotificationClick(notification)"/>
+          </div>
 
-      <NoContent 
-        v-else
-        message="You do not have any notifications at the moment"/>
-    </template>
-  </ViewTemplate>
+          <NoContent 
+            v-else
+            message="You do not have any notifications at the moment"/>
+        </template>
+      </ViewTemplate>
+    </transition>
+    
+    <MarkDetails 
+      v-if="displayedMark !== null"
+      :mark="displayedMark"
+      :notificationMark="true"
+      @back="handleBack"/>
+  </div>
 </template>
 
 <script>
 import ViewTemplate from "./ViewTemplate.vue";
-import NotificationCard from "./NotificationCard.vue"
+import NotificationCard from "./NotificationCard.vue";
+import MarkDetails from "./MarkDetails.vue";
+import NoContent from "./NoContent.vue";
 import axios from 'axios';
+import  { eventBus } from "../main";
 
 
 export default {
   name: "Notifications",
 
+  data() {
+    return {
+      displayedMark: null
+    }
+  },
+
   components: {
-    ViewTemplate, NotificationCard
+    ViewTemplate, NotificationCard, MarkDetails, NoContent
   },
 
   computed: {
@@ -65,30 +86,92 @@ export default {
     }
   },
 
-  async created() {
-    // get an updated user object
-    await this.$store.dispatch('getUser');
+  mounted() {
+    // register refresh eventBus
+    eventBus.$on("refresh", () => {
+      this.$store.dispatch('getUser');
+    })
     
-    // update all the notifications as seen
+
+  },
+
+  beforeDestroy() {
+    this.updateNotificationStatuses();
+    eventBus.$off("refresh");
+  },
+
+  watch: {
+    notifications: function(newNotifications) {
+      if (this.displayedMark) {
+        this.displayedMark = newNotifications.filter(n => this.displayedMark._id === n.mark._id)[0].mark;
+      }
+    }
+  },
+
+
+  methods: {
+    handleBack() {
+      this.displayedMark = null;
+      eventBus.$emit('clearPlan');
+    },
+
+    updateNotificationStatuses() {
+      // update all new notifications as seen
     const body = {
       status: "SEEN",
-      ratingIds: this.ratingNotifications.map(notification => notification._id),
-      replyIds: this.replyNotifications.map(notification => notification._id),
-      commentIds: this.commentNotifications.map(notification => notification._id)
+      ratingIds: this.ratingNotifications
+                     .filter(notification => notification.notificationType === "NEW")
+                     .map(notification => notification._id),
+      replyIds: this.replyNotifications
+                    .filter(notification => notification.notificationType === "NEW")
+                    .map(notification => notification._id),
+      commentIds: this.commentNotifications
+                      .filter(notification => notification.notificationType === "NEW")
+                      .map(notification => notification._id),
     };
 
     axios.patch("/api/user/notifications", body)
       .then(() => {
-        //
+        this.$store.dispatch('getUser');
       })
       .catch(err => {
         console.log(err)
       })
+    },
+
+    handleNotificationClick(notification) {
+      const type = notification.notificationType;
+
+      const body = {
+        status: "OPENED",
+        ...(type === "REPLY" && {replyIds: [notification._id]}),
+        ...(type === "COMMENT" && {commentIds: [notification._id]}),
+        ...(type === "RATING" && {ratingIds: [notification._id]}),
+      };
+
+      notification.notificationStatus !== "OPENED" && 
+        axios.patch("/api/user/notifications", body)
+          .then(() => {
+            this.$store.dispatch('updateNotificationStatus', {
+              status: "OPENED",
+              notificationIds: [notification._id]
+            })
+          })
+          .catch(err => {
+            console.log(err);
+          })
+      this.displayedMark = notification.mark;
+    }
   }
 }
 </script>
 
 <style scoped>
+.outer {
+  width: 100%;
+  height: 100%;
+}
+
 .notifications {
   display: flex;
   flex-direction: column;

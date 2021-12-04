@@ -5,6 +5,7 @@
 
     <div class="notification-card-user-icon">
       <UserIcon 
+        :class="notOpened ? '' : 'tinted'"
         :imageUrl="notification.user.imageUrl"
         :username="name"/>
 
@@ -26,11 +27,16 @@
         {{ details.content }}
       </p>
 
-      <Rating 
+      <v-rating
+        v-else
         class="notification-rating"
-        :disabled="!notOpened"
-        :rating="notification.rating"
-        v-else/>
+        :value="notification.rating"
+        half-increments
+        :color="notOpened ? 'yellow darken-3' : 'grey darken-1'"
+        :empty-icon="notOpened ? '$ratingFull' : '$ratingEmpty'"
+        background-color="grey darken-1"
+        :readonly="true"
+        size="16"></v-rating>
 
       <span class="date">{{ formatDate }}</span>
 
@@ -46,13 +52,12 @@
 <script>
 import { formatDate } from '../utils';
 import UserIcon from "./UserIcon.vue";
-import Rating from "./Rating.vue";
 
 export default {
   name: "NotificationCard",
 
   components: {
-    UserIcon, Rating
+    UserIcon
   },
 
   props: {
@@ -77,8 +82,7 @@ export default {
     },
 
     notificationClass() {
-      // return this.notification.notificationStatus.toLowerCase();
-      return "new";
+      return this.notification.notificationStatus.toLowerCase();
     },
 
     name() {
@@ -95,7 +99,7 @@ export default {
           return {
             notificationIcon: "comments",
             iconClass: "reply",
-            message: "replied one of your comments",
+            message: "replied to one of your comments",
             content: this.notification.content,
           }
 
@@ -150,6 +154,10 @@ export default {
 .notification-card-user-icon {
   position: relative;
   margin: 0 1.5rem;
+}
+
+.tinted {
+  filter: grayscale(100%);
 }
 
 .notification-card-user-icon .icon {
@@ -207,7 +215,7 @@ export default {
 
 .notification-card-details .date {
   margin-top: 0.5rem;
-  color: var(--theme-color);
+  color: #1ba9bf;
   font-size: 0.9rem;
 }
 
