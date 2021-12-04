@@ -39,10 +39,6 @@ input, textarea {
   outline: none;
 }
 
-textarea:hover:not(:focus) {
-  background-color: var(--input-color-hover);
-}
-
 .shadow {
   background-color: white;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);

@@ -13,12 +13,7 @@
       <div class="app-inner">
         <AddMark v-if="template === 'mark'"/>
         <PlanTrip v-if="template === 'plan'"/>
-        <MarksList 
-          v-if="template === 'user-marks'" 
-          title="My Marks" 
-          :marks="marks"
-          :displaySaveIcon="false"
-          :userMarks="true"/>
+        <UserMarks v-if="template === 'user-marks'" />
         <SavedPlans v-if="template === 'user-saved'"/>
         <Notifications v-if="template === 'notifications'"/>
         <Locator v-if="template === 'locator'"/>
@@ -50,7 +45,7 @@
 import Navigator from "../components/Navigator";
 import PlanTrip from "../components/PlanTrip";
 import Notifications from "../components/Notifications";
-import MarksList from "../components/MarksList";
+import UserMarks from "../components/UserMarks";
 import SavedPlans from "../components/SavedPlans";
 import Authentication from "../components/Authentication";
 import AddMark from "../components/AddMark";
@@ -68,7 +63,7 @@ export default {
     PlanTrip,
     AddMark,
     Notifications,
-    MarksList,
+    UserMarks,
     Authentication,
     Locator,
     SavedPlans,
@@ -94,14 +89,6 @@ export default {
     isSignedIn() {
       return this.$store.getters.isSignedIn;
     },
-
-    user() {
-      return this.$store.getters.user;
-    },
-
-    marks() {
-      return this.isSignedIn ? this.user.marks : []
-    }
   },
 
   methods: {

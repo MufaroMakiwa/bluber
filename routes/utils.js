@@ -3,7 +3,7 @@ const markController = require("./mark-controller");
 const replyController = require("./reply-controller");
 const ratingController = require("./rating-controller");
 const userController = require("./user-controller");
-const savedController = require("./saved-controller")
+const savedController = require("./saved-controller");
 
 
 async function constructMarkResponse(mark, userId) {
@@ -33,18 +33,23 @@ async function constructMarkResponse(mark, userId) {
   };
 }
 
-async function constructCommentResponse(comment) {
-  let replies =  await replyController.findAllByCommentId(comment._id);
-  replies = await Promise.all(replies.map(async (reply) => await constructReplyResponse(reply)));
+async function constructCommentResponse(comment, isNotification=false) {
+
+  const getReplies = async () => {
+    let replies =  await replyController.findAllByCommentId(comment._id);
+    replies = await Promise.all(replies.map(async (reply) => await constructReplyResponse(reply)));
+    return sortResponsesByKey(replies);
+  }
+  
  
   return {
     _id: comment._id,
-    user: await constructUserResponseFromUserId(comment.userId),
     markId: comment.markId,
     dateAdded: comment.dateAdded,
     content: comment.content,
-    targetUser: await constructUserResponseFromUserId(comment.targetUserId),
-    replies: sortResponsesByKey(replies)
+    ...(!isNotification && {user: await constructUserResponseFromUserId(comment.userId)}),
+    ...(!isNotification && {targetUser: await constructUserResponseFromUserId(comment.targetUserId)}),
+    ...(!isNotification && {replies: await getReplies()})
   }
 }
 
@@ -86,6 +91,82 @@ async function constructUserResponse(user, includePersonalInfo=true) {
     const ratingCount = userRatings.length;
     return ratingCount === 0 ? 0 : rating / userRatings.length;
   }
+
+  // get reply notifications
+  const getReplyNotifications = async () => {
+    const replies = await replyController.findAllByTargetUserId(user._id);
+    const notifications = await Promise.all(
+      replies
+        .filter(reply => reply.notificationStatus !== "IGNORED")
+        .map(async (reply) => {
+          const comment = await commentController.findOne(reply.commentId);
+          const mark = await markController.findOne(comment.markId);
+          const response = {
+            _id: reply._id,
+            content: reply.content,
+            notificationStatus: reply.notificationStatus,
+            dateAdded: reply.dateAdded,
+            notificationType: "REPLY",
+            user: await constructUserResponseFromUserId(reply.userId),
+            comment: await constructCommentResponse(comment, true),
+            mark: await constructMarkResponse(mark),
+          }
+          return response
+        })
+    );
+    return notifications; 
+  }
+
+  // get comment notifications
+  const getCommentNotifications = async () => {
+    const comments = await commentController.findAllByTargetUserId(user._id);
+    const notifications = await Promise.all(
+      comments
+        .filter(comment => comment.notificationStatus !== "IGNORED")
+        .map(async (comment) => {
+          const mark = await markController.findOne(comment.markId);
+          const response = {   
+            _id: comment._id,
+            content: comment.content,
+            notificationStatus: comment.notificationStatus,
+            dateAdded: comment.dateAdded,
+            notificationType: "COMMENT",
+            user: await constructUserResponseFromUserId(comment.userId),
+            mark: await constructMarkResponse(mark)
+          }
+          return response;
+        })
+    );
+    return notifications;
+  }
+
+  // get rating notifications
+  const getRatingNotifications = async () => {
+    const ratings = await ratingController.findAllByTargetUserId(user._id);
+    const notifications = await Promise.all(
+      ratings.map(async (rating) => {
+        const mark = await markController.findOne(rating.markId);
+        const response = {
+          _id: rating._id,
+          rating: rating.rating,
+          notificationStatus: rating.notificationStatus,
+          dateAdded: rating.dateAdded,
+          notificationType: "RATING",
+          user: await constructUserResponseFromUserId(rating.userId),
+          mark: await constructMarkResponse(mark)
+        }
+        return response;
+      })
+    );
+    return notifications;
+  }
+
+  const getNotifications = async () => {
+    const replyNotifications = await getReplyNotifications();
+    const commentNotifications = await getCommentNotifications();
+    const ratingNotifications = await getRatingNotifications();
+    return sortResponsesByKey(replyNotifications.concat(ratingNotifications, commentNotifications));
+  }
   
   return {
     userId: user._id,
@@ -94,7 +175,8 @@ async function constructUserResponse(user, includePersonalInfo=true) {
     imageUrl: user.imageUrl,
     ...(includePersonalInfo && {rating: await getRating()}),
     ...(includePersonalInfo && {marks: await getMarks()}),
-    ...(includePersonalInfo && {saved: await getSaved()})
+    ...(includePersonalInfo && {saved: await getSaved()}),
+    ...(includePersonalInfo && {notifications: await getNotifications()}),
   };
 }
 
@@ -116,6 +198,37 @@ async function deleteComment(commentId){
 }
 
 
+async function isCurrentUserMark(markId, userId) {
+  let mark = await markController.findOne(markId);
+  return mark.userId === userId;
+}
+
+async function isCurrentUserComment(commentId, userId) {
+  let comment = await commentController.findOne(commentId);
+  return comment.userId === userId;
+}
+
+async function updateNotificationStatuses(body) {
+  const updates = {
+    notificationStatus: body.status
+  }
+
+  // update rating notificcations
+  body.ratingIds && (await Promise.all(
+    body.ratingIds.map(async (ratingId) => await ratingController.updateOne(ratingId, updates))
+  ));
+
+  // update reply notifications
+  body.replyIds && (await Promise.all(
+    body.replyIds.map(async (replyId) => await replyController.updateOne(replyId, updates))
+  ));
+
+  // update comment notifications
+  body.commentIds && (await Promise.all(
+    body.commentIds.map(async (commentId) => await commentController.updateOne(commentId, updates))
+  ));
+}
+
 
 module.exports = Object.freeze({
     constructMarkResponse,
@@ -124,5 +237,8 @@ module.exports = Object.freeze({
     constructUserResponse,
     sortResponsesByKey,
     deleteMark,
-    deleteComment
+    deleteComment,
+    isCurrentUserMark,
+    isCurrentUserComment,
+    updateNotificationStatuses
 });

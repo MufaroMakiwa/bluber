@@ -65,9 +65,7 @@
             @click.native="handleMarkClick(mark)"/>
           </div>
 
-          <div class="no-marks-container" v-else>
-            <span class="no-marks">{{ emptyMessage }}</span>
-          </div>
+          <NoContent :message="emptyMessage" v-else/>
         </template>
       </ViewTemplate>
     </transition>
@@ -82,7 +80,7 @@
       v-if="displayedMark !== null"
       :mark="displayedMark"
       :userMarks="userMarks"
-      @back="displayedMark=null"/>
+      @back="handleBack"/>
 
     <SavePlanDialog 
       :display="displaySaveDialog"
@@ -95,6 +93,7 @@
 import { eventBus } from '../main';
 import Filters from "./Filters.vue";
 import MarkCard from "./MarkCard.vue";
+import NoContent from "./NoContent.vue";
 import MarkDetails from "./MarkDetails.vue";
 import ViewTemplate from "./ViewTemplate.vue";
 import SavePlanDialog from "./SavePlanDialog.vue";
@@ -104,7 +103,7 @@ export default {
   name: "MarksList",
 
   components: {
-    Filters, MarkCard, MarkDetails, ViewTemplate, SavePlanDialog
+    Filters, MarkCard, MarkDetails, ViewTemplate, SavePlanDialog, NoContent
   },
 
   props: {
@@ -123,12 +122,13 @@ export default {
       type: Boolean,
     }
   },
+
   beforeMount(){
     eventBus.$on("openMarkDetails",(mark)=>{
       this.displayedMark = mark;
-    });
-  }
-  ,
+    }); 
+  },
+
   data() {
     return {
       displayFilters: false,
@@ -173,7 +173,11 @@ export default {
     },
 
     emptyMessage() {
-      return this.hasFilters ? 'There are marks with these filters in area.' : 'There are no marks in this area.'
+      if (this.userMarks) {
+        return this.hasFilters ? 'You do not have any marks with these filters.' : 'You have not added any marks yet.'
+      } else {
+        return this.hasFilters ? 'There are marks with these filters in area.' : 'There are no marks in this area.'
+      }
     },
 
     displayAllMarks() {
@@ -190,6 +194,11 @@ export default {
   }
   ,
   methods: {
+    handleBack() {
+      this.displayedMark = null;
+      this.userMarks && eventBus.$emit('clearPlan');
+    },
+
     clearFilters() {
       this.filters = {
         sortBy: "dateAdded",
@@ -237,7 +246,7 @@ export default {
   watch: {
       marks: function(newMarks){
         if (this.displayedMark){
-          this.displayedMark = newMarks.filter((m)=>(this.displayedMark._id===m._id))[0]
+          this.displayedMark = newMarks.filter((m) => this.displayedMark._id===m._id)[0]
         }
       }
   }
@@ -272,17 +281,6 @@ export default {
   flex-direction: column;
   flex-grow: 1;
   margin-top: 1.5rem;
-}
-
-.no-marks-container {
-  display: flex;
-  margin-top: 1.5rem;
-  width: 100%;
-}
-
-.no-marks {
-  font-weight: bold;
-  color: gray;
 }
 
 .control-container {

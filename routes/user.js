@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const validator = require("./middleware");
 const controller = require('./user-controller');
-const { constructUserResponse } = require('./utils');
+const { constructUserResponse, updateNotificationStatuses } = require('./utils');
   
 
 /**
@@ -82,5 +82,30 @@ router.post(
       res.status(503).json({ error }).end();
     }
 });
+
+
+/**
+ * Update notification statuses
+ * 
+ * @name PATCH /user/notifications
+ * @param {String} status - The updated status for the notifications
+ * @param {String[]} ratingIds - The ids for rating notifications to update
+ * @param {String[]} replyIds - The ids for reply notifications to update
+ * @param {String[]} commentIds - The ids for comment notifications to update
+ * @returns {String} - A success message
+ * @throws {403} - If the user is not signed in
+ */
+router.patch(
+  '/notifications',
+  [
+    validator.isUserLoggedIn
+  ],
+  async (req, res) => {
+    await updateNotificationStatuses(req.body);
+    res.status(200).json({ 
+      message: "Notifications updated"
+    }).end();
+  }
+);
 
 module.exports = router;

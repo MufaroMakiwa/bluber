@@ -54,7 +54,7 @@
         <v-divider></v-divider>
 
         <v-list>
-          <!-- <v-list-item 
+          <v-list-item 
             @click="displayNotifications"
             color="primary"
             :input-value="template === 'notifications'">
@@ -67,7 +67,7 @@
               v-if="isDisplayNotificationsCount">
               {{ displayedNotificationCount }}
             </span>         
-          </v-list-item> -->
+          </v-list-item>
 
           <v-list-item 
             @click="displayMarks"
@@ -120,13 +120,6 @@ export default {
     }
   },
 
-  props: {
-    notificationCount: {
-      default: 0,
-      type: Number
-    }
-  },
-
   computed: {
     displayedNotificationCount() {
     return this.notificationCount < 100 
@@ -164,6 +157,18 @@ export default {
 
     imageUrl() {
       return this.isSignedIn ? this.user.imageUrl : "";
+    },
+
+    notificationCount() {
+      if (!this.isSignedIn) {
+        return 0
+      }
+
+      return this.user.notifications.reduce(
+        (prev, curr) => {
+          const toAdd = curr.notificationStatus === "NEW" ? 1 : 0;
+          return prev + toAdd;
+        }, 0)
     }
   },
 

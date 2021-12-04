@@ -70,7 +70,8 @@ export default {
             userId: user.userId,
             rating: user.rating,
             marks: user.marks,
-            saved: user.saved
+            saved: user.saved,
+            notifications: user.notifications,
           });
 
           this.hasRedirect && this.$store.dispatch('setTemplate', this.redirect);

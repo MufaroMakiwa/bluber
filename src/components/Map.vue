@@ -30,6 +30,7 @@ export default {
       center: latLng(42.373611, -71.110558),
       popup: undefined,
       popupContent: "",
+      currentBikePopup: undefined,
       secondPopup: undefined,
       secondPopupContent: "",
       // tooltip: undefined,
@@ -44,7 +45,6 @@ export default {
       routing_state: [],
       circleMarker: {},
       markingState: "path",
-      mapState: "marking", //planning
       mapVectors: {},
       accessToken:
         "pk.eyJ1IjoiaGlsbHp5dGFwcyIsImEiOiJja2MxZ3dtankxNThpMnpsbXo1MG4zdHkzIn0.mxO9d6EI9Xcr6d9RmmR3Jg",
@@ -271,8 +271,10 @@ export default {
       }
     });
 
-    eventBus.$on("drawRoutes", (marks) => {
+    eventBus.$on("drawRoutes", (obj) => {
 
+        const marks = obj.marks;
+        const centerOnRender = obj.centerOnRender;
 
         this.routes.forEach((routeId) => {
           if (this.map.getLayer(routeId)) {
@@ -471,6 +473,16 @@ export default {
           });
         }
 
+        // center the camera if centerOnRender is true. This will only be true
+        // when displaying one mark
+        if (centerOnRender) {
+          this.map.flyTo({
+            center: [marks[0].start.lng, marks[0].start.lat],
+            zoom: 14,
+            essential: true, // this animation is considered essential with respect to prefers-reduced-motion
+          });
+        }
+
         this.map.on("mouseenter", mark._id, () => {
           this.map.getCanvas().style.cursor = "pointer";
         });
@@ -490,9 +502,6 @@ export default {
     });
 
     eventBus.$on("draw-plan-radius", (center, radius) => {
-
-
-
       if (this.map.getLayer("circle-outline")) {
         this.map.removeLayer("circle-outline");
       }
@@ -608,6 +617,12 @@ export default {
       // remove source place
       if (this.map.getSource("places")) {
         this.map.removeSource("places");
+      }
+
+      // remove the currentselected bluebikes popup
+      if (this.currentBikePopup) {
+        console.log("has pop up");
+        this.currentBikePopup.remove();
       }
     });
 
@@ -992,7 +1007,13 @@ export default {
           coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
         }
 
-        new mapboxgl.Popup()
+        if (this.currentBikePopup) {
+          this.currentBikePopup = undefined;
+        }
+
+        this.currentBikePopup = new mapboxgl.Popup({
+          closeButton: false,
+        })
           .setLngLat(coordinates)
           .setHTML(
             `
@@ -1280,6 +1301,13 @@ export default {
     },
 
     initializeMarkingMap() {
+      // move the map to center on start
+      this.map.flyTo({
+        center: this.startMarker,
+        zoom: 16,
+        essential: true, // this animation is considered essential with respect to prefers-reduced-motion
+      });
+
       const canvas = this.map.getCanvasContainer();
 
       const geojson = {
