@@ -45,7 +45,6 @@ export default {
       routing_state: [],
       circleMarker: {},
       markingState: "path",
-      mapState: "marking", //planning
       mapVectors: {},
       accessToken:
         "pk.eyJ1IjoiaGlsbHp5dGFwcyIsImEiOiJja2MxZ3dtankxNThpMnpsbXo1MG4zdHkzIn0.mxO9d6EI9Xcr6d9RmmR3Jg",
