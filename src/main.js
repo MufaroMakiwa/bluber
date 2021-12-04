@@ -7,6 +7,8 @@ import 'leaflet-arrowheads'
 import VueCookie from 'vue-cookie';
 import vuetify from './plugins/vuetify'
 
+import { initializeApp } from 'firebase/app';
+// import { getAnalytics } from "firebase/analytics";
 
 
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -47,6 +49,7 @@ library.add(
   faTimesCircle, faTimes, faArrowLeft, faFilter, faTrashAlt,
   faSignOutAlt, faSave, faLayerGroup, faSatellite, faStreetView
 );
+
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 Vue.config.productionTip = false;
@@ -56,10 +59,27 @@ export const eventBus = new Vue();
 
 Vue.use(VueCookie);
 
+const firebaseConfig = {
+  apiKey: "AIzaSyCD-h_T627RrCy3H_G9SiEF6kwzMHJ9rWk",
+  authDomain: "bluber-332905.firebaseapp.com",
+  projectId: "bluber-332905",
+  storageBucket: "bluber-332905.appspot.com",
+  messagingSenderId: "617587199418",
+  appId: "1:617587199418:web:ba0fe55c4279e230756183",
+  measurementId: "G-LTV2X55SVC"
+};
+
+export const firebase = initializeApp(firebaseConfig);
+
+Vue.use(firebase);
+
+
 new Vue({
   el: '#app',
   router,
   store,
   vuetify,
+  firebase,
   render: h => h(App)
 });
+
