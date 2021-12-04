@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const validator = require("./middleware");
 const commentController = require("./comment-controller");
-const { deleteComment, constructCommentResponse }  = require("./utils");
+const { deleteComment, constructCommentResponse, isCurrentUserMark }  = require("./utils");
 
 
 /**
@@ -27,7 +27,9 @@ router.post(
   ],
   async (req, res) => {
     const { markId, content, targetUserId } = req.body;
-    const comment = await commentController.addOne(req.session.userId, markId, content, targetUserId);
+    const userMark = await isCurrentUserMark(markId, req.session.userId);
+    const notificationStatus = userMark ? "IGNORED" : "NEW";
+    const comment = await commentController.addOne(req.session.userId, markId, content, targetUserId, notificationStatus);
     res.status(201).json({
       comment: await constructCommentResponse(comment)
     }).end();

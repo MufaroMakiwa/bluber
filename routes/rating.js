@@ -22,7 +22,7 @@ router.post(
   [
     validator.isUserLoggedIn,
     validator.isMarkIdInBodyExists,
-    validator.isMarkRatingAllowed,
+    validator.isMarkRatingBodyAllowed,
     validator.isTargetUserIdExists,
     (req, res, next) => validator.checkMarkRatingStatus(req, res, next, false)
   ],
@@ -48,7 +48,7 @@ router.delete(
   [
     validator.isUserLoggedIn,
     validator.isMarkIdInParamsExists,
-    validator.isMarkRatingAllowed,
+    validator.isMarkRatingParamsAllowed,
     (req, res, next) => validator.checkMarkRatingStatus(req, res, next, true)
   ],
   async (req, res) => {

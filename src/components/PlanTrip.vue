@@ -69,7 +69,7 @@ export default {
     };
   },
 
-  beforeCreate() {
+  mounted() {
     eventBus.$on("searchResultPlan", (results, type) => {
       this.type = type;
       if (this.results.length === 0) {
@@ -98,8 +98,10 @@ export default {
         .then((res) => {
           let { marksInSpannedArea } = res.data;
           this.marks = marksInSpannedArea;
-          eventBus.$emit("drawRoutes", this.marks)
-          // eventBus.$emit("draw-plan-radius", center, radius);
+          eventBus.$emit("drawRoutes", {
+            marks: this.marks,
+            centerOnRender: false
+          })
         })
         .catch((err) => {
           console.log("this is my err", err);
@@ -108,6 +110,9 @@ export default {
   },
 
   beforeDestroy() {
+    // update the user object
+    this.$store.dispatch('getUser');
+    
     eventBus.$off("searchResultPlan");
     eventBus.$off("inputPlan");
     eventBus.$off("refresh");
@@ -130,8 +135,10 @@ export default {
         .then((res) => {
           let { marksInSpannedArea, radius, center } = res.data;
           this.marks = marksInSpannedArea;
-          // eventBus.$emit("clearPlan");
-          eventBus.$emit("drawRoutes", this.marks);
+          eventBus.$emit("drawRoutes", {
+            marks: this.marks,
+            centerOnRender: false
+          })
           eventBus.$emit("draw-plan-radius", center, radius);
         })
         .catch((err) => {

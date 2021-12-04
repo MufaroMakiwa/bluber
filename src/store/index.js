@@ -49,6 +49,15 @@ const store = new Vuex.Store({
     },
     setUser(state, payload) {
       state.user = payload;
+    },
+    updateNotificationStatus(state, payload) {
+      const notifications = state.user.notifications.map(notification => {
+        if (payload.notificationIds.includes(notification._id)) {
+          notification.notificationStatus = payload.status;
+        }
+        return notification;
+      })
+      state.user = { ...state.user, notifications }
     }
   },
 
@@ -90,6 +99,12 @@ const store = new Vuex.Store({
       const response = await axios.get('/api/user/session');
       state.commit('setUser', response.data.user);
     },
+    updateNotificationStatus(state, payload) {
+      state.commit('updateNotificationStatus', payload)
+    },
+    deleteNotification(state, payload) {
+      state.commit('deleteNotification', payload)
+    }
   },
 
   getters: {

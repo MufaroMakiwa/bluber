@@ -2,17 +2,17 @@ const Reply = require("../models/reply");
 
 async function findOne(replyId){
     try{
-    const reply = await Reply.findOne({replyId: replyId});
+    const reply = await Reply.findOne({_id: replyId});
     return reply;
     } catch(err){
     return false;
     }
   }
   
-async function addOne(userId, commentId ,content, targetUserId){
+async function addOne(userId, commentId ,content, targetUserId, notificationStatus){
     const date = new Date();
     
-    const reply = new Reply({userId: userId, dateAdded: date, commentId: commentId, content: content, targetUserId: targetUserId});
+    const reply = new Reply({userId: userId, dateAdded: date, commentId: commentId, content: content, targetUserId: targetUserId, notificationStatus: notificationStatus});
     try {
         await reply.save();
         return reply;
@@ -48,6 +48,18 @@ async function findAllByTargetUserId(targetUserId){
     }
 }
 
+async function updateOne(replyId, updates){
+  try{
+    const reply = await Reply.findOne({_id: replyId});
+    updates.notificationStatus && (reply.notificationStatus = updates.notificationStatus);
+    reply.save();
+    return reply;
+
+  } catch(err){
+    return false;
+  }
+}
+
 async function deleteOne(replyId){
     try{
       const reply = await Reply.deleteOne({_id: replyId});
@@ -77,5 +89,6 @@ module.exports = Object.freeze({
     findAllByCommentId,
     findAllByTargetUserId,
     deleteOne,
+    updateOne,
     deleteMany
   });

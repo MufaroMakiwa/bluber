@@ -109,8 +109,22 @@ const checkMarkRatingStatus = async (req, res, next, expected) => {
 
 
 // checks if the user is allowed to rate (user who made the marking cannot rate)
-const isMarkRatingAllowed = async (req, res, next) => {
+const isMarkRatingBodyAllowed = async (req, res, next) => {
   const mark = await markController.findOne(req.body.markId);
+  if (mark.userId === req.session.userId) {
+    res.status(400).json({
+      error: {
+        rating: 'You cannot rate your own mark.'
+      },
+    }).end();
+    return;
+  }
+  next();
+}
+
+// checks if the user is allowed to rate (user who made the marking cannot rate)
+const isMarkRatingParamsAllowed = async (req, res, next) => {
+  const mark = await markController.findOne(req.params.markId);
   if (mark.userId === req.session.userId) {
     res.status(400).json({
       error: {
@@ -384,7 +398,8 @@ module.exports = Object.freeze({
   isMarkIdInBodyExists,
   isUserLoggedIn,
   checkMarkRatingStatus,
-  isMarkRatingAllowed,
+  isMarkRatingBodyAllowed,
+  isMarkRatingParamsAllowed,
   isValidMarkModifier,
   isCommentIdInParamsExists,
   isCommentIdInBodyExists,

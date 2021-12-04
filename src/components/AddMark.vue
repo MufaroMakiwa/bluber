@@ -1,42 +1,45 @@
 <template>
-  <div class="outer">
-    <transition name="fade">
-      <Search mode="mark" v-if="!addingMarkDetails" @search-type="updateSearchType">
-        <template v-slot:heading> Where do you want to mark? </template>
-        <template v-slot:content>
-          <div class="search-results">
-            <div
-              v-for="result in results"
-              v-bind:key="result.id"
-              class="result-item"
-              v-on:click="navigateTo(result)"
-            >
-              <span class="place-text">{{ result.text }}</span>
-              <span class="place-name">{{ result.place_name }}</span>
+  <div>
+    <div class="outer">
+      <transition name="fade">
+        <Search mode="mark" v-if="!addingMarkDetails" @search-type="updateSearchType">
+          <template v-slot:heading> Where do you want to mark? </template>
+          <template v-slot:content>
+            <div class="search-results">
+              <div
+                v-for="result in results"
+                v-bind:key="result.id"
+                class="result-item"
+                v-on:click="navigateTo(result)"
+              >
+                <span class="place-text">{{ result.text }}</span>
+                <span class="place-name">{{ result.place_name }}</span>
+              </div>
             </div>
-          </div>
-        </template>
-        <template v-slot:submit>
-          <v-btn
-            depressed
-            rounded
-            :disabled="!canSubmit"
-            color="primary"
-            class="submit-button font-weight-bold"
-            @click="handleSubmit"
-          >
-            Continue
-          </v-btn>
-        </template>
-      </Search>
-    </transition>
+          </template>
 
-    <CreateMarkDetails
-      v-if="addingMarkDetails"
-      :start="start"
-      :end="end"
-      @back="addingMarkDetails = false"
-    />
+          <template v-slot:submit>
+            <v-btn
+              depressed
+              rounded
+              :disabled="!canSubmit"
+              color="primary"
+              class="submit-button font-weight-bold"
+              @click="handleSubmit"
+            >
+              Continue
+            </v-btn>
+          </template>
+        </Search>
+      </transition>
+
+      <CreateMarkDetails
+        v-if="addingMarkDetails"
+        :start="start"
+        :end="end"
+        @back="addingMarkDetails = false"
+      />
+    </div>
   </div>
 </template>
 
@@ -73,7 +76,15 @@ export default {
     });
 
   },
+
+  mounted() {
+
+  }, 
+
   beforeDestroy() {
+    // update the user object
+    this.$store.dispatch('getUser');
+    
     eventBus.$off("mark-created");
     eventBus.$off("inputMark");
     eventBus.$off("clearSuggestionsMark");

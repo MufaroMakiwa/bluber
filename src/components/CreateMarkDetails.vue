@@ -39,6 +39,10 @@
             </v-btn>
           </div>
         </div>
+
+        <v-flex class="image-uploader">
+          <ImageUploader />
+        </v-flex>
       </template>
     </ViewTemplate>
 
@@ -62,13 +66,14 @@ import axios from "axios";
 import { eventBus } from "../main";
 import ViewTemplate from "./ViewTemplate.vue";
 import MarkPoints from "./MarkPoints.vue";
+import ImageUploader from "./ImageUploader.vue";
 
 
 export default {
   name: "CreateMarkDetails",
 
   components: {
-    ViewTemplate, MarkPoints
+    ViewTemplate, MarkPoints, ImageUploader
   },
 
   props: {
@@ -86,6 +91,7 @@ export default {
       tags: ["Blocked", "Not Safe", "Busy"],
       selectedTags: [],
       caption: "",
+      imageUrl: "",
     };
   },
 
@@ -193,5 +199,9 @@ export default {
 
 .tag {
   margin-right: 1rem;
+}
+
+.image-uploader {
+  padding: 1rem;
 }
 </style>

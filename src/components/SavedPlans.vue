@@ -2,7 +2,7 @@
   <div class="outer">
     <transition name="fade">
       <ViewTemplate 
-        v-if="!displayPlan">
+        v-if="displayedPlan === null">
         <template v-slot:heading>
           Saved Plans
         </template>
@@ -16,15 +16,15 @@
               @click.native="renderPlan(plan)"/>
           </div>
 
-          <div v-else class="no-saved-container">
-            <span class="no-plans">You currently do not have any saved plans</span>
-          </div>
+          <NoContent 
+            v-else
+            message="You currently do not have any saved plans"/>
         </template>
       </ViewTemplate>
     </transition>
 
     <MarksList 
-      v-if="displayPlan" 
+      v-if="displayedPlan !== null" 
       :requiresBackButton="true" 
       title="Marks in area"
       :marks="marks"
@@ -37,6 +37,7 @@
 <script>
 import ViewTemplate from "./ViewTemplate.vue";
 import SavedPlanCard from "./SavedPlanCard.vue";
+import NoContent from "./NoContent.vue";
 import MarksList from "./MarksList.vue";
 import axios from 'axios';
 import { eventBus } from "../main";
@@ -45,7 +46,7 @@ export default {
   name: "SavedPlans",
 
   components: {
-    ViewTemplate, SavedPlanCard, MarksList
+    ViewTemplate, SavedPlanCard, MarksList, NoContent
   },
 
   computed: {
@@ -64,18 +65,28 @@ export default {
 
   data() {
     return {
-      displayPlan: false,
+      displayedPlan: null,
       marks: []
     }
   },
 
+  mounted() {
+    eventBus.$on("refresh", () => {
+      this.displayedPlan !== null && this.renderPlan(this.displayedPlan);
+    })
+  },
+
   beforeDestroy() {
+    // update the user object
+    this.$store.dispatch('getUser');
+    
+    eventBus.$off("refresh");
     eventBus.$emit("clearPlan");
   },
 
   methods: {
     hidePlan() {
-      this.displayPlan=false;
+      this.displayedPlan = null;
       this.marks = [];   
       eventBus.$emit("clearPlan");
     },
@@ -90,10 +101,13 @@ export default {
 
       axios.get("/api/mark",{params:params})
       .then((res) => {
-        this.displayPlan = true;
+        this.displayedPlan = plan;
         let {marksInSpannedArea, radius, center } = res.data
         this.marks = marksInSpannedArea;
-        eventBus.$emit("drawRoutes",this.marks)
+        eventBus.$emit("drawRoutes", {
+            marks: this.marks,
+            centerOnRender: false
+          })
         eventBus.$emit("draw-plan-radius", center, radius);
       })
       .catch((err) => {
@@ -117,16 +131,5 @@ export default {
   justify-content: flex-start;
   width: 100%;
   margin-top: 1.5rem;
-}
-
-.no-saved-container {
-  display: flex;
-  margin-top: 1.5rem;
-  width: 100%;
-}
-
-.no-plans {
-  font-weight: bold;
-  color: gray;
 }
 </style>
