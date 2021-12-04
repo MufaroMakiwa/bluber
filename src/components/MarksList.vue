@@ -109,17 +109,25 @@ export default {
   props: {
     title: String,
     marks: Array,
+
     requiresBackButton: {
       default: false,
       type: Boolean,
     },
+
     userMarks: {
       default: false,
       type: Boolean,
     },
+
     displaySaveIcon: {
       default: true,
       type: Boolean,
+    },
+
+    center: {
+      default: undefined,
+      type: Object
     }
   },
 
@@ -196,7 +204,17 @@ export default {
   methods: {
     handleBack() {
       this.displayedMark = null;
-      this.userMarks && eventBus.$emit('clearPlan');
+      if (this.userMarks) {
+        eventBus.$emit('clearPlan');
+
+      } else {
+        eventBus.$emit('drawRoutes', {
+          marks: this.marks,
+          centerOnRender: false,
+          center: this.center
+        });
+      }
+      
     },
 
     clearFilters() {

@@ -273,42 +273,10 @@ export default {
 
     eventBus.$on("drawRoutes", (obj) => {
 
-        const marks = obj.marks;
-        const centerOnRender = obj.centerOnRender;
+      const marks = obj.marks;
+      const centerOnRender = obj.centerOnRender;
 
-        this.routes.forEach((routeId) => {
-          if (this.map.getLayer(routeId)) {
-            this.map.removeLayer(routeId);
-          }
-
-          if (this.map.getSource(routeId)) {
-            this.map.removeSource(routeId);
-          }
-
-          if (this.map.getLayer("point-" + routeId)) {
-            this.map.removeLayer("point-" + routeId);
-          }
-
-          if (this.map.getSource("point-" + routeId)) {
-            this.map.removeSource("point-" + routeId);
-          }
-          if (this.map.getLayer("end-" + routeId)) {
-            this.map.removeLayer("end-" + routeId);
-          }
-
-          if (this.map.getSource("end-" + routeId)) {
-            this.map.removeSource("end-" + routeId);
-          }
-
-          if (this.planMarkers[routeId]) {
-            this.planMarkers[routeId].remove();
-          }
-        });
-
-        this.planMarkers = [];
-        this.routes = [];
-
-
+      this.removeRoutes();
 
       this.routesDisplayed = true;
       const randomColor = (() => {
@@ -329,11 +297,7 @@ export default {
 
 
       marks.forEach((mark) => {
-
-
         if (mark.path.length !== 0) {
-
-
           if (!this.map.getLayer(mark._id)){
             this.map.addLayer({
               id: mark._id,
@@ -360,7 +324,6 @@ export default {
             });
             this.routes.push(mark._id);
         
-
           const geojsonStart = {
             type: "FeatureCollection",
             features: [
@@ -478,6 +441,12 @@ export default {
         if (centerOnRender) {
           this.map.flyTo({
             center: [marks[0].start.lng, marks[0].start.lat],
+            zoom: 16,
+            essential: true, // this animation is considered essential with respect to prefers-reduced-motion
+          });
+        } else {
+          this.map.flyTo({
+            center: [obj.center.lng, obj.center.lat],
             zoom: 14,
             essential: true, // this animation is considered essential with respect to prefers-reduced-motion
           });
@@ -490,13 +459,8 @@ export default {
           this.map.getCanvas().style.cursor = "";
         });
 
-        this.map.on("click", mark._id, (e) => {
+        this.map.on("click", mark._id, () => {
           eventBus.$emit("openMarkDetails", mark);
-          this.map.flyTo({
-            center: [e.lngLat.lng, e.lngLat.lat],
-            zoom: 16,
-            essential: true, // this animation is considered essential with respect to prefers-reduced-motion
-          });
         });
       });
     });
@@ -576,13 +540,6 @@ export default {
       if (this.map.getSource("point2")) {
         this.map.removeSource("point2");
       }
-
-      // this.routing_state = [];
-      // this.point1 = [];
-      // this.point2 = [];
-
-      // this.$store.dispatch("setPoint1", []);
-      // this.$store.dispatch("setPoint2", []);
     });
     /**
      * clear Locator listener
@@ -701,38 +658,9 @@ export default {
 
       this.routesDisplayed = false;
 
-      this.routes.forEach((routeId) => {
-        if (this.map.getLayer(routeId)) {
-          this.map.removeLayer(routeId);
-        }
-
-        if (this.map.getSource(routeId)) {
-          this.map.removeSource(routeId);
-        }
-
-        if (this.map.getLayer("point-" + routeId)) {
-          this.map.removeLayer("point-" + routeId);
-        }
-
-        if (this.map.getSource("point-" + routeId)) {
-          this.map.removeSource("point-" + routeId);
-        }
-        if (this.map.getLayer("end-" + routeId)) {
-          this.map.removeLayer("end-" + routeId);
-        }
-
-        if (this.map.getSource("end-" + routeId)) {
-          this.map.removeSource("end-" + routeId);
-        }
-
-        if (this.planMarkers[routeId]) {
-          this.planMarkers[routeId].remove();
-        }
-      });
-
-      this.planMarkers = [];
-      this.routes = [];
+      this.removeRoutes();
     });
+
 
     eventBus.$on("switch", () => {
       const geojsonStart = {
@@ -1169,6 +1097,40 @@ export default {
   },
 
   methods: {
+    removeRoutes() {
+      this.routes.forEach((routeId) => {
+        if (this.map.getLayer(routeId)) {
+          this.map.removeLayer(routeId);
+        }
+
+        if (this.map.getSource(routeId)) {
+          this.map.removeSource(routeId);
+        }
+
+        if (this.map.getLayer("point-" + routeId)) {
+          this.map.removeLayer("point-" + routeId);
+        }
+
+        if (this.map.getSource("point-" + routeId)) {
+          this.map.removeSource("point-" + routeId);
+        }
+        if (this.map.getLayer("end-" + routeId)) {
+          this.map.removeLayer("end-" + routeId);
+        }
+
+        if (this.map.getSource("end-" + routeId)) {
+          this.map.removeSource("end-" + routeId);
+        }
+
+        if (this.planMarkers[routeId]) {
+          this.planMarkers[routeId].remove();
+        }
+      });
+
+      this.planMarkers = [];
+      this.routes = [];
+    },
+
     formatDate(d) {
       return formatDate(d);
     },
@@ -1647,16 +1609,4 @@ export default {
   width: 100%;
   height: 100%;
 }
-/* .map-wrapper {
-    height: 50%;
-    width: 100%;
-} */
-
-/* .mapboxgl-control-container
-{
-  position: absolute;
-  top: 64px;
-  left: 24px;
-  background-color: white;
-} */
 </style>

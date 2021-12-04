@@ -36,6 +36,7 @@
       @back="hidePlan"
       v-if="displayPlan"
       :requiresBackButton="true"
+      :center="center"
     />
   </div>
 </template>
@@ -66,6 +67,7 @@ export default {
       type: "start",
       results: [],
       marks: [],
+      center: undefined
     };
   },
 
@@ -85,28 +87,7 @@ export default {
       }
     });
 
-    eventBus.$on("refresh", () => {
-      let params = {
-        startLat: this.$store.getters.point1[1],
-        startLng: this.$store.getters.point1[0],
-        endLat: this.$store.getters.point2[1],
-        endLng: this.$store.getters.point2[0],
-      };
-
-      axios
-        .get("/api/mark", { params: params })
-        .then((res) => {
-          let { marksInSpannedArea } = res.data;
-          this.marks = marksInSpannedArea;
-          eventBus.$emit("drawRoutes", {
-            marks: this.marks,
-            centerOnRender: false
-          })
-        })
-        .catch((err) => {
-          console.log("this is my err", err);
-        });
-    });
+    eventBus.$on("refresh", () => this.handleSubmit(false));
   },
 
   beforeDestroy() {
@@ -120,7 +101,7 @@ export default {
   },
 
   methods: {
-    handleSubmit() {
+    handleSubmit(drawRadius=true) {
       this.displayPlan = true;
 
       let params = {
@@ -135,11 +116,14 @@ export default {
         .then((res) => {
           let { marksInSpannedArea, radius, center } = res.data;
           this.marks = marksInSpannedArea;
+          this.center = center;
+
           eventBus.$emit("drawRoutes", {
             marks: this.marks,
-            centerOnRender: false
+            centerOnRender: false,
+            center: this.center
           })
-          eventBus.$emit("draw-plan-radius", center, radius);
+          drawRadius && eventBus.$emit("draw-plan-radius", center, radius);
         })
         .catch((err) => {
           console.log("this is my err", err);
@@ -150,6 +134,7 @@ export default {
       this.displayPlan = false;
       this.results = [];
       this.marks = [];
+      this.center = undefined;
       eventBus.$emit("clearPlan");
     },
 

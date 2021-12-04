@@ -121,7 +121,7 @@ export default {
   },
 
   created() {
-    (this.userMarks || this.notificationMark) &&  eventBus.$emit("drawRoutes", {
+    eventBus.$emit("drawRoutes", {
       marks: [this.mark],
       centerOnRender: true
     });

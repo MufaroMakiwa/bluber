@@ -29,7 +29,8 @@
       title="Marks in area"
       :marks="marks"
       :displaySaveIcon="false"
-      @back="hidePlan"/>
+      @back="hidePlan"
+      :center="center"/>
     
   </div>
 </template>
@@ -66,7 +67,8 @@ export default {
   data() {
     return {
       displayedPlan: null,
-      marks: []
+      marks: [],
+      center: undefined
     }
   },
 
@@ -87,7 +89,8 @@ export default {
   methods: {
     hidePlan() {
       this.displayedPlan = null;
-      this.marks = [];   
+      this.marks = []; 
+      this.center = undefined;  
       eventBus.$emit("clearPlan");
     },
 
@@ -104,9 +107,12 @@ export default {
         this.displayedPlan = plan;
         let {marksInSpannedArea, radius, center } = res.data
         this.marks = marksInSpannedArea;
+        this.center = center;
+        
         eventBus.$emit("drawRoutes", {
             marks: this.marks,
-            centerOnRender: false
+            centerOnRender: false,
+            center: this.center
           })
         eventBus.$emit("draw-plan-radius", center, radius);
       })
