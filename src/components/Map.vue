@@ -30,6 +30,7 @@ export default {
       center: latLng(42.373611, -71.110558),
       popup: undefined,
       popupContent: "",
+      currentBikePopup: undefined,
       secondPopup: undefined,
       secondPopupContent: "",
       // tooltip: undefined,
@@ -618,6 +619,12 @@ export default {
       if (this.map.getSource("places")) {
         this.map.removeSource("places");
       }
+
+      // remove the currentselected bluebikes popup
+      if (this.currentBikePopup) {
+        console.log("has pop up");
+        this.currentBikePopup.remove();
+      }
     });
 
     eventBus.$on("clearAddMark", () => {
@@ -1001,7 +1008,13 @@ export default {
           coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
         }
 
-        new mapboxgl.Popup()
+        if (this.currentBikePopup) {
+          this.currentBikePopup = undefined;
+        }
+
+        this.currentBikePopup = new mapboxgl.Popup({
+          closeButton: false,
+        })
           .setLngLat(coordinates)
           .setHTML(
             `
