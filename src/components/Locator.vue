@@ -93,10 +93,15 @@ export default {
       await this.handleSuggestion(text, type);
     });
   },
+
   beforeDestroy() {
+    // update the user object
+    this.$store.dispatch('getUser');
+    
     eventBus.$off("bikes-result");
     eventBus.$emit("clearLocator");
   },
+
   methods: {
     formatDate(d) {
       return formatDate(d);

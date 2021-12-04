@@ -41,7 +41,6 @@ async function constructCommentResponse(comment, isNotification=false) {
     return sortResponsesByKey(replies);
   }
   
- 
   return {
     _id: comment._id,
     markId: comment.markId,
@@ -77,7 +76,12 @@ async function constructUserResponse(user, includePersonalInfo=true) {
     marks = await Promise.all(marks.map(async (mark) => await constructMarkResponse(mark)));
     return sortResponsesByKey(marks);
   }
-  
+
+  const getMarksCount = async () => {
+    let marks = await markController.findAllByUserId(user._id);
+    return marks.length;
+  }
+   
   // get saved plans
   const getSaved = async () => {
     let saved = await savedController.findAllByUserId(user._id);
@@ -167,14 +171,16 @@ async function constructUserResponse(user, includePersonalInfo=true) {
     const ratingNotifications = await getRatingNotifications();
     return sortResponsesByKey(replyNotifications.concat(ratingNotifications, commentNotifications));
   }
+
+  const userRating = await getRating();
   
   return {
     userId: user._id,
     name: user.name,
     email: user.email,
     imageUrl: user.imageUrl,
-    ...(includePersonalInfo && {rating: await getRating()}),
-    ...(includePersonalInfo && {marks: await getMarks()}),
+    rating: userRating,
+    marks: includePersonalInfo ? await getMarks() : getMarksCount(),
     ...(includePersonalInfo && {saved: await getSaved()}),
     ...(includePersonalInfo && {notifications: await getNotifications()}),
   };

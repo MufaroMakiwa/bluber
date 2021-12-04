@@ -77,6 +77,9 @@ export default {
   },
 
   beforeDestroy() {
+    // update the user object
+    this.$store.dispatch('getUser');
+    
     eventBus.$off("refresh");
     eventBus.$emit("clearPlan");
   },

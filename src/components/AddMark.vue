@@ -74,6 +74,9 @@ export default {
 
   },
   beforeDestroy() {
+    // update the user object
+    this.$store.dispatch('getUser');
+    
     eventBus.$off("mark-created");
     eventBus.$off("inputMark");
     eventBus.$off("clearSuggestionsMark");
