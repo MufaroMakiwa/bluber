@@ -20,6 +20,7 @@
 
           <NoContent 
             v-else
+            class="notifications-padded"
             message="You do not have any notifications at the moment"/>
         </template>
       </ViewTemplate>
@@ -120,13 +121,13 @@ export default {
     const body = {
       status: "SEEN",
       ratingIds: this.ratingNotifications
-                     .filter(notification => notification.notificationType === "NEW")
+                     .filter(notification => notification.notificationStatus === "NEW")
                      .map(notification => notification._id),
       replyIds: this.replyNotifications
-                    .filter(notification => notification.notificationType === "NEW")
+                    .filter(notification => notification.notificationStatus === "NEW")
                     .map(notification => notification._id),
       commentIds: this.commentNotifications
-                      .filter(notification => notification.notificationType === "NEW")
+                      .filter(notification => notification.notificationStatus === "NEW")
                       .map(notification => notification._id),
     };
 
@@ -176,5 +177,9 @@ export default {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+}
+
+.notifications-padded {
+  padding: 0 1.5rem;
 }
 </style>

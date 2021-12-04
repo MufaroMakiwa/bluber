@@ -173,7 +173,11 @@ export default {
     },
 
     emptyMessage() {
-      return this.hasFilters ? 'There are marks with these filters in area.' : 'There are no marks in this area.'
+      if (this.userMarks) {
+        return this.hasFilters ? 'You do not have any marks with these filters.' : 'You have not added any marks yet.'
+      } else {
+        return this.hasFilters ? 'There are marks with these filters in area.' : 'There are no marks in this area.'
+      }
     },
 
     displayAllMarks() {
