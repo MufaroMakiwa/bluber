@@ -3,18 +3,30 @@
    <v-layout >
       <v-flex >
        <div>
-         <div >
+         <v-flex >
            <v-btn block elevation="5" @click="click1"> {{ uploadButtonLabel }}</v-btn>
            <input type="file" ref="input1"
             style="display: none"
-            @change="previewImage" accept="image/*" >                
-         </div>
+            @change="previewImage" accept="image/png, image/gif, image/jpeg" > 
+            <v-flex v-if="!hideHints" offset-2 align-self-center>
+                <span>Accepted image formats: png, jpg, gif</span> 
+            </v-flex>
+
+            <v-flex v-if="!hideHints" offset-3 align-self-center>
+                <span>Size limit: {{ fileSizeLimit/1000000 }} MB</span> 
+            </v-flex>
+
+            <v-flex>
+                <span class="error-message">{{ errorMessage }}</span> 
+            </v-flex>
+           
+         </v-flex>
        </div>
       </v-flex>
     </v-layout>
     <br>  
     <v-flex v-if="state === 'loaded'">          
-        <img class="preview" :src="img1">
+        <img class="preview" :src="imageUrl">
     </v-flex> 
 
     <v-flex  md6 offset-sm4  v-if="state === 'loading'">
@@ -41,10 +53,13 @@ export default {
 
   data () {
       return {
-          img1: null,
+          imageUrl: null,
           imageData: null,
           state: "",
           uploadButtonLabel: "Upload a photo",
+          fileSizeLimit: 10**7,
+          errorMessage: "",
+          hideHints: false
       }
   },
 
@@ -55,13 +70,31 @@ export default {
 
     previewImage(event) {
         this.uploadValue=0;
-        this.img1=null;
+        this.imageUrl=null;
         this.imageData = event.target.files[0];
-        this.onUpload()
+
+        console.log("file size", this.imageData.size)
+        if (this.imageData.size < this.fileSizeLimit) {
+          this.onUpload()
+        } else {
+            this.hideHints = true;
+            this.errorMessage = `Your image [ ${this.bytesToMegaBytesConverter(this.imageData.size)} MB ] exceeds the accepted size limit [${this.bytesToMegaBytesConverter(this.fileSizeLimit)} MB ], Please try a different image!`
+
+            setTimeout(() => {
+              this.errorMessage = "",
+              this.hideHints = false
+            }, 10000);
+          
+        }
+        
+    },
+
+    bytesToMegaBytesConverter(bytes) {
+      return (bytes / 1000000).toFixed(2);
     },
 
     onUpload(){
-        this.img1=null;
+        this.imageUrl=null;
 
         console.log("firebase is", firebase);
         const storage = getStorage(firebase);
@@ -71,8 +104,7 @@ export default {
 
         uploadTask.on('state_changed', 
             (snapshot) => {
-                // Observe state change events such as progress, pause, and resume
-                // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+
                 const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                 console.log('Upload is ' + progress + '% done');
                 switch (snapshot.state) {
@@ -95,7 +127,7 @@ export default {
                     console.log('File available at', downloadURL);
                     this.state = 'loaded';
                     this.uploadButtonLabel = "Change a Photo"
-                    this.img1 = downloadURL;
+                    this.imageUrl = downloadURL;
                     eventBus.$emit("image-upload", downloadURL);
                 });
             }
@@ -198,6 +230,10 @@ export default {
   100% {
     transform: rotate(360deg);
   }
+}
+
+.error-message {
+  color: red
 }
 
 </style>
