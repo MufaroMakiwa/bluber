@@ -455,6 +455,7 @@ export default {
         this.map.on("mouseenter", mark._id, () => {
           this.map.getCanvas().style.cursor = "pointer";
         });
+        
         this.map.on("mouseleave", mark._id, () => {
           this.map.getCanvas().style.cursor = "";
         });

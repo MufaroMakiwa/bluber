@@ -5,15 +5,11 @@
         <template v-slot:heading> Where do you want to mark? </template>
         <template v-slot:content>
           <div class="search-results">
-            <div
+            <SearchSuggestionCard 
               v-for="result in results"
               v-bind:key="result.id"
-              class="result-item"
-              v-on:click="navigateTo(result)"
-            >
-              <span class="place-text">{{ result.text }}</span>
-              <span class="place-name">{{ result.place_name }}</span>
-            </div>
+              :text="result.text"
+              :name="result.place_name"/>
           </div>
         </template>
         <template v-slot:submit>
@@ -43,6 +39,7 @@
 <script>
 import Search from "./Search";
 import CreateMarkDetails from "./CreateMarkDetails";
+import SearchSuggestionCard from "./SearchSuggestionCard";
 import { eventBus } from "../main";
 import { toPrecision } from "../utils";
 
@@ -86,6 +83,7 @@ export default {
   components: {
     Search,
     CreateMarkDetails,
+    SearchSuggestionCard
   },
 
   data() {
@@ -143,46 +141,5 @@ export default {
 .outer {
   width: 100%;
   height: 100%;
-}
-
-.search-results {
-  width: 100%;
-  margin-top: 16px;
-}
-
-.result-item {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 0.5rem;
-  margin-top: 1rem;
-  width: 100%;
-  cursor: pointer;
-  box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px,
-    rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
-  border-radius: 3px;
-  transition: all 0.3s;
-}
-
-.result-item:first-of-type {
-  margin-top: 0;
-}
-
-.result-item:hover .place-text {
-  color: #ffea00;
-}
-.result-item:hover .place-name {
-  color: #fff;
-}
-
-.place-text {
-  color: #74adb6;
-  font-weight: bold;
-  font-size: 18px;
-}
-
-.place-name {
-  font-weight: bold;
-  font-size: 14px;
 }
 </style>

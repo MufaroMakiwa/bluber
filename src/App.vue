@@ -95,5 +95,8 @@ input, textarea {
   margin-top: 0;
 }
 
-
+.search-results {
+  width: 100%;
+  margin-top: 1rem;
+}
 </style>
