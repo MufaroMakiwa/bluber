@@ -29,7 +29,8 @@ async function constructMarkResponse(mark, userId) {
     comments: sortResponsesByKey(comments),
     rating: ratingCount == 0 ? 0 : rating / ratingCount,
     ratingCount: ratingCount,
-    isCurrentUserRating: isCurrentUserRating !== undefined
+    isCurrentUserRating: isCurrentUserRating !== undefined,
+    imageUrl: mark.imageUrl
   };
 }
 

@@ -18,6 +18,11 @@
           @remove-rating="removeRating"/>
       </div>
 
+      <div v-if="mark.imageUrl">
+        <img class="mark-image" :src="mark.imageUrl">
+      </div>
+
+
       <div class="mark-details">
         <MarkDescription 
           :caption="mark.caption"
@@ -289,5 +294,11 @@ export default {
   justify-content: flex-end;
   flex-grow: 1;
   margin-right: 1rem
+}
+
+.mark-image {
+  height: auto;
+  width: 100%;
+  
 }
 </style>

@@ -9,7 +9,7 @@ async function findOne(markId) {
   }
 }
 
-async function addOne(userId, tags, caption, start, end, path) {
+async function addOne(userId, tags, caption, start, end, path, imageUrl) {
   const date = new Date();
 
   const mark = new markModel({
@@ -20,6 +20,7 @@ async function addOne(userId, tags, caption, start, end, path) {
     start: start,
     end: end,
     path: path,
+    imageUrl : imageUrl
   });
   try {
     await mark.save();

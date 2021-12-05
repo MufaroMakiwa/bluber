@@ -33,6 +33,11 @@ const MarkSchema = new Schema(
         type: Array,
         required: true,
     },
+
+    "imageUrl": {
+      type: String,
+      required: false
+    }
   }
 );
 

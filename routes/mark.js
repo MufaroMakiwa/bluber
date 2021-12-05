@@ -58,7 +58,7 @@ router.post(
     validator.isValidMarkTags
   ],
   async (req, res) => {
-    const { tags, caption, start, end, path } = req.body;
+    const { tags, caption, start, end, path, imageUrl } = req.body;
     
     const st = {
       lat: start[1],
@@ -69,7 +69,7 @@ router.post(
       lat: end[1],
       lng: end[0]
     }
-    const mark = await markController.addOne(req.session.userId, tags, caption, st, en, path);
+    const mark = await markController.addOne(req.session.userId, tags, caption, st, en, path, imageUrl);
     res.status(201).json({
       mark: await constructMarkResponse(mark, req.session.userId)
     }).end();

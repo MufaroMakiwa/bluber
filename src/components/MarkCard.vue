@@ -4,6 +4,10 @@
       :username="mark.user.name"
       :imageUrl="mark.user.imageUrl"
       :dateAdded="formatDate(mark.dateAdded)"/>
+    
+    <div v-if="mark.imageUrl">
+      <v-btn small @click="toggleImage"> See Image </v-btn>
+    </div>
 
     <div class="mark-details">
       <MarkDescription 
@@ -42,6 +46,7 @@ export default {
   data() {
     return {
       tags: ["Busy", "Blocked"],
+      showImage: false,
     }
   },
 
@@ -49,12 +54,24 @@ export default {
 
     formatDate(d){
       return formatDate(d);
+    },
+
+    toggleImage() {
+      this.showImage = !this.showImage;
     }
 
   },
   computed: {
     userIcon() {
       return this.mark.userId.charAt(0).toUpperCase();
+    },
+
+    showButtonLabel() {
+      if (this.showImage) {
+        return "Hide Image"
+      } else {
+        return "See Image"
+      }
     },
 
     commentCount(){
@@ -102,4 +119,5 @@ export default {
   color: gray;
   margin-left: 0.5rem;
 }
+
 </style>

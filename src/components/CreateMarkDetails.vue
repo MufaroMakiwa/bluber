@@ -95,6 +95,12 @@ export default {
     };
   },
 
+  mounted() {
+    eventBus.$on("image-upload", (data) => {
+      this.imageUrl = data;
+    })
+  },
+
   computed: {
     hasCaption() {
       return this.caption !== null && this.caption.trim().length > 0;
@@ -117,6 +123,7 @@ export default {
         start: this.$store.getters.startMarker,
         end: this.$store.getters.endMarker,
         path: this.$store.getters.route,
+        imageUrl: this.imageUrl
       };
 
       axios

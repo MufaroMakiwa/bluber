@@ -31,7 +31,7 @@
 
 <script> 
 
-import { firebase } from '../main.js'
+import { firebase, eventBus } from '../main.js'
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
 export default {
@@ -96,6 +96,7 @@ export default {
                     this.state = 'loaded';
                     this.uploadButtonLabel = "Change a Photo"
                     this.img1 = downloadURL;
+                    eventBus.$emit("image-upload", downloadURL);
                 });
             }
         );
