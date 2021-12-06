@@ -182,6 +182,7 @@ async function constructUserResponse(user, includePersonalInfo=true) {
     imageUrl: user.imageUrl,
     rating: userRating,
     marks: includePersonalInfo ? await getMarks() : await getMarksCount(),
+    ...(includePersonalInfo && {viewedDemo: user.viewedDemo}),
     ...(includePersonalInfo && {saved: await getSaved()}),
     ...(includePersonalInfo && {notifications: await getNotifications()}),
   };

@@ -73,7 +73,12 @@ export default {
             marks: user.marks,
             saved: user.saved,
             notifications: user.notifications,
+            viewedDemo: user.viewedDemo,
           });
+
+          if (!user.viewedDemo) {
+            eventBus.$emit('incomplete-demo');
+          }
 
           if (this.hasRedirect) {
             this.$store.dispatch('setTemplate', this.redirect);

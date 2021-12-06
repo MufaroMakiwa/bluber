@@ -20,7 +20,7 @@
         <Authentication v-if="template === 'authentication'"/>
       </div>
     </div>
-
+    
     <v-snackbar
       v-model="snackbar"
       color="primary"
@@ -98,9 +98,19 @@ export default {
     isSignedIn() {
       return this.$store.getters.isSignedIn;
     },
+
+    hasViewedDemo() {
+      if (this.$store.getters.user) {
+        return this.$store.getters.user.viewedDemo;
+      }
+      return true;
+    },
   },
 
   methods: {
+    closeDialog() {
+      this.$emit('close-auth-dialog')
+    },
     snackbarHandler(text) {
       this.snackbarText = text;
       this.snackbar = true;
@@ -112,12 +122,37 @@ export default {
 
     handleDisplayAbout() {
       this.displayAbout = true;
+    },
+
+    markPlayed() {
+      let body = {
+          userId: this.$store.getters.user.userId,
+      }
+      axios.patch("/api/user", body)
+        .then(() => {
+          this.$store.dispatch("setViewedDemo", true);
+        }).catch((err) => console.log(err));
+      // this.$store.dispatch("setViewedDemo", true)
     }
   },
 
 
   mounted() {
     eventBus.$on('display-snackbar', this.snackbarHandler);
+
+    eventBus.$on('incomplete-demo', () => {
+      this.displayAbout = true;
+    });
+
+    eventBus.$on("complete-demo", () => {
+      axios.patch("/api/user", {viewedDemo: true})
+        .then(() => {
+          this.$store.dispatch("setViewedDemo", true);
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    });
 
     eventBus.$on("sign-out", async () => {
       if (!await this.$refs.confirm.open()) {
@@ -151,6 +186,18 @@ export default {
   z-index: 0;
 }
 
+.authentication-container {
+  width: 100%;
+  height: 100%;
+  padding: 1.25rem;
+  overflow: scroll;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background-color: white;
+}
+
 .main-app-section {
   z-index: var(--overlay-z-index);
   position: absolute;
@@ -165,6 +212,19 @@ export default {
   align-items: flex-start;
   justify-content: flex-start;
   border: none;
+}
+
+.place-text {
+  color: #74adb6;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.video-player-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .app-inner {

@@ -39,7 +39,10 @@ import {
   faStreetView,
   faMoon,
   faComments,
-  faInfo } from '@fortawesome/free-solid-svg-icons';
+  faInfo,
+  faChevronLeft,
+  faChevronRight,
+  faCircle } from '@fortawesome/free-solid-svg-icons';
 import { faStar as faStarRegular } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
@@ -50,7 +53,7 @@ library.add(
   faStarRegular, faBell, faMapMarker, faMap, faEllipsisH,
   faTimesCircle, faTimes, faArrowLeft, faFilter, faTrashAlt,
   faSignOutAlt, faSave, faLayerGroup, faSatellite, faStreetView,
-  faComments, faInfo
+  faComments, faInfo, faChevronLeft, faChevronRight, faCircle
 );
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)

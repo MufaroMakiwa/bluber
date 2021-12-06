@@ -41,7 +41,7 @@
           <font-awesome-icon icon="info"/>
         </v-btn>
       </template>
-      <span>About</span>
+      <span>Help</span>
     </v-tooltip>
 
     <AuthenticationDialog 

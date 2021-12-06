@@ -12,7 +12,7 @@ async function findOne(userId){
 async function addOne(name, email, imageUrl){
   const date = new Date();
 
-  const user = new User({ name: name, email: email, imageUrl: imageUrl, dateAdded: date });
+  const user = new User({ name: name, email: email, imageUrl: imageUrl, dateAdded: date, viewedDemo: false });
   try {
       await user.save();
       return user;
@@ -39,9 +39,20 @@ async function findOneByName(name){
   }
 }
 
+async function updateOne(userId, body){
+  try{
+    const user = await User.findOne({_id: userId});
+    body.viewedDemo && (user.viewedDemo = body.viewedDemo);
+    await user.save();
+    return user;
+  } catch(err){
+    return false;
+  }
+}
+
 async function deleteOne(userId){
   try{
-    const user = await User.remove({userId: userId});
+    const user = await User.remove({_id: userId});
     return user;
   } catch(err){
     return false;
@@ -53,5 +64,6 @@ module.exports = Object.freeze({
   addOne,
   findOneByName,
   findOneByEmail,
-  deleteOne
+  deleteOne,
+  updateOne
 });

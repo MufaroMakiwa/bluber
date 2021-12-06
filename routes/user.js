@@ -79,9 +79,35 @@ router.post(
       }).end();
 
     } catch (error) {
-      res.status(503).json({ error }).end();
+      res.status(403).json({ error }).end();
     }
 });
+
+/**
+ * Update viewed demo status
+ * 
+ * @name PATCH /user/
+ * @param {String} name - The name of the user to be updated
+ * @returns {User} - the updated user
+ * @throws {403} - If the user is not signed in
+ */
+ router.patch(
+  '/',
+  [
+    validator.isUserLoggedIn
+  ],
+  async (req, res) => {
+    try {
+      const user = await controller.updateOne(req.session.userId, req.body);
+      res.status(201).json({
+        message: 'Your account was updated successfully.', 
+        user: await constructUserResponse(user)
+      }).end();
+    } catch (error) {
+      res.status(403).json({ error }).end();
+    }
+  }
+);
 
 
 /**
