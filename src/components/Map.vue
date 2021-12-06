@@ -58,11 +58,10 @@ export default {
       endMarker: [],
       planMarkers: {},
       routes: [],
+      disableAddingMarks: false
     };
   },
 
-  beforeMount() {},
-  created() {},
   beforeDestroy() {
     eventBus.$off("mark-stations");
     eventBus.$off("fly-to");
@@ -108,6 +107,10 @@ export default {
     , 'bottom-left');
 
     this.map.on("click", (e) => {
+      if (this.disableAddingMarks) {
+        return;
+      }
+
       const coords = Object.keys(e.lngLat).map((key) => e.lngLat[key]);
       if (this.getMapState() === "planning") {
         if (!this.routesDisplayed) {
@@ -466,6 +469,10 @@ export default {
       });
     });
 
+    eventBus.$on("disable-adding-marks", (data) => {
+      this.disableAddingMarks = data;
+    })
+
     eventBus.$on("draw-plan-radius", (center, radius) => {
       if (this.map.getLayer("circle-outline")) {
         this.map.removeLayer("circle-outline");
@@ -716,10 +723,7 @@ export default {
     });
 
 
-    // this.listenForPlanningMarkers()
-    // this.listenForMarkers()
     eventBus.$on("marking", this.listenForMarkers);
-    // eventBus.$on("planning", this.listenForPlanningMarkers);
 
     eventBus.$on("fly-to", (coords) => {
       this.map.flyTo({
@@ -1093,7 +1097,6 @@ export default {
         labelLayerId
       );
         this.listenForPlanningMarkers()
-        // this.listenForMarkers()
     });
   },
 
@@ -1264,6 +1267,7 @@ export default {
     },
 
     initializeMarkingMap() {
+      this.startMarker = [-71.110558, 42.373611];
       // move the map to center on start
       this.map.flyTo({
         center: this.startMarker,
@@ -1280,7 +1284,7 @@ export default {
             type: "Feature",
             geometry: {
               type: "Point",
-              coordinates: [-71.110558, 42.373611],
+              coordinates: this.startMarker,
             },
           },
         ],
@@ -1315,7 +1319,9 @@ export default {
 
       this.map.on("mouseenter", "point", () => {
         // this.map.setPaintProperty("point", "circle-color", "#3bb2d0");
-        canvas.style.cursor = "move";
+        if (!this.disableAddingMarks) {
+          canvas.style.cursor = "move";
+        }
       });
 
       this.map.on("mouseleave", "point", () => {
@@ -1355,11 +1361,15 @@ export default {
       };
 
       this.map.on("mousedown", "point", (e) => {
+        // disable dragging when the user has added marks
+        if (this.disableAddingMarks) {
+          return;
+        }
+
         // Prevent the default map drag behavior.
         e.preventDefault();
 
         canvas.style.cursor = "grab";
-
         this.map.on("mousemove", onMove);
         this.map.once("mouseup", onUp);
       });
@@ -1398,6 +1408,7 @@ export default {
         if (this.map.getLayer("point")){
           this.map.removeLayer("point")
         }
+
         if (this.map.getSource("point")){
           this.map.removeSource("point")
         }

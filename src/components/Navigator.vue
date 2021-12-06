@@ -76,13 +76,13 @@ export default {
         return;
       }
       this.$store.dispatch('setTemplate', 'mark');
-      this.$store.dispatch('setMapState', 'marking');
+      eventBus.$emit("disable-adding-marks", false);
       eventBus.$emit("marking");
     },
 
     planTrip() {
       this.$store.dispatch('setTemplate', 'plan');
-      this.$store.dispatch('setMapState', 'planning');
+      eventBus.$emit("disable-adding-marks", false);
       eventBus.$emit("planning");
     },
 

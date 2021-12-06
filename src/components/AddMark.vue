@@ -1,7 +1,11 @@
 <template>
   <div class="outer">
     <transition name="fade">
-      <Search mode="mark" v-if="!addingMarkDetails" @search-type="updateSearchType">
+      <Search 
+        mode="mark" 
+        v-if="!addingMarkDetails" 
+        :searchType="searchType"
+        @search-type="updateSearchType">
         <template v-slot:heading> Where do you want to mark? </template>
         <template v-slot:content>
           <div class="search-results">
@@ -9,7 +13,8 @@
               v-for="result in results"
               v-bind:key="result.id"
               :text="result.text"
-              :name="result.place_name"/>
+              :name="result.place_name"
+              @click.native="navigateTo(result)"/>
           </div>
         </template>
         <template v-slot:submit>
@@ -31,7 +36,7 @@
       v-if="addingMarkDetails"
       :start="start"
       :end="end"
-      @back="addingMarkDetails = false"
+      @back="handleBack"
     />
   </div>
 </template>
@@ -54,8 +59,6 @@ export default {
 
     eventBus.$on("mark-created", () => {
       this.addingMarkDetails = false;
-      this.$store.dispatch('setMapState', 'marking');
-      eventBus.$emit("marking");
       this.results = [];
     });
 
@@ -115,8 +118,14 @@ export default {
     }
   },
   methods: {
+    handleBack() {
+      this.addingMarkDetails = false;
+      eventBus.$emit("disable-adding-marks", false);
+    },
+
     handleSubmit() {
       this.addingMarkDetails = true;
+      eventBus.$emit("disable-adding-marks", true);
     },
 
     navigateTo(suggestion) {

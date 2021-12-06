@@ -20,6 +20,7 @@
         />
 
         <v-btn
+          
           :disabled="mode === 'plan'"
           icon
           color="primary"
@@ -82,6 +83,17 @@ export default {
 
   props: {
     mode: String,
+    searchType: String,
+  },
+
+  data() {
+    return {
+      placeholder: "e.g 189 Vassar Street",
+      start: "",
+      end: "",
+      startInput: "start",
+      endInput: "end"
+    };
   },
 
   beforeMount() {
@@ -169,42 +181,36 @@ export default {
     }
   },
 
-  data() {
-    return {
-      placeholder: "e.g 189 Vassar Street",
-      start: "",
-      end: "",
-      startInput: "start",
-      endInput: "end",
-      searchType: "intersection",
-    };
-  },
-
   created() {
-    // this helps to show the dots when the searchType is plan
-    this.mode === 'plan' && (this.searchType = 'path');
+    if (this.mode === "mark") {
+      this.start =
+        this.$store.getters.startMarker[0] +
+        ", " +
+        this.$store.getters.startMarker[1];
 
-    this.mode === 'mark' && (this.start =
-      this.$store.getters.startMarker[0] +
-      ", " +
-      this.$store.getters.startMarker[1]);
+      if (this.$store.getters.endMarker.length !== 0) {
+        this.end =
+          this.$store.getters.endMarker[0] +
+          ", " +
+          this.$store.getters.endMarker[1];
+      }
+    }
   },
 
   methods: {
     setSearchType() {
       let prevType = this.searchType;
-      this.searchType === "intersection"
-        ? (this.searchType = "path")
-        : (this.searchType = "intersection");
+      const updatedType = this.searchType === "intersection" ? "path" : "intersection";
 
-      // emit searchtype to the addMark parent to know how to block submit button
-      this.$emit('search-type', this.searchType);
-
-      this.$store.dispatch("setMarkType", this.searchType);
-      if (this.searchType === "intersection" && prevType === "path") {
+      this.$store.dispatch("setMarkType", updatedType);
+      if (updatedType === "intersection" && prevType === "path") {
         eventBus.$emit("removeEnd");
         this.end = "";
       }
+
+      // emit searchtype to the addMark parent to know how to block submit button
+      this.$emit('search-type', updatedType);
+
     },
 
     switchStartEnd() {

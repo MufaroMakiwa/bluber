@@ -125,6 +125,8 @@ export default {
         })
         .finally(() => {
           eventBus.$emit("clearAddMark");
+          eventBus.$emit("marking");
+          eventBus.$emit("disable-adding-marks", false);
         });
     },
 

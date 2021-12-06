@@ -1,7 +1,10 @@
 <template>
   <div class="outer">
     <transition name="fade">
-      <Search mode="plan" v-if="!displayPlan">
+      <Search 
+        searchType="path"
+        mode="plan" 
+        v-if="!displayPlan">
         <template v-slot:heading> Where are you going? </template>
         <template v-slot:content>
           <div class="search-results">
@@ -9,7 +12,8 @@
               v-for="result in results"
               v-bind:key="result.id"
               :text="result.text"
-              :name="result.place_name"/>
+              :name="result.place_name"
+              @click.native="navigateTo(result)"/>
           </div>
         </template>
         <template v-slot:submit>
