@@ -1,7 +1,7 @@
 <template>
   <div class="app-wrapper">  
     <Map class="map"/>  
-    <Navigator />   
+    <Navigator @display-about="handleDisplayAbout"/>   
 
     <div class="shadow main-app-section">
       <div 
@@ -39,6 +39,10 @@
     </v-snackbar>  
 
     <SignoutDialog ref="confirm"/>
+
+    <About 
+      @close-about="handleCloseAbout"
+      :dialog="displayAbout"/>
   </div>
 </template>
 
@@ -56,6 +60,7 @@ import Map from '../components/Map';
 import Locator from '../components/Locator'
 import { eventBus } from '../main.js';
 import GoogleLoginButton from "../components/GoogleLoginButton";
+import About from "../components/About";
 import axios from 'axios';
 
 
@@ -72,7 +77,8 @@ export default {
     Locator,
     SavedPlans,
     GoogleLoginButton,
-    SignoutDialog
+    SignoutDialog,
+    About
   },
 
   data() {
@@ -80,6 +86,7 @@ export default {
       snackbar: false,
       snackbarText: '',
       timeout: 5000,
+      displayAbout: false
     };
   },
 
@@ -97,6 +104,14 @@ export default {
     snackbarHandler(text) {
       this.snackbarText = text;
       this.snackbar = true;
+    },
+
+    handleCloseAbout(){
+      this.displayAbout = false;
+    },
+
+    handleDisplayAbout() {
+      this.displayAbout = true;
     }
   },
 

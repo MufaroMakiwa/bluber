@@ -26,6 +26,11 @@ const UserSchema = new Schema(
         "password": {
           type: String,
           required: false,
+        },
+        // whether the user completed the demo or not
+        "viewedDemo": {
+          type: Boolean,
+          required: true
         }
     }
 );

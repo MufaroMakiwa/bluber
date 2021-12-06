@@ -29,6 +29,21 @@
       Bluebikes
     </v-btn>
 
+    <v-tooltip right>
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn
+          class="nav-button"
+          rounded
+          color="white"
+          v-on="on"
+          v-bind="attrs"
+          @click="displayAbout">
+          <font-awesome-icon icon="info"/>
+        </v-btn>
+      </template>
+      <span>About</span>
+    </v-tooltip>
+
     <AuthenticationDialog 
       :dialog="displayAuthDialog" 
       action="add a mark"
@@ -92,7 +107,12 @@ export default {
         .catch((err) => {
             console.log(err);
         });
-      }
+    },
+
+    displayAbout() {
+      this.$emit('display-about');
+    }
+
     }
   }
 </script>
