@@ -78,8 +78,46 @@ export default {
   },
 
   watch: {
-    mapStyle(val) {
-      this.map.setStyle('mapbox://styles/mapbox/' + val);
+    // https://github.com/mapbox/mapbox-gl-js/issues/4006#issuecomment-772462907
+    
+    async mapStyle(val) {
+      const { data: newStyle } = await axios.get(
+        `https://api.mapbox.com/styles/v1/mapbox/${val}?access_token=${this.accessToken}`
+      );
+      const currentStyle = this.map.getStyle();
+
+      // ensure any sources from the current style are copied across to the new style
+      newStyle.sources = Object.assign(
+          {},
+          currentStyle.sources,
+          newStyle.sources
+      );
+
+      // find the index of where to insert our layers to retain in the new style
+      let labelIndex = newStyle.layers.findIndex((el) => {
+          return el.id == 'waterway-label';
+      });
+
+      // default to on top
+      if (labelIndex === -1) {
+          labelIndex = newStyle.layers.length;
+      }
+      const appLayers = currentStyle.layers.filter((el) => {
+          // app layers are the layers to retain, and these are any layers which have a different source set
+          return (
+              el.source &&
+              el.source != 'mapbox://mapbox.satellite' &&
+              el.source != 'mapbox' &&
+              el.source != 'composite'
+          );
+      });
+      newStyle.layers = [
+          ...newStyle.layers.slice(0, labelIndex),
+          ...appLayers,
+          ...newStyle.layers.slice(labelIndex, -1),
+      ];
+      this.map.setStyle(newStyle);
+      // this.map.setStyle('mapbox://styles/mapbox/' + val);
     }
   },
 

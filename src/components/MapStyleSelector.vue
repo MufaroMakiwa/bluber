@@ -79,7 +79,7 @@ export default {
 .menu-container {
   position: fixed;
   left: 10px;
-  bottom: 180px;
+  bottom: 178px;
   float: left;
 }
 

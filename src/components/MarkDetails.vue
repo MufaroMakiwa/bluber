@@ -239,10 +239,10 @@ export default {
       }
       axios.delete('/api/mark/' + this.mark._id)
         .then(async () => {
-          this.userMarks 
-          ? await this.$store.dispatch('getUser')
-          : eventBus.$emit("refresh",  {drawRoutes: true});
           this.$emit('back');
+          this.userMarks 
+            ? await this.$store.dispatch('getUser')
+            : eventBus.$emit("refresh",  {drawRoutes: true});
         })
         .catch((err) => console.log(err))
     },
