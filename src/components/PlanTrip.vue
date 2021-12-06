@@ -19,7 +19,7 @@
             :disabled="!canSubmit"
             color="primary"
             class="submit-button font-weight-bold"
-            @click="handleSubmit">
+            @click="handleSubmit(true, true)">
             Plan Trip
           </v-btn>
         </template>
@@ -81,7 +81,9 @@ export default {
       }
     });
 
-    eventBus.$on("refresh", () => this.handleSubmit(false));
+    eventBus.$on("refresh", (obj) => {
+      this.handleSubmit(obj.drawRoutes, false)
+    });
   },
 
   beforeDestroy() {
@@ -95,7 +97,7 @@ export default {
   },
 
   methods: {
-    handleSubmit(drawRadius=true) {
+    handleSubmit(drawRoutes, drawRadius) {
       this.displayPlan = true;
 
       let params = {
@@ -112,7 +114,7 @@ export default {
           this.marks = marksInSpannedArea;
           this.center = center;
 
-          eventBus.$emit("drawRoutes", {
+          drawRoutes && eventBus.$emit("drawRoutes", {
             marks: this.marks,
             centerOnRender: false,
             center: this.center

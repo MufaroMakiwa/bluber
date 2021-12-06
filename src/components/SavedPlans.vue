@@ -13,7 +13,7 @@
               v-for="(plan, index) in user.saved"
               :key="index"
               :plan="plan"
-              @click.native="renderPlan(plan)"/>
+              @click.native="renderPlan(plan, true)"/>
           </div>
 
           <NoContent 
@@ -73,8 +73,8 @@ export default {
   },
 
   mounted() {
-    eventBus.$on("refresh", () => {
-      this.displayedPlan !== null && this.renderPlan(this.displayedPlan);
+    eventBus.$on("refresh", (obj) => {
+      this.displayedPlan !== null && this.renderPlan(this.displayedPlan, obj.drawRoutes);
     })
   },
 
@@ -94,7 +94,7 @@ export default {
       eventBus.$emit("clearPlan");
     },
 
-    renderPlan(plan) {
+    renderPlan(plan, drawRoutes) {
       let params = {
         startLat: plan.start.lat,
         startLng: plan.start.lng,
@@ -109,7 +109,7 @@ export default {
         this.marks = marksInSpannedArea;
         this.center = center;
         
-        eventBus.$emit("drawRoutes", {
+        drawRoutes && eventBus.$emit("drawRoutes", {
             marks: this.marks,
             centerOnRender: false,
             center: this.center

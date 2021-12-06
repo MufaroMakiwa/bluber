@@ -122,8 +122,10 @@ export default {
         })
         .catch((err) => {
           console.log(err);
+        })
+        .finally(() => {
+          eventBus.$emit("clearAddMark");
         });
-      eventBus.$emit("clearAddMark");
     },
 
     tagClick(tag) {

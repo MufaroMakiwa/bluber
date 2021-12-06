@@ -9,6 +9,8 @@
         <MarkUserDetails 
           :username="mark.user.name"
           :imageUrl="mark.user.imageUrl"
+          :rating="mark.user.rating"
+          :marksCount="mark.user.marks"
           :dateAdded="formatDate(mark.dateAdded)"/>
 
         <OptionsMenu 
@@ -196,7 +198,7 @@ export default {
         targetUserId: this.mark.user.userId
       })
       .then(() => {       
-        eventBus.$emit("refresh");
+        eventBus.$emit("refresh",  {drawRoutes: false});
       })
       .catch((err) => {
         console.log(err)
@@ -210,7 +212,7 @@ export default {
     removeRating(){
       axios.delete('/api/rating/' + this.mark._id)
         .then(() => {     
-          eventBus.$emit("refresh");
+          eventBus.$emit("refresh",  {drawRoutes: false});
         })
         .catch(err => {
           console.log(err)
@@ -223,7 +225,7 @@ export default {
         .then(() => {
           this.userMarks 
           ? this.$store.dispatch('getUser')
-          : eventBus.$emit("refresh");
+          : eventBus.$emit("refresh",  {drawRoutes: true});
           this.$emit('back');
         })
         .catch((err) => console.log(err))

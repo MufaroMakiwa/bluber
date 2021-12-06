@@ -111,7 +111,7 @@ export default {
     handleDeleteComment() {
       axios.delete('/api/comment/'+this.response._id)
         .then(() => { 
-          eventBus.$emit("refresh");
+          eventBus.$emit("refresh",  {drawRoutes: false});
         })
         .catch((err) => {
           console.log(err)
@@ -122,7 +122,7 @@ export default {
     handleDeleteReply() {
       axios.delete('/api/reply/'+this.response._id)
         .then(() => { 
-          eventBus.$emit("refresh");
+          eventBus.$emit("refresh",  {drawRoutes: false});
         })
         .catch((err) => {
           console.log(err)
