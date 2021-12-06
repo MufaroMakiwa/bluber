@@ -1,7 +1,8 @@
 <template>
   <PageModalTemplate
     :display="display">
-    <div class="add-rating">
+    <div 
+      class="add-rating">
       <h3 class="rate-title">Rate this mark</h3>
       <v-divider></v-divider>
       <v-rating

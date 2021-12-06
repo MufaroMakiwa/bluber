@@ -157,7 +157,7 @@ export default {
 }
 
 .title {
-  color: #1ba9bf;
+  color: var(--primary);
 }
 
 .result-list {

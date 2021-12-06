@@ -31,7 +31,13 @@
             </span>
           </div>
           
-          <AddComment v-else :commentId="commentId" :commentUserId="commentUserId" :isReply="true" @cancel="cancelReply"/>
+          <AddComment 
+            class="reply-padded"
+            v-else 
+            :commentId="commentId" 
+            :commentUserId="commentUserId" 
+            :isReply="true" 
+            @cancel="cancelReply"/>
         </div>
 
         <div v-if="isReply && isCurrentUserResponse" class="modify-reply-container">
@@ -49,6 +55,8 @@
         </div>
       </div>
     </div>
+
+    <ConfirmDialog ref="confirm"/>
   </div>
 </template>
 
@@ -56,6 +64,7 @@
 import UserIcon from "./UserIcon.vue";
 import AddComment from "./AddComment.vue";
 import {formatDate} from "../utils";
+import ConfirmDialog from "./ConfirmDialog.vue";
 import axios from "axios";
 import { eventBus } from '../main';
 
@@ -64,7 +73,7 @@ export default {
   name: "Response",
 
   components: {
-    UserIcon, AddComment
+    UserIcon, AddComment, ConfirmDialog
   },
 
   props: {
@@ -108,7 +117,14 @@ export default {
       this.isReplying = false;
     },
 
-    handleDeleteComment() {
+    async handleDeleteComment() {
+      if (!await this.$refs.confirm.open(
+        "Delete comment?",
+        "This cannot be undone and your comment with its replies will be deleted.",
+        "Delete"
+      )) {
+        return;
+      }
       axios.delete('/api/comment/'+this.response._id)
         .then(() => { 
           eventBus.$emit("refresh",  {drawRoutes: false});
@@ -119,7 +135,14 @@ export default {
 
     },
 
-    handleDeleteReply() {
+    async handleDeleteReply() {
+      if (!await this.$refs.confirm.open(
+        "Delete reply?",
+        "This cannot be undone and your reply will not appear among other replies to this comment.",
+        "Remove"
+      )) {
+        return;
+      }
       axios.delete('/api/reply/'+this.response._id)
         .then(() => { 
           eventBus.$emit("refresh",  {drawRoutes: false});
@@ -204,6 +227,10 @@ export default {
   width: 100%;
 }
 
+.reply-padded {
+  margin-top: 0.5rem;
+}
+
 .content-padded {
   padding-bottom: 1rem;
 }
@@ -224,7 +251,7 @@ export default {
 }
 
 .modify-button.reply {
-  color: #1ba9bf;
+  color: var(--primary);
 }
 
 .modify-button.reply:hover {

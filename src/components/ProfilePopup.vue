@@ -118,7 +118,7 @@ export default {
 }
 
 .popup-name {
-  color: #1ba9bf;
+  color: var(--primary);
   font-weight: bold;
 }
 

@@ -64,6 +64,7 @@
         action="rate this mark"
         @close-auth-dialog="displayAuthDialog=false"/>
 
+      <ConfirmDialog ref="confirm"/>
 
     </template>
   </ViewTemplate>
@@ -78,6 +79,7 @@ import MarkDescription from "./MarkDescription.vue";
 import OptionsMenu from "./OptionsMenu.vue";
 import AddComment from "./AddComment.vue";
 import AuthenticationDialog from "./AuthenticationDialog.vue";
+import ConfirmDialog from "./ConfirmDialog.vue";
 import Comment from "./Comment.vue";
 import { formatDate, toPrecision } from '../utils';
 
@@ -97,7 +99,8 @@ export default {
     AddComment,
     Comment,
     RateMarkDialog,
-    AuthenticationDialog
+    AuthenticationDialog,
+    ConfirmDialog
   },
 
   props: {
@@ -108,7 +111,6 @@ export default {
       type: Boolean,
     },
 
-    // TODO
     notificationMark: {
       default: false,
       type: Boolean,
@@ -209,7 +211,14 @@ export default {
       return toPrecision(d);
     },
     
-    removeRating(){
+    async removeRating(){
+      if (!await this.$refs.confirm.open(
+        "Remove rating?",
+        "This cannot be undone and your rating will not count towards this mark's overall rating.",
+        "Remove"
+      )) {
+        return;
+      }
       axios.delete('/api/rating/' + this.mark._id)
         .then(() => {     
           eventBus.$emit("refresh",  {drawRoutes: false});
@@ -220,11 +229,18 @@ export default {
 
     },
 
-    deleteMark() {
+    async deleteMark() {
+      if (!await this.$refs.confirm.open(
+        "Delete mark?",
+        "This cannot be undone and the mark will be removed with its comments, replies and ratings.",
+        "Delete"
+      )) {
+        return;
+      }
       axios.delete('/api/mark/' + this.mark._id)
-        .then(() => {
+        .then(async () => {
           this.userMarks 
-          ? this.$store.dispatch('getUser')
+          ? await this.$store.dispatch('getUser')
           : eventBus.$emit("refresh",  {drawRoutes: true});
           this.$emit('back');
         })

@@ -5,9 +5,14 @@
       @wheel.prevent 
       @scroll.prevent 
       @touchmove.prevent 
-      class="modal">
+      class="modal"
+      @click.stop="modalClick">
       
-      <slot></slot>
+      <div
+        @click.stop
+        :class="['container', animateModalClick ? 'scale' : '']">
+        <slot></slot>
+      </div>
 
     </div>
   </transition>
@@ -19,13 +24,41 @@ export default {
 
   props: {
     display: Boolean,
+
+    clickToDismiss: {
+      default: false,
+      type: Boolean,
+    }
+  },
+
+  data() {
+    return {
+      animateModalClick: false,
+    }
+  },
+
+  methods: {
+    animateClick() {
+      this.animateModalClick = true;
+      setTimeout(() => {
+        this.animateModalClick = false;
+      }, 100);
+    },
+
+    closeModal() {
+      this.$emit('dismiss-dialog')
+    },
+
+    modalClick() {
+      return this.clickToDismiss ? this.closeModal() : this.animateClick();
+    }
   }
 }
 </script>
 
 <style scoped>
 .modal {
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.5);
   position: absolute;
   top: 0;
   bottom: 0;
@@ -36,5 +69,13 @@ export default {
   justify-content: center;
   align-items: center;
   cursor: default;
+}
+
+.container {
+  transition: all 0.3s;
+}
+
+.scale {
+  transform: translateY(-2.5%);
 }
 </style>

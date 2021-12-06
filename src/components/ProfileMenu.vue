@@ -95,7 +95,7 @@
             <v-list-item-avatar class="avatar">
               <font-awesome-icon icon="sign-out-alt" class="menu-icon"/> 
             </v-list-item-avatar>
-            <v-list-item-title>Signout</v-list-item-title>
+            <v-list-item-title>Sign out</v-list-item-title>
           </v-list-item>
         </v-list>
       </v-card>
@@ -105,7 +105,8 @@
 
 <script>
 import Rating from './Rating.vue';
-import axios from 'axios';
+import { eventBus } from "../main";
+
 
 export default {
   name: "ProfileMenu",
@@ -186,14 +187,7 @@ export default {
     },
 
     signOut() {
-      axios.delete('/api/user/session')
-        .then(() => {
-          this.$store.dispatch('setUser', null);
-          this.$store.dispatch('setTemplate', 'authentication');
-        })
-        .catch(error => {
-          console.log(error);
-        })
+      eventBus.$emit("sign-out");
     }
   }
 }

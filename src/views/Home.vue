@@ -37,6 +37,8 @@
         </v-btn>
       </template>
     </v-snackbar>  
+
+    <SignoutDialog ref="confirm"/>
   </div>
 </template>
 
@@ -48,11 +50,13 @@ import Notifications from "../components/Notifications";
 import UserMarks from "../components/UserMarks";
 import SavedPlans from "../components/SavedPlans";
 import Authentication from "../components/Authentication";
+import SignoutDialog from "../components/SignoutDialog";
 import AddMark from "../components/AddMark";
 import Map from '../components/Map';
 import Locator from '../components/Locator'
 import { eventBus } from '../main.js';
 import GoogleLoginButton from "../components/GoogleLoginButton";
+import axios from 'axios';
 
 
 export default {
@@ -67,14 +71,12 @@ export default {
     Authentication,
     Locator,
     SavedPlans,
-    GoogleLoginButton
+    GoogleLoginButton,
+    SignoutDialog
   },
 
   data() {
     return {
-      showMarks:false,
-      isLoggedIn: false,
-      showMarker: false,
       snackbar: false,
       snackbarText: '',
       timeout: 5000,
@@ -99,19 +101,23 @@ export default {
   },
 
 
-  created() {
+  mounted() {
     eventBus.$on('display-snackbar', this.snackbarHandler);
 
-    eventBus.$on("toggle-marks", () => {
-      this.showMarks = !this.showMarks;
-      this.showMarker = false;
-    })
-    eventBus.$on("toggle-marker", () => {
-      this.showMarker = !this.showMarker;
-      this.showMarks = false;
-    })
-    eventBus.$on("signIn", () => {
-      this.isLoggedIn = true;
+    eventBus.$on("sign-out", async () => {
+      if (!await this.$refs.confirm.open()) {
+        return;
+      }
+
+      axios.delete('/api/user/session')
+        .then(() => {
+          this.$store.dispatch('setUser', null);
+          this.$store.dispatch('setTemplate', 'authentication');
+        })
+        .catch(error => {
+          console.log(error);
+        })
+
     })
   },
 

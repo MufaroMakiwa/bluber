@@ -1,28 +1,26 @@
 <template>
-  <div class="dialog-container">
-    <v-dialog
-      overlay-opacity="0.6"
-      :width="400"
-      :value="dialog"
-      @click:outside="closeDialog">
-      <div class="authentication-container">
-        <div class="title-container">
-          <h1>Bluber</h1>
-        </div>  
+  <v-dialog
+    overlay-opacity="0.6"
+    :width="400"
+    :value="dialog"
+    @click:outside="closeDialog">
+    <div class="authentication-container">
+      <div class="title-container">
+        <h1>Bluber</h1>
+      </div>  
 
-        <img class="button-bike-icon" alt="" src="https://img.icons8.com/external-wanicon-lineal-color-wanicon/64/000000/external-bike-healthy-wanicon-lineal-color-wanicon.png" />
+      <img class="button-bike-icon" alt="" src="https://img.icons8.com/external-wanicon-lineal-color-wanicon/64/000000/external-bike-healthy-wanicon-lineal-color-wanicon.png" />
 
-        <span class="message">You need to be signed in to {{action}}.</span>
+      <span class="message">You need to be signed in to {{action}}.</span>
 
-        <div class="login-container">
-          <GoogleLoginButton 
-            :isParentDialog="true"
-            :redirect="redirect"
-            @auth-complete="closeDialog"/>
-        </div>
+      <div class="login-container">
+        <GoogleLoginButton 
+          :isParentDialog="true"
+          :redirect="redirect"
+          @auth-complete="closeDialog"/>
       </div>
-    </v-dialog>
-  </div>
+    </div>
+  </v-dialog>
 </template>
 
 <script>

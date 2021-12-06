@@ -13,7 +13,8 @@
               v-for="(plan, index) in user.saved"
               :key="index"
               :plan="plan"
-              @click.native="renderPlan(plan, true)"/>
+              @click.native="renderPlan(plan, true, true)"
+              @delete-plan="deleteSavedPlan(plan._id)"/>
           </div>
 
           <NoContent 
@@ -31,6 +32,8 @@
       :displaySaveIcon="false"
       @back="hidePlan"
       :center="center"/>
+
+    <ConfirmDialog ref="confirm"/>
     
   </div>
 </template>
@@ -38,6 +41,7 @@
 <script>
 import ViewTemplate from "./ViewTemplate.vue";
 import SavedPlanCard from "./SavedPlanCard.vue";
+import ConfirmDialog from "./ConfirmDialog.vue";
 import NoContent from "./NoContent.vue";
 import MarksList from "./MarksList.vue";
 import axios from 'axios';
@@ -47,7 +51,7 @@ export default {
   name: "SavedPlans",
 
   components: {
-    ViewTemplate, SavedPlanCard, MarksList, NoContent
+    ViewTemplate, SavedPlanCard, MarksList, NoContent, ConfirmDialog
   },
 
   computed: {
@@ -74,7 +78,7 @@ export default {
 
   mounted() {
     eventBus.$on("refresh", (obj) => {
-      this.displayedPlan !== null && this.renderPlan(this.displayedPlan, obj.drawRoutes);
+      this.displayedPlan !== null && this.renderPlan(this.displayedPlan, obj.drawRoutes, false);
     })
   },
 
@@ -94,7 +98,26 @@ export default {
       eventBus.$emit("clearPlan");
     },
 
-    renderPlan(plan, drawRoutes) {
+    async deleteSavedPlan(planId) {
+      if (!await this.$refs.confirm.open(
+        "Delete plan?",
+        "This cannot be undone and this plan will not be displayed together with your other saved plans.",
+        "Delete"
+      )) {
+        return;
+      }
+
+      axios.delete('/api/saved/' + planId)
+        .then(async () => {
+          await this.$store.dispatch('getUser');
+          eventBus.$emit("display-snackbar", "You deleted a saved plan");
+        })
+        .catch(err => {
+          console.log(err);
+        })
+    },
+
+    renderPlan(plan, drawRoutes, drawRadius) {
       let params = {
         startLat: plan.start.lat,
         startLng: plan.start.lng,
@@ -114,7 +137,7 @@ export default {
             centerOnRender: false,
             center: this.center
           })
-        eventBus.$emit("draw-plan-radius", center, radius);
+        drawRadius && eventBus.$emit("draw-plan-radius", center, radius);
       })
       .catch((err) => {
         console.log(err)
