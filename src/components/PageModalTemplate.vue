@@ -73,6 +73,9 @@ export default {
 
 .container {
   transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .scale {
