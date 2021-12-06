@@ -26,6 +26,11 @@ const UserSchema = new Schema(
         "password": {
           type: String,
           required: false,
+        },
+        // boolean user view demo 
+        "viewedDemo": {
+            type: Boolean,
+            required: false
         }
     }
 );

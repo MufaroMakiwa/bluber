@@ -58,6 +58,10 @@ const store = new Vuex.Store({
         return notification;
       })
       state.user = { ...state.user, notifications }
+    },
+    
+    setViewedDemo(state, payload) {
+      state.user = {...state.user, viewedDemo: payload}
     }
   },
 
@@ -104,6 +108,9 @@ const store = new Vuex.Store({
     },
     deleteNotification(state, payload) {
       state.commit('deleteNotification', payload)
+    },
+    setViewedDemo(state,payload) {
+      state.commit("setViewedDemo", payload)
     }
   },
 

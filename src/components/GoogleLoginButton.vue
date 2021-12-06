@@ -58,6 +58,7 @@ export default {
         name: user.getBasicProfile().getName(),
         email: user.getBasicProfile().getEmail(),
         imageUrl: user.getBasicProfile().getImageUrl(),
+        viewedDemo: false,
       }
       axios.post("/api/user", body)
         .then(response => {
@@ -72,6 +73,7 @@ export default {
             marks: user.marks,
             saved: user.saved,
             notifications: user.notifications,
+            viewedDemo: user.viewedDemo,
           });
 
           this.hasRedirect && this.$store.dispatch('setTemplate', this.redirect);

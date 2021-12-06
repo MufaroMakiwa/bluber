@@ -1,5 +1,12 @@
 <template>
-  <div class="app-wrapper">  
+  <div>
+  <div class = "video-player-box" v-if="!hasViewedDemo">
+    <span class="place-text">Finish watching this video to onboard and understand how Bluber works!</span>
+    <video-player ref="videoPlayer"
+      :options="playerOptions"
+      @ended="markPlayed"></video-player>
+    </div>
+  <div v-else class="app-wrapper">  
     <Map class="map"/>  
     <Navigator />   
 
@@ -18,6 +25,7 @@
         <Notifications v-if="template === 'notifications'"/>
         <Locator v-if="template === 'locator'"/>
         <Authentication v-if="template === 'authentication'"/>
+      </div>
       </div>
     </div>
 
@@ -53,7 +61,9 @@ import Map from '../components/Map';
 import Locator from '../components/Locator'
 import { eventBus } from '../main.js';
 import GoogleLoginButton from "../components/GoogleLoginButton";
-
+import 'video.js/dist/video-js.css'
+import {videoPlayer} from 'vue-video-player'
+import axios from "axios";
 
 export default {
   name: "App",
@@ -67,7 +77,8 @@ export default {
     Authentication,
     Locator,
     SavedPlans,
-    GoogleLoginButton
+    GoogleLoginButton,
+    videoPlayer
   },
 
   data() {
@@ -78,6 +89,16 @@ export default {
       snackbar: false,
       snackbarText: '',
       timeout: 5000,
+      playerOptions: {
+          // videojs options
+          language: 'en',
+          playbackRates: [0.7, 1.0, 1.5, 2.0],
+          sources: [{
+            type: "video/mp4",
+            src: "https://cdn.theguardian.tv/webM/2015/07/20/150716YesMen_synd_768k_vp8.webm"
+          }],
+          poster: "../meeting-notes-2.pdf",
+        }
     };
   },
 
@@ -89,12 +110,30 @@ export default {
     isSignedIn() {
       return this.$store.getters.isSignedIn;
     },
+
+    hasViewedDemo() {
+      if (this.$store.getters.user) {
+        return this.$store.getters.user.viewedDemo;
+      }
+      return true;
+    },
   },
 
   methods: {
     snackbarHandler(text) {
       this.snackbarText = text;
       this.snackbar = true;
+    },
+    markPlayed() {
+      let body = {
+          userId: this.$store.getters.user.userId,
+      }
+      console.log(body, 'USER INFO')
+      axios.patch("/api/user", body)
+        .then(() => {
+          this.$store.dispatch("setViewedDemo", true);
+        }).catch((err) => console.log(err));
+      // this.$store.dispatch("setViewedDemo", true)
     }
   },
 
@@ -144,6 +183,19 @@ export default {
   align-items: flex-start;
   justify-content: flex-start;
   border: none;
+}
+
+.place-text {
+  color: #74adb6;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.video-player-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .app-inner {
