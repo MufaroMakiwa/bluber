@@ -1,10 +1,12 @@
 <template>
   <div style="height: 100vh; width: 100%" class="map-wrapper">
     <div id="mapContainer" class="basemap"></div>
+    <MapStyleSelector />
   </div>
 </template>
 
 <script>
+import MapStyleSelector from "./MapStyleSelector.vue";
 import mapboxgl from "mapbox-gl";
 import MapboxDirections from "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions";
 // import "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions.css";
@@ -21,7 +23,9 @@ import { formatDate, toPrecision } from "../utils";
 
 export default {
   name: "Map",
-  components: {},
+  components: {
+    MapStyleSelector
+  },
 
   data() {
     return {
@@ -105,6 +109,7 @@ export default {
         showUserHeading: true
       })
     , 'bottom-left');
+
 
     this.map.on("click", (e) => {
       if (this.disableAddingMarks) {
