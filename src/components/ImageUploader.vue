@@ -3,17 +3,36 @@
    <v-layout >
       <v-flex >
        <div>
+          <v-flex class="image-container" v-if="state === 'loaded' && hasImage">       
+          <img class="preview" :src="imageUrl">
+        </v-flex> 
+
+        <v-flex  md6 offset-sm4  v-if="state === 'loading'">
+          <div>
+              <span> Uploading </span>
+          </div>
+          
+          <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+       </v-flex> 
+
          <v-flex >
-           <v-btn block elevation="5" @click="click1"> {{ uploadButtonLabel }}</v-btn>
+
+           <div class="image-buttons">
+                <v-btn  block v-if="!hasImage" elevation="5" @click="click1"> {{ uploadButtonLabel }}</v-btn>
+                <v-btn  v-if="hasImage" elevation="3" @click="click1"> {{ uploadButtonLabel }}</v-btn>
+                <v-btn  v-if="hasImage" elevation="3" @click="removeImage"> remove photo</v-btn>
+           </div>
+
            <input type="file" ref="input1"
             style="display: none"
             @change="previewImage" accept="image/png, image/gif, image/jpeg" > 
-            <v-flex v-if="!hideHints" offset-2 align-self-center>
-                <span>Accepted image formats: png, jpg, gif</span> 
-            </v-flex>
+            <v-flex v-if="!hideHints && !hasImage" class="hint-container">
+                <span class="hint-title">Accepted image formats: </span> 
+                <span>png, jpg, gif</span> 
+                <br>
 
-            <v-flex v-if="!hideHints" offset-3 align-self-center>
-                <span>Size limit: {{ fileSizeLimit/1000000 }} MB</span> 
+                <span class="hint-title">Size limit: </span> 
+                <span> {{ fileSizeLimit/1000000 }} MB</span> 
             </v-flex>
 
             <v-flex>
@@ -25,26 +44,14 @@
       </v-flex>
     </v-layout>
     <br>  
-    <v-flex v-if="state === 'loaded'">          
-        <img class="preview" :src="imageUrl">
-    </v-flex> 
-
-    <v-flex  md6 offset-sm4  v-if="state === 'loading'">
-        <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-
-        <div>
-            <span> Uploading </span>
-        </div>
-    </v-flex> 
-
-    
+   
 </v-container>
 </template>
 
 <script> 
 
 import { firebase, eventBus } from '../main.js'
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
 
 export default {
   name: "ImageUploader",
@@ -53,7 +60,8 @@ export default {
 
   data () {
       return {
-          imageUrl: null,
+          imageUrl: "",
+          imageRef: null,
           imageData: null,
           state: "",
           uploadButtonLabel: "Upload a photo",
@@ -65,12 +73,26 @@ export default {
 
   methods: {
     click1() {
+        console.log("clicked")
         this.$refs.input1.click()   
         },
 
+    removeImage() {
+      deleteObject(this.imageRef).then(() => {
+        console.log("deleted file successfully")
+      }).catch((error) => {
+         console.log("could not delete file successfully");
+         console.log(error)
+      });
+
+      this.imageUrl = "";
+      this.imageData = null;
+      this.uploadButtonLabel = "Upload a photo"
+    },
+
     previewImage(event) {
         this.uploadValue=0;
-        this.imageUrl=null;
+        this.imageUrl="";
         this.imageData = event.target.files[0];
 
         console.log("file size", this.imageData.size)
@@ -94,11 +116,13 @@ export default {
     },
 
     onUpload(){
-        this.imageUrl=null;
+        this.imageUrl="";
 
         console.log("firebase is", firebase);
         const storage = getStorage(firebase);
         const storageRef = ref(storage, `${this.imageData.name}`);
+
+        this.imageRef = storageRef;
 
         const uploadTask = uploadBytesResumable(storageRef, this.imageData);
 
@@ -126,13 +150,19 @@ export default {
                 getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
                     console.log('File available at', downloadURL);
                     this.state = 'loaded';
-                    this.uploadButtonLabel = "Change a Photo"
+                    this.uploadButtonLabel = "Change Photo"
                     this.imageUrl = downloadURL;
                     eventBus.$emit("image-upload", downloadURL);
                 });
             }
         );
         },  
+    }, 
+
+    computed: {
+      hasImage() {
+        return this.imageUrl.length > 0;
+      }
     }
 
 
@@ -142,10 +172,10 @@ export default {
 
 <style scoped>
 
-.preview {
+/* .preview {
     height: 100%;
     width: 100%;
-}
+} */
 
 .lds-roller {
   display: inline-block;
@@ -234,6 +264,26 @@ export default {
 
 .error-message {
   color: red
+}
+
+.image-container img {
+  aspect-ratio: 4 / 3;
+  width: 100%;
+  object-fit: contain;
+}
+
+.hint-title {
+  color: rgb(57, 135, 190);
+  padding: 4px;
+}
+
+.hint-container {
+  margin: 0.5rem;
+}
+
+.image-buttons {
+  display: flex;
+  justify-content: space-evenly
 }
 
 </style>
