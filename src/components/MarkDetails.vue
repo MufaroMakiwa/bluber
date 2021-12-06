@@ -18,8 +18,11 @@
           @remove-rating="removeRating"/>
       </div>
 
-      <div v-if="mark.imageUrl">
-        <img class="mark-image" :src="mark.imageUrl">
+      <div v-if="mark.imageUrl" class="mark-image">
+        <v-img 
+          class="image"     
+          :src="mark.imageUrl">
+        </v-img>
       </div>
 
 
@@ -297,8 +300,10 @@ export default {
 }
 
 .mark-image {
-  height: auto;
-  width: 100%;
-  
+  margin-top: 1rem;
+}
+
+.mark-image .image {
+  border-radius: 16px !important;
 }
 </style>

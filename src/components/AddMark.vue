@@ -1,46 +1,45 @@
 <template>
-  <div>
-    <div class="outer">
-      <transition name="fade">
-        <Search mode="mark" v-if="!addingMarkDetails" @search-type="updateSearchType">
-          <template v-slot:heading> Where do you want to mark? </template>
-          <template v-slot:content>
-            <div class="search-results">
-              <div
-                v-for="result in results"
-                v-bind:key="result.id"
-                class="result-item"
-                v-on:click="navigateTo(result)"
-              >
-                <span class="place-text">{{ result.text }}</span>
-                <span class="place-name">{{ result.place_name }}</span>
-              </div>
-            </div>
-          </template>
-
-          <template v-slot:submit>
-            <v-btn
-              depressed
-              rounded
-              :disabled="!canSubmit"
-              color="primary"
-              class="submit-button font-weight-bold"
-              @click="handleSubmit"
+  <div class="outer">
+    <transition name="fade">
+      <Search mode="mark" v-if="!addingMarkDetails" @search-type="updateSearchType">
+        <template v-slot:heading> Where do you want to mark? </template>
+        <template v-slot:content>
+          <div class="search-results">
+            <div
+              v-for="result in results"
+              v-bind:key="result.id"
+              class="result-item"
+              v-on:click="navigateTo(result)"
             >
-              Continue
-            </v-btn>
-          </template>
-        </Search>
-      </transition>
+              <span class="place-text">{{ result.text }}</span>
+              <span class="place-name">{{ result.place_name }}</span>
+            </div>
+          </div>
+        </template>
 
-      <CreateMarkDetails
-        v-if="addingMarkDetails"
-        :start="start"
-        :end="end"
-        @back="addingMarkDetails = false"
-      />
-    </div>
+        <template v-slot:submit>
+          <v-btn
+            depressed
+            rounded
+            :disabled="!canSubmit"
+            color="primary"
+            class="submit-button font-weight-bold"
+            @click="handleSubmit"
+          >
+            Continue
+          </v-btn>
+        </template>
+      </Search>
+    </transition>
+
+    <CreateMarkDetails
+      v-if="addingMarkDetails"
+      :start="start"
+      :end="end"
+      @back="addingMarkDetails = false"
+    />
   </div>
+  
 </template>
 
 <script>

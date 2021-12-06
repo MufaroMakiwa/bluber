@@ -5,8 +5,11 @@
       :imageUrl="mark.user.imageUrl"
       :dateAdded="formatDate(mark.dateAdded)"/>
     
-    <div v-if="mark.imageUrl">
-      <v-btn small @click="toggleImage"> See Image </v-btn>
+    <div v-if="mark.imageUrl" class="mark-image">
+      <v-img 
+        class="image"
+        :src="mark.imageUrl">
+      </v-img>
     </div>
 
     <div class="mark-details">
@@ -120,4 +123,11 @@ export default {
   margin-left: 0.5rem;
 }
 
+.mark-image {
+  margin-top: 1rem;
+}
+
+.mark-image .image {
+  border-radius: 16px !important;
+}
 </style>

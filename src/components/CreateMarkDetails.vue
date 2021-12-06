@@ -39,10 +39,8 @@
             </v-btn>
           </div>
         </div>
-
-        <v-flex class="image-uploader">
-          <ImageUploader />
-        </v-flex>
+     
+        <ImageUploader class="image-uploader"/>    
       </template>
     </ViewTemplate>
 
@@ -209,6 +207,6 @@ export default {
 }
 
 .image-uploader {
-  padding: 1rem;
+  margin-top: 2rem;
 }
 </style>
