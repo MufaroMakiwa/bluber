@@ -3,29 +3,48 @@
    <v-layout >
       <v-flex >
        <div>
-         <div >
-           <v-btn block elevation="5" @click="click1"> {{ uploadButtonLabel }}</v-btn>
+          <v-flex class="image-container" v-if="state === 'loaded' && hasImage">       
+          <img class="preview" :src="imageUrl">
+        </v-flex> 
+
+        <v-flex  md6 offset-sm4  v-if="state === 'loading'">
+          <div>
+              <span> Uploading </span>
+          </div>
+          
+          <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+       </v-flex> 
+
+         <v-flex >
+
+           <div class="image-buttons">
+                <v-btn  block v-if="!hasImage" elevation="5" @click="click1"> {{ uploadButtonLabel }}</v-btn>
+                <v-btn  v-if="hasImage" elevation="3" @click="click1"> {{ uploadButtonLabel }}</v-btn>
+                <v-btn  v-if="hasImage" elevation="3" @click="removeImage"> remove photo</v-btn>
+           </div>
+
            <input type="file" ref="input1"
             style="display: none"
-            @change="previewImage" accept="image/*" >                
-         </div>
+            @change="previewImage" accept="image/png, image/gif, image/jpeg" > 
+            <v-flex v-if="!hideHints && !hasImage" class="hint-container">
+                <span class="hint-title">Accepted image formats: </span> 
+                <span>png, jpg, gif</span> 
+                <br>
+
+                <span class="hint-title">Size limit: </span> 
+                <span> {{ fileSizeLimit/1000000 }} MB</span> 
+            </v-flex>
+
+            <v-flex>
+                <span class="error-message">{{ errorMessage }}</span> 
+            </v-flex>
+           
+         </v-flex>
        </div>
       </v-flex>
     </v-layout>
     <br>  
-    <v-flex v-if="state === 'loaded'">          
-        <img class="preview" :src="img1">
-    </v-flex> 
-
-    <v-flex  md6 offset-sm4  v-if="state === 'loading'">
-        <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-
-        <div>
-            <span> Uploading </span>
-        </div>
-    </v-flex> 
-
-    
+   
 </v-container>
 </template>
 
@@ -41,27 +60,56 @@ export default {
 
   data () {
       return {
-          img1: null,
+          imageUrl: "",
           imageData: null,
           state: "",
           uploadButtonLabel: "Upload a photo",
+          fileSizeLimit: 10**7,
+          errorMessage: "",
+          hideHints: false
       }
   },
 
   methods: {
     click1() {
+        console.log("clicked")
         this.$refs.input1.click()   
         },
 
+    removeImage() {
+      this.imageUrl = "";
+      this.imageData = null;
+      this.uploadButtonLabel = "Upload a photo"
+    },
+
     previewImage(event) {
+      console.log("preview")
         this.uploadValue=0;
-        this.img1=null;
+        this.imageUrl="";
         this.imageData = event.target.files[0];
-        this.onUpload()
+
+        console.log("file size", this.imageData.size)
+        if (this.imageData.size < this.fileSizeLimit) {
+          this.onUpload()
+        } else {
+            this.hideHints = true;
+            this.errorMessage = `Your image [ ${this.bytesToMegaBytesConverter(this.imageData.size)} MB ] exceeds the accepted size limit [${this.bytesToMegaBytesConverter(this.fileSizeLimit)} MB ], Please try a different image!`
+
+            setTimeout(() => {
+              this.errorMessage = "",
+              this.hideHints = false
+            }, 10000);
+          
+        }
+        
+    },
+
+    bytesToMegaBytesConverter(bytes) {
+      return (bytes / 1000000).toFixed(2);
     },
 
     onUpload(){
-        this.img1=null;
+        this.imageUrl="";
 
         console.log("firebase is", firebase);
         const storage = getStorage(firebase);
@@ -71,8 +119,7 @@ export default {
 
         uploadTask.on('state_changed', 
             (snapshot) => {
-                // Observe state change events such as progress, pause, and resume
-                // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+
                 const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                 console.log('Upload is ' + progress + '% done');
                 switch (snapshot.state) {
@@ -94,13 +141,19 @@ export default {
                 getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
                     console.log('File available at', downloadURL);
                     this.state = 'loaded';
-                    this.uploadButtonLabel = "Change a Photo"
-                    this.img1 = downloadURL;
+                    this.uploadButtonLabel = "Change Photo"
+                    this.imageUrl = downloadURL;
                     eventBus.$emit("image-upload", downloadURL);
                 });
             }
         );
         },  
+    }, 
+
+    computed: {
+      hasImage() {
+        return this.imageUrl.length > 0;
+      }
     }
 
 
@@ -110,10 +163,10 @@ export default {
 
 <style scoped>
 
-.preview {
+/* .preview {
     height: 100%;
     width: 100%;
-}
+} */
 
 .lds-roller {
   display: inline-block;
@@ -198,6 +251,30 @@ export default {
   100% {
     transform: rotate(360deg);
   }
+}
+
+.error-message {
+  color: red
+}
+
+.image-container img {
+  aspect-ratio: 4 / 3;
+  width: 100%;
+  object-fit: contain;
+}
+
+.hint-title {
+  color: rgb(57, 135, 190);
+  padding: 4px;
+}
+
+.hint-container {
+  margin: 0.5rem;
+}
+
+.image-buttons {
+  display: flex;
+  justify-content: space-evenly
 }
 
 </style>
