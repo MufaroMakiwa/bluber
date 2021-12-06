@@ -1,30 +1,41 @@
 <template>
   <div class="user-details-container">
-    <UserIcon 
+    <ProfilePopup 
       :username="username"
-      :imageUrl="imageUrl"/>
+      :imageUrl="imageUrl"
+      :isImage="true"
+      :rating="rating"
+      :marksCount="marksCount"/>
 
     <div class="details-inner">
-      <span class="username">{{ username }}</span>
+      <ProfilePopup 
+      :username="username"
+      :imageUrl="imageUrl"
+      :isImage="false"
+      :rating="rating"
+      :marksCount="marksCount"/>
       <span class="date-posted">{{ dateAdded }}</span>
     </div>
   </div>
 </template>
 
 <script>
-import UserIcon from "./UserIcon.vue";
+import ProfilePopup from "./ProfilePopup.vue";
+
 
 export default {
   name: "MarkUserDetails",
 
   components: {
-    UserIcon
+    ProfilePopup
   },
 
   props: {
     username: String,
     dateAdded: String,
-    imageUrl: String
+    imageUrl: String,
+    rating: Number,
+    marksCount: Number
   },
 
   computed: {

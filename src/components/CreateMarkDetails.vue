@@ -133,8 +133,12 @@ export default {
         })
         .catch((err) => {
           console.log(err);
+        })
+        .finally(() => {
+          eventBus.$emit("clearAddMark");
+          eventBus.$emit("marking");
+          eventBus.$emit("disable-adding-marks", false);
         });
-      eventBus.$emit("clearAddMark");
     },
 
     tagClick(tag) {

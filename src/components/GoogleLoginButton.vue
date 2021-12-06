@@ -18,6 +18,7 @@
 import GoogleLogin from 'vue-google-login';
 import GoogleIcon from "./GoogleIcon";
 import axios from "axios";
+import { eventBus } from '../main';
 
 export default {
   name: "GoogleLoginButton",
@@ -74,7 +75,14 @@ export default {
             notifications: user.notifications,
           });
 
-          this.hasRedirect && this.$store.dispatch('setTemplate', this.redirect);
+          if (this.hasRedirect) {
+            this.$store.dispatch('setTemplate', this.redirect);
+            
+            // if it is marking, emit event to trigger marking
+            if (this.redirect === "mark") {
+              eventBus.$emit('marking');
+            }
+          }
         })
         .catch(error => {
           // do not expect an error with google auth yet

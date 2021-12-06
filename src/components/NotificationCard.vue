@@ -193,7 +193,7 @@ export default {
 }
 
 .info-icon-container .inner.reply {
-  background-color: #1ba9bf;
+  background-color: var(--primary);
 }
 
 .info-icon-container .info-icon {
@@ -215,7 +215,7 @@ export default {
 
 .notification-card-details .date {
   margin-top: 0.5rem;
-  color: #1ba9bf;
+  color: var(--primary);
   font-size: 0.9rem;
 }
 
@@ -252,6 +252,6 @@ export default {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background-color: #1ba9bf;
+  background-color: var(--primary);
 }
 </style>

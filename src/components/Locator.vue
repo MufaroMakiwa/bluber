@@ -13,15 +13,13 @@
     </div>
     
     <div class="search-results">
-      <div
+      <SearchSuggestionCard 
         v-for="result in results"
         v-bind:key="result.id"
-        class="result-item"
-        v-on:click="navigateTo(result)"
-      >
-        <span class="place-text">{{ result.text }}</span>
-        <span class="place-name">{{ result.place_name }}</span>
-      </div>
+        :text="result.text"
+        :name="result.place_name"
+        class="padded-result"
+        @click.native="navigateTo(result)"/>
     </div>
     
     <div class="result-container">
@@ -64,11 +62,16 @@ import { eventBus } from "../main";
 import { formatDate, toPrecision } from "../utils";
 import axios from "axios";
 import SearchInputField from "./SearchInputField.vue";
+import SearchSuggestionCard from "./SearchSuggestionCard.vue";
+
 
 export default {
   name: "Locator",
   props: [],
-  components: { SearchInputField },
+  components: { 
+    SearchInputField,
+    SearchSuggestionCard 
+  },
   data() {
     return {
       stations: [],
@@ -106,6 +109,7 @@ export default {
     formatDate(d) {
       return formatDate(d);
     },
+
     toPrecision(d) {
       return toPrecision(d);
     },
@@ -127,6 +131,7 @@ export default {
             `https://api.mapbox.com/geocoding/v5/mapbox.places/${text}.json?bbox=${bbox[0]},${bbox[1]},${bbox[2]},${bbox[3]}&access_token=pk.eyJ1IjoiaGlsbHp5dGFwcyIsImEiOiJja2MxZ3dtankxNThpMnpsbXo1MG4zdHkzIn0.mxO9d6EI9Xcr6d9RmmR3Jg`
           );
           this.results = query.data.features;
+          this.stations = [];
         } catch (error) {
           this.results = [];
           
@@ -152,7 +157,7 @@ export default {
 }
 
 .title {
-  color: #1ba9bf;
+  color: var(--primary);
 }
 
 .result-list {
@@ -166,12 +171,20 @@ export default {
 .result-container {
   width: 100%;
   padding: 1.5rem;
-  padding-top: 0;
 }
 
 .search-results {
-  padding: 1.5rem;
+  padding: 0 1.5rem;
+  margin: 0;
   width: 100%;
+}
+
+.padded-result:first-of-type {
+  margin-top: 1.5rem;
+}
+
+.padded-result:last-of-type {
+  margin-bottom: 1.5rem;
 }
 
 .result-header {
@@ -189,7 +202,7 @@ export default {
 
 .location-name {
   color: #1da1f2;
-  font-weight: 700;
+  font-weight: bold;
   font-size: 12px;
 }
 
@@ -206,12 +219,6 @@ export default {
   padding: 8px;
   border-radius: 6px;
   cursor: pointer;
-}
-
-.name {
-  color: #1ba9bf;
-  font-weight: 700;
-  font-size: 14px;
 }
 
 .locator-card {
@@ -263,9 +270,11 @@ export default {
 .card-footer {
   padding-top: 6px;
 }
+
 .card-header {
   margin-top: 12px;
 }
+
 .milage {
   font-size: 12px;
   position: absolute;
@@ -297,8 +306,6 @@ export default {
 
 .click .name {
   color: #ffea00;
-  font-weight: 700;
-  font-size: 16px;
 }
 
 .click .milage {
@@ -307,49 +314,5 @@ export default {
 
 .click .date {
   color: #fff;
-}
-
-.result-item {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 0.5rem;
-  margin-top: 1rem;
-  width: 100%;
-  cursor: pointer;
-  box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px,
-    rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
-  border-radius: 3px;
-  transition: all 0.3s;
-}
-
-.result-item:first-of-type {
-  margin-top: 0;
-}
-
-.result-item:hover {
-  background-color: #74adb6;
-  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
-    rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
-  transform: scale(1.01);
-}
-
-.result-item:hover .place-text {
-  color: #ffea00;
-}
-.result-item:hover .place-name {
-  color: #fff;
-}
-
-.place-text {
-  color: #74adb6;
-  font-weight: bold;
-  font-size: 18px;
-}
-
-.place-name {
-  font-weight: bold;
-  font-size: 14px;
-  text-align: left;
 }
 </style>

@@ -29,8 +29,6 @@
       Bluebikes
     </v-btn>
 
-    <MapStyleSelector class="padded"/>
-
     <AuthenticationDialog 
       :dialog="displayAuthDialog" 
       action="add a mark"
@@ -44,13 +42,13 @@ import ProfileMenu from './ProfileMenu.vue';
 import axios from 'axios';
 import {eventBus} from '../main';
 import AuthenticationDialog from "./AuthenticationDialog.vue";
-import MapStyleSelector from "./MapStyleSelector.vue";
+
 
 export default {
   name: "Navigator",
 
   components: {
-    ProfileMenu, AuthenticationDialog, MapStyleSelector
+    ProfileMenu, AuthenticationDialog
   },
 
   computed: {
@@ -76,13 +74,13 @@ export default {
         return;
       }
       this.$store.dispatch('setTemplate', 'mark');
-      this.$store.dispatch('setMapState', 'marking');
+      eventBus.$emit("disable-adding-marks", false);
       eventBus.$emit("marking");
     },
 
     planTrip() {
       this.$store.dispatch('setTemplate', 'plan');
-      this.$store.dispatch('setMapState', 'planning');
+      eventBus.$emit("disable-adding-marks", false);
       eventBus.$emit("planning");
     },
 

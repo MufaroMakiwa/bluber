@@ -5,7 +5,7 @@
 
   <img
     v-else
-    class="profile-image"
+    class="image"
     :src="imageUrl"
     alt=""/>
 </template>
@@ -51,7 +51,7 @@ export default {
   font-weight: bold;
 }
 
-.profile-image {
+.image {
   width: 40px;
   height: 40px;
   border-radius: 50%;

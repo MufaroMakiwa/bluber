@@ -1,19 +1,19 @@
 <template>
   <div class="outer">
     <transition name="fade">
-      <Search mode="plan" v-if="!displayPlan">
+      <Search 
+        searchType="path"
+        mode="plan" 
+        v-if="!displayPlan">
         <template v-slot:heading> Where are you going? </template>
         <template v-slot:content>
           <div class="search-results">
-            <div
+            <SearchSuggestionCard 
               v-for="result in results"
               v-bind:key="result.id"
-              class="result-item"
-              v-on:click="navigateTo(result)"
-            >
-              <span class="place-text">{{ result.text }}</span>
-              <span class="place-name">{{ result.place_name }}</span>
-            </div>
+              :text="result.text"
+              :name="result.place_name"
+              @click.native="navigateTo(result)"/>
           </div>
         </template>
         <template v-slot:submit>
@@ -23,7 +23,7 @@
             :disabled="!canSubmit"
             color="primary"
             class="submit-button font-weight-bold"
-            @click="handleSubmit">
+            @click="handleSubmit(true, true)">
             Plan Trip
           </v-btn>
         </template>
@@ -36,6 +36,7 @@
       @back="hidePlan"
       v-if="displayPlan"
       :requiresBackButton="true"
+      :center="center"
     />
   </div>
 </template>
@@ -44,6 +45,7 @@
 import Search from "./Search.vue";
 import MarksList from "./MarksList.vue";
 import { eventBus } from "../main";
+import SearchSuggestionCard from "./SearchSuggestionCard.vue";
 import axios from "axios";
 
 export default {
@@ -52,6 +54,7 @@ export default {
   components: {
     Search,
     MarksList,
+    SearchSuggestionCard
   },
 
   computed: {
@@ -66,17 +69,14 @@ export default {
       type: "start",
       results: [],
       marks: [],
+      center: undefined
     };
   },
 
   mounted() {
     eventBus.$on("searchResultPlan", (results, type) => {
       this.type = type;
-      if (this.results.length === 0) {
-        this.results = [{place_name:"Try another input", text:"No places found that match your search"}]
-      } else {
-        this.results = results;
-      }
+      this.results = results;
     });
 
     eventBus.$on("input", (text) => {
@@ -85,27 +85,8 @@ export default {
       }
     });
 
-    eventBus.$on("refresh", () => {
-      let params = {
-        startLat: this.$store.getters.point1[1],
-        startLng: this.$store.getters.point1[0],
-        endLat: this.$store.getters.point2[1],
-        endLng: this.$store.getters.point2[0],
-      };
-
-      axios
-        .get("/api/mark", { params: params })
-        .then((res) => {
-          let { marksInSpannedArea } = res.data;
-          this.marks = marksInSpannedArea;
-          eventBus.$emit("drawRoutes", {
-            marks: this.marks,
-            centerOnRender: false
-          })
-        })
-        .catch((err) => {
-          console.log("this is my err", err);
-        });
+    eventBus.$on("refresh", (obj) => {
+      this.handleSubmit(obj.drawRoutes, false)
     });
   },
 
@@ -120,9 +101,7 @@ export default {
   },
 
   methods: {
-    handleSubmit() {
-      this.displayPlan = true;
-
+    handleSubmit(drawRoutes, drawRadius) {
       let params = {
         startLat: this.$store.getters.point1[1],
         startLng: this.$store.getters.point1[0],
@@ -133,13 +112,17 @@ export default {
       axios
         .get("/api/mark", { params: params })
         .then((res) => {
+          this.displayPlan = true;
           let { marksInSpannedArea, radius, center } = res.data;
           this.marks = marksInSpannedArea;
-          eventBus.$emit("drawRoutes", {
+          this.center = center;
+
+          drawRoutes && eventBus.$emit("drawRoutes", {
             marks: this.marks,
-            centerOnRender: false
+            centerOnRender: false,
+            center: this.center
           })
-          eventBus.$emit("draw-plan-radius", center, radius);
+          drawRadius && eventBus.$emit("draw-plan-radius", center, radius);
         })
         .catch((err) => {
           console.log("this is my err", err);
@@ -150,6 +133,7 @@ export default {
       this.displayPlan = false;
       this.results = [];
       this.marks = [];
+      this.center = undefined;
       eventBus.$emit("clearPlan");
     },
 
@@ -175,43 +159,4 @@ export default {
   height: 100%;
 }
 
-.search-results {
-  width: 100%;
-  margin-top: 16px;
-}
-
-.result-item {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 0.5rem;
-  margin-top: 1rem;
-  width: 100%;
-  cursor: pointer;
-  box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px,
-    rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
-  border-radius: 3px;
-  transition: all 0.3s;
-}
-
-.result-item:first-of-type {
-  margin-top: 0;
-}
-
-.result-item:hover .place-text {
-  color: #ffea00;
-}
-.result-item:hover .place-name {
-  color: #fff;
-}
-
-.place-text {
-  color: #74adb6;
-  font-weight: bold;
-  font-size: 1.15rem;
-}
-
-.place-name {
-  font-weight: bold;
-}
 </style>

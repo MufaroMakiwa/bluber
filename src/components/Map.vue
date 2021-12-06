@@ -1,10 +1,12 @@
 <template>
   <div style="height: 100vh; width: 100%" class="map-wrapper">
     <div id="mapContainer" class="basemap"></div>
+    <MapStyleSelector />
   </div>
 </template>
 
 <script>
+import MapStyleSelector from "./MapStyleSelector.vue";
 import mapboxgl from "mapbox-gl";
 import MapboxDirections from "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions";
 // import "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions.css";
@@ -21,7 +23,9 @@ import { formatDate, toPrecision } from "../utils";
 
 export default {
   name: "Map",
-  components: {},
+  components: {
+    MapStyleSelector
+  },
 
   data() {
     return {
@@ -58,11 +62,10 @@ export default {
       endMarker: [],
       planMarkers: {},
       routes: [],
+      disableAddingMarks: false
     };
   },
 
-  beforeMount() {},
-  created() {},
   beforeDestroy() {
     eventBus.$off("mark-stations");
     eventBus.$off("fly-to");
@@ -75,8 +78,46 @@ export default {
   },
 
   watch: {
-    mapStyle(val) {
-      this.map.setStyle('mapbox://styles/mapbox/' + val);
+    // https://github.com/mapbox/mapbox-gl-js/issues/4006#issuecomment-772462907
+    
+    async mapStyle(val) {
+      const { data: newStyle } = await axios.get(
+        `https://api.mapbox.com/styles/v1/mapbox/${val}?access_token=${this.accessToken}`
+      );
+      const currentStyle = this.map.getStyle();
+
+      // ensure any sources from the current style are copied across to the new style
+      newStyle.sources = Object.assign(
+          {},
+          currentStyle.sources,
+          newStyle.sources
+      );
+
+      // find the index of where to insert our layers to retain in the new style
+      let labelIndex = newStyle.layers.findIndex((el) => {
+          return el.id == 'waterway-label';
+      });
+
+      // default to on top
+      if (labelIndex === -1) {
+          labelIndex = newStyle.layers.length;
+      }
+      const appLayers = currentStyle.layers.filter((el) => {
+          // app layers are the layers to retain, and these are any layers which have a different source set
+          return (
+              el.source &&
+              el.source != 'mapbox://mapbox.satellite' &&
+              el.source != 'mapbox' &&
+              el.source != 'composite'
+          );
+      });
+      newStyle.layers = [
+          ...newStyle.layers.slice(0, labelIndex),
+          ...appLayers,
+          ...newStyle.layers.slice(labelIndex, -1),
+      ];
+      this.map.setStyle(newStyle);
+      // this.map.setStyle('mapbox://styles/mapbox/' + val);
     }
   },
 
@@ -107,7 +148,12 @@ export default {
       })
     , 'bottom-left');
 
+
     this.map.on("click", (e) => {
+      if (this.disableAddingMarks) {
+        return;
+      }
+
       const coords = Object.keys(e.lngLat).map((key) => e.lngLat[key]);
       if (this.getMapState() === "planning") {
         if (!this.routesDisplayed) {
@@ -273,42 +319,10 @@ export default {
 
     eventBus.$on("drawRoutes", (obj) => {
 
-        const marks = obj.marks;
-        const centerOnRender = obj.centerOnRender;
+      const marks = obj.marks;
+      const centerOnRender = obj.centerOnRender;
 
-        this.routes.forEach((routeId) => {
-          if (this.map.getLayer(routeId)) {
-            this.map.removeLayer(routeId);
-          }
-
-          if (this.map.getSource(routeId)) {
-            this.map.removeSource(routeId);
-          }
-
-          if (this.map.getLayer("point-" + routeId)) {
-            this.map.removeLayer("point-" + routeId);
-          }
-
-          if (this.map.getSource("point-" + routeId)) {
-            this.map.removeSource("point-" + routeId);
-          }
-          if (this.map.getLayer("end-" + routeId)) {
-            this.map.removeLayer("end-" + routeId);
-          }
-
-          if (this.map.getSource("end-" + routeId)) {
-            this.map.removeSource("end-" + routeId);
-          }
-
-          if (this.planMarkers[routeId]) {
-            this.planMarkers[routeId].remove();
-          }
-        });
-
-        this.planMarkers = [];
-        this.routes = [];
-
-
+      this.removeRoutes();
 
       this.routesDisplayed = true;
       const randomColor = (() => {
@@ -329,11 +343,7 @@ export default {
 
 
       marks.forEach((mark) => {
-
-
         if (mark.path.length !== 0) {
-
-
           if (!this.map.getLayer(mark._id)){
             this.map.addLayer({
               id: mark._id,
@@ -360,7 +370,6 @@ export default {
             });
             this.routes.push(mark._id);
         
-
           const geojsonStart = {
             type: "FeatureCollection",
             features: [
@@ -478,6 +487,12 @@ export default {
         if (centerOnRender) {
           this.map.flyTo({
             center: [marks[0].start.lng, marks[0].start.lat],
+            zoom: 16,
+            essential: true, // this animation is considered essential with respect to prefers-reduced-motion
+          });
+        } else {
+          this.map.flyTo({
+            center: [obj.center.lng, obj.center.lat],
             zoom: 14,
             essential: true, // this animation is considered essential with respect to prefers-reduced-motion
           });
@@ -486,20 +501,20 @@ export default {
         this.map.on("mouseenter", mark._id, () => {
           this.map.getCanvas().style.cursor = "pointer";
         });
+        
         this.map.on("mouseleave", mark._id, () => {
           this.map.getCanvas().style.cursor = "";
         });
 
-        this.map.on("click", mark._id, (e) => {
+        this.map.on("click", mark._id, () => {
           eventBus.$emit("openMarkDetails", mark);
-          this.map.flyTo({
-            center: [e.lngLat.lng, e.lngLat.lat],
-            zoom: 16,
-            essential: true, // this animation is considered essential with respect to prefers-reduced-motion
-          });
         });
       });
     });
+
+    eventBus.$on("disable-adding-marks", (data) => {
+      this.disableAddingMarks = data;
+    })
 
     eventBus.$on("draw-plan-radius", (center, radius) => {
       if (this.map.getLayer("circle-outline")) {
@@ -576,13 +591,6 @@ export default {
       if (this.map.getSource("point2")) {
         this.map.removeSource("point2");
       }
-
-      // this.routing_state = [];
-      // this.point1 = [];
-      // this.point2 = [];
-
-      // this.$store.dispatch("setPoint1", []);
-      // this.$store.dispatch("setPoint2", []);
     });
     /**
      * clear Locator listener
@@ -701,38 +709,9 @@ export default {
 
       this.routesDisplayed = false;
 
-      this.routes.forEach((routeId) => {
-        if (this.map.getLayer(routeId)) {
-          this.map.removeLayer(routeId);
-        }
-
-        if (this.map.getSource(routeId)) {
-          this.map.removeSource(routeId);
-        }
-
-        if (this.map.getLayer("point-" + routeId)) {
-          this.map.removeLayer("point-" + routeId);
-        }
-
-        if (this.map.getSource("point-" + routeId)) {
-          this.map.removeSource("point-" + routeId);
-        }
-        if (this.map.getLayer("end-" + routeId)) {
-          this.map.removeLayer("end-" + routeId);
-        }
-
-        if (this.map.getSource("end-" + routeId)) {
-          this.map.removeSource("end-" + routeId);
-        }
-
-        if (this.planMarkers[routeId]) {
-          this.planMarkers[routeId].remove();
-        }
-      });
-
-      this.planMarkers = [];
-      this.routes = [];
+      this.removeRoutes();
     });
+
 
     eventBus.$on("switch", () => {
       const geojsonStart = {
@@ -787,10 +766,7 @@ export default {
     });
 
 
-    // this.listenForPlanningMarkers()
-    // this.listenForMarkers()
     eventBus.$on("marking", this.listenForMarkers);
-    // eventBus.$on("planning", this.listenForPlanningMarkers);
 
     eventBus.$on("fly-to", (coords) => {
       this.map.flyTo({
@@ -1164,11 +1140,44 @@ export default {
         labelLayerId
       );
         this.listenForPlanningMarkers()
-        // this.listenForMarkers()
     });
   },
 
   methods: {
+    removeRoutes() {
+      this.routes.forEach((routeId) => {
+        if (this.map.getLayer(routeId)) {
+          this.map.removeLayer(routeId);
+        }
+
+        if (this.map.getSource(routeId)) {
+          this.map.removeSource(routeId);
+        }
+
+        if (this.map.getLayer("point-" + routeId)) {
+          this.map.removeLayer("point-" + routeId);
+        }
+
+        if (this.map.getSource("point-" + routeId)) {
+          this.map.removeSource("point-" + routeId);
+        }
+        if (this.map.getLayer("end-" + routeId)) {
+          this.map.removeLayer("end-" + routeId);
+        }
+
+        if (this.map.getSource("end-" + routeId)) {
+          this.map.removeSource("end-" + routeId);
+        }
+
+        if (this.planMarkers[routeId]) {
+          this.planMarkers[routeId].remove();
+        }
+      });
+
+      this.planMarkers = [];
+      this.routes = [];
+    },
+
     formatDate(d) {
       return formatDate(d);
     },
@@ -1301,6 +1310,7 @@ export default {
     },
 
     initializeMarkingMap() {
+      this.startMarker = [-71.110558, 42.373611];
       // move the map to center on start
       this.map.flyTo({
         center: this.startMarker,
@@ -1317,7 +1327,7 @@ export default {
             type: "Feature",
             geometry: {
               type: "Point",
-              coordinates: [-71.110558, 42.373611],
+              coordinates: this.startMarker,
             },
           },
         ],
@@ -1352,7 +1362,9 @@ export default {
 
       this.map.on("mouseenter", "point", () => {
         // this.map.setPaintProperty("point", "circle-color", "#3bb2d0");
-        canvas.style.cursor = "move";
+        if (!this.disableAddingMarks) {
+          canvas.style.cursor = "move";
+        }
       });
 
       this.map.on("mouseleave", "point", () => {
@@ -1392,11 +1404,15 @@ export default {
       };
 
       this.map.on("mousedown", "point", (e) => {
+        // disable dragging when the user has added marks
+        if (this.disableAddingMarks) {
+          return;
+        }
+
         // Prevent the default map drag behavior.
         e.preventDefault();
 
         canvas.style.cursor = "grab";
-
         this.map.on("mousemove", onMove);
         this.map.once("mouseup", onUp);
       });
@@ -1435,6 +1451,7 @@ export default {
         if (this.map.getLayer("point")){
           this.map.removeLayer("point")
         }
+
         if (this.map.getSource("point")){
           this.map.removeSource("point")
         }
@@ -1647,16 +1664,4 @@ export default {
   width: 100%;
   height: 100%;
 }
-/* .map-wrapper {
-    height: 50%;
-    width: 100%;
-} */
-
-/* .mapboxgl-control-container
-{
-  position: absolute;
-  top: 64px;
-  left: 24px;
-  background-color: white;
-} */
 </style>

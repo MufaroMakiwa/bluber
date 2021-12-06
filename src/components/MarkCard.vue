@@ -3,6 +3,8 @@
     <MarkUserDetails 
       :username="mark.user.name"
       :imageUrl="mark.user.imageUrl"
+      :rating="mark.user.rating"
+      :marksCount="mark.user.marks"
       :dateAdded="formatDate(mark.dateAdded)"/>
     
     <div v-if="mark.imageUrl" class="mark-image">

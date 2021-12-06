@@ -125,7 +125,7 @@ export default {
 }
 
 .reply-button {
-  color: #1ba9bf;
+  color: var(--primary);
   font-size: 0.9rem;
   transition: all 0.3s;
   cursor: pointer;

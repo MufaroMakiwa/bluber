@@ -8,7 +8,6 @@ const store = new Vuex.Store({
   state: {
     template: "authentication",
     markType: "intersection",
-    mapState: "planning",
     startMarker: [],
     endMarker: [],
     point1: [],
@@ -25,9 +24,6 @@ const store = new Vuex.Store({
     },
     setMarkType(state, payload) {
       state.markType = payload;
-    },
-    setMapState(state, payload) {
-      state.mapState = payload;
     },
     setPoint1(state, payload) {
       state.point1 = payload;
@@ -68,20 +64,14 @@ const store = new Vuex.Store({
     setMarkType(state, payload) {
       state.commit("setMarkType", payload);
     },
-
     setRoute(state, payload) {
       state.commit("setRoute", payload);
     },
-
     setPoint1(state, payload) {
       state.commit("setPoint1", payload);
     },
-
     setPoint2(state, payload) {
       state.commit("setPoint2", payload);
-    },
-    setMapState(state, payload) {
-      state.commit('setMapState', payload);
     },
     setStartMarker(state, payload) {
       state.commit('setStartMarker', payload);
@@ -110,7 +100,16 @@ const store = new Vuex.Store({
   getters: {
     template: state => state.template,
     markType: state => state.markType,
-    mapState: state => state.mapState,
+    mapState: state => {
+      switch (state.template) {
+        case "plan":
+          return "planning";
+        case "mark":
+          return "marking";
+        default:
+          return null
+      }
+    },
     startMarker: state => state.startMarker,
     endMarker: state => state.endMarker,
     bbox: state => state.bbox,

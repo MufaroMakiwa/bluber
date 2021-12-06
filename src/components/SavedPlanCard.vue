@@ -21,8 +21,6 @@
 import OptionsMenu from "./OptionsMenu.vue"
 import { formatDate, toPrecision } from '../utils';
 import MarkPoints from "./MarkPoints.vue";
-import axios from 'axios';
-import { eventBus } from "../main";
 
 
 export default {
@@ -60,15 +58,7 @@ export default {
 
   methods: {
     deleteSavedPlan() {
-      this.$emit('delete-plan', this.plan._id)
-      axios.delete('/api/saved/' + this.plan._id)
-        .then(async () => {
-          await this.$store.dispatch('getUser');
-          eventBus.$emit("display-snackbar", "You deleted a saved plan");
-        })
-        .catch(err => {
-          console.log(err);
-        })
+      this.$emit('delete-plan');
     },
 
     formatDate(d){

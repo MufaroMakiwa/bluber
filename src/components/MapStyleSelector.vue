@@ -6,19 +6,13 @@
       offset-x
       :min-width="150"
       :close-on-content-click="true">
-      <template v-slot:activator="{ on: menu, attrs }">
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on: tooltip }">
-            <v-btn
-              color="white"
-              rounded
-              v-on="{ ...tooltip, ...menu }"
-              v-bind="attrs">
-              <font-awesome-icon icon="layer-group"/>
-            </v-btn>
-          </template>
-          <span>Map style</span>
-        </v-tooltip>
+      <template v-slot:activator="{ on, attrs }">
+        <button
+          class="map-style-button"
+          v-on="on"
+          v-bind="attrs">
+          <font-awesome-icon icon="layer-group"/>
+        </button>      
       </template>
 
       <v-list class="menu-options">
@@ -83,7 +77,10 @@ export default {
 
 <style scoped>
 .menu-container {
-  position: relative;
+  position: fixed;
+  left: 10px;
+  bottom: 178px;
+  float: left;
 }
 
 .menu-options {
@@ -102,5 +99,20 @@ export default {
 .avatar {
   margin: 0 !important;
   padding: 0 !important;
+}
+
+.map-style-button {
+  width: 30px;
+  height: 30px;
+  background-color: white;
+  cursor: pointer;
+  outline: none;
+  padding: 0;
+  border-radius: 4px;
+  box-shadow: 0 0 0 2px rgb(0 0 0 / 10%);
+}
+
+.map-style-button:hover {
+  background-color: rgb(240, 240, 240);
 }
 </style>

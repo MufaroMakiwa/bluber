@@ -13,7 +13,8 @@
               v-for="(plan, index) in user.saved"
               :key="index"
               :plan="plan"
-              @click.native="renderPlan(plan)"/>
+              @click.native="renderPlan(plan, true, true)"
+              @delete-plan="deleteSavedPlan(plan._id)"/>
           </div>
 
           <NoContent 
@@ -29,7 +30,10 @@
       title="Marks in area"
       :marks="marks"
       :displaySaveIcon="false"
-      @back="hidePlan"/>
+      @back="hidePlan"
+      :center="center"/>
+
+    <ConfirmDialog ref="confirm"/>
     
   </div>
 </template>
@@ -37,6 +41,7 @@
 <script>
 import ViewTemplate from "./ViewTemplate.vue";
 import SavedPlanCard from "./SavedPlanCard.vue";
+import ConfirmDialog from "./ConfirmDialog.vue";
 import NoContent from "./NoContent.vue";
 import MarksList from "./MarksList.vue";
 import axios from 'axios';
@@ -46,7 +51,7 @@ export default {
   name: "SavedPlans",
 
   components: {
-    ViewTemplate, SavedPlanCard, MarksList, NoContent
+    ViewTemplate, SavedPlanCard, MarksList, NoContent, ConfirmDialog
   },
 
   computed: {
@@ -66,13 +71,14 @@ export default {
   data() {
     return {
       displayedPlan: null,
-      marks: []
+      marks: [],
+      center: undefined
     }
   },
 
   mounted() {
-    eventBus.$on("refresh", () => {
-      this.displayedPlan !== null && this.renderPlan(this.displayedPlan);
+    eventBus.$on("refresh", (obj) => {
+      this.displayedPlan !== null && this.renderPlan(this.displayedPlan, obj.drawRoutes, false);
     })
   },
 
@@ -87,11 +93,31 @@ export default {
   methods: {
     hidePlan() {
       this.displayedPlan = null;
-      this.marks = [];   
+      this.marks = []; 
+      this.center = undefined;  
       eventBus.$emit("clearPlan");
     },
 
-    renderPlan(plan) {
+    async deleteSavedPlan(planId) {
+      if (!await this.$refs.confirm.open(
+        "Delete plan?",
+        "This cannot be undone and this plan will not be displayed together with your other saved plans.",
+        "Delete"
+      )) {
+        return;
+      }
+
+      axios.delete('/api/saved/' + planId)
+        .then(async () => {
+          await this.$store.dispatch('getUser');
+          eventBus.$emit("display-snackbar", "You deleted a saved plan");
+        })
+        .catch(err => {
+          console.log(err);
+        })
+    },
+
+    renderPlan(plan, drawRoutes, drawRadius) {
       let params = {
         startLat: plan.start.lat,
         startLng: plan.start.lng,
@@ -104,11 +130,14 @@ export default {
         this.displayedPlan = plan;
         let {marksInSpannedArea, radius, center } = res.data
         this.marks = marksInSpannedArea;
-        eventBus.$emit("drawRoutes", {
+        this.center = center;
+        
+        drawRoutes && eventBus.$emit("drawRoutes", {
             marks: this.marks,
-            centerOnRender: false
+            centerOnRender: false,
+            center: this.center
           })
-        eventBus.$emit("draw-plan-radius", center, radius);
+        drawRadius && eventBus.$emit("draw-plan-radius", center, radius);
       })
       .catch((err) => {
         console.log(err)
