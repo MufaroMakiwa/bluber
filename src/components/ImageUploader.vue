@@ -51,7 +51,7 @@
 <script> 
 
 import { firebase, eventBus } from '../main.js'
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
 
 export default {
   name: "ImageUploader",
@@ -61,6 +61,7 @@ export default {
   data () {
       return {
           imageUrl: "",
+          imageRef: null,
           imageData: null,
           state: "",
           uploadButtonLabel: "Upload a photo",
@@ -77,6 +78,13 @@ export default {
         },
 
     removeImage() {
+      deleteObject(this.imageRef).then(() => {
+        console.log("deleted file successfully")
+      }).catch((error) => {
+         console.log("could not delete file successfully");
+         console.log(error)
+      });
+
       this.imageUrl = "";
       this.imageData = null;
       this.uploadButtonLabel = "Upload a photo"
@@ -114,6 +122,8 @@ export default {
         console.log("firebase is", firebase);
         const storage = getStorage(firebase);
         const storageRef = ref(storage, `${this.imageData.name}`);
+
+        this.imageRef = storageRef;
 
         const uploadTask = uploadBytesResumable(storageRef, this.imageData);
 
