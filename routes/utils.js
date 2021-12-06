@@ -180,6 +180,7 @@ async function constructUserResponse(user, includePersonalInfo=true) {
     email: user.email,
     imageUrl: user.imageUrl,
     rating: userRating,
+    viewedDemo: user.viewedDemo,
     marks: includePersonalInfo ? await getMarks() : getMarksCount(),
     ...(includePersonalInfo && {saved: await getSaved()}),
     ...(includePersonalInfo && {notifications: await getNotifications()}),

@@ -58,7 +58,6 @@ export default {
         name: user.getBasicProfile().getName(),
         email: user.getBasicProfile().getEmail(),
         imageUrl: user.getBasicProfile().getImageUrl(),
-        viewedDemo: false,
       }
       axios.post("/api/user", body)
         .then(response => {

@@ -30,6 +30,7 @@ const UserSchema = new Schema(
         // boolean user view demo 
         "viewedDemo": {
             type: Boolean,
+            default: false,
             required: false
         }
     }
