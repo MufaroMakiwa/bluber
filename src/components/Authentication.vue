@@ -6,6 +6,8 @@
 
     <img class="button-bike-icon" alt="" src="https://img.icons8.com/external-wanicon-lineal-color-wanicon/64/000000/external-bike-healthy-wanicon-lineal-color-wanicon.png" />
 
+    <span class="tag-line">...making Cambridge safer for bikers.</span>
+
     <div class="login-container">
       <GoogleLoginButton redirect="plan"/>
     </div>
@@ -60,7 +62,7 @@ export default {
   justify-content: center;
   flex-direction: column;
   margin-bottom: 1rem;
-  margin-top: 2rem;
+  margin-top: 3rem;
 }
 
 .login-container {
@@ -74,6 +76,14 @@ export default {
 .button-bike-icon {
   width: 50px;
   height: 50px;
+  margin-bottom: 2rem;
+}
+
+.tag-line {
+  width: 100%;
+  text-align: center;
+  font-weight: bold;
   margin-bottom: 3rem;
+  color: var(--primary);
 }
 </style>

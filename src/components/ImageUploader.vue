@@ -295,7 +295,7 @@ export default {
 .image-buttons {
   display: flex;
   justify-content: space-evenly;
-  margin-top: 1rem;
+  margin-top: 3rem;
 }
 
 </style>

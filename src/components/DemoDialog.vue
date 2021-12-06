@@ -106,10 +106,6 @@ export default {
     flex-grow: 1;
 }
 
-.video-player-box {
-
-}
-
 .authentication-container > * {
   width: 100%;
 }
