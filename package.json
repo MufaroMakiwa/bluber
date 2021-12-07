@@ -48,9 +48,11 @@
     "vue-cookie": "^1.1.4",
     "vue-google-login": "^2.0.5",
     "vue-konva": "^2.1.7",
+    "vue-lazytube": "^1.0.2",
     "vue-mapbox": "^0.4.1",
     "vue-router": "^3.5.2",
     "vue-video-player": "^5.0.2",
+    "vue-youtube-embed": "^2.2.2",
     "vue2-leaflet": "^2.7.1",
     "vuetify": "^2.4.0",
     "vuex": "^3.6.2"
