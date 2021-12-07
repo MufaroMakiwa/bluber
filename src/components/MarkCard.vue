@@ -10,6 +10,8 @@
     <div v-if="mark.imageUrl" class="mark-image">
       <v-img 
         class="image"
+        height="300px"
+        contain
         :src="mark.imageUrl">
       </v-img>
     </div>
@@ -127,9 +129,5 @@ export default {
 
 .mark-image {
   margin-top: 1rem;
-}
-
-.mark-image .image {
-  border-radius: 16px !important;
 }
 </style>

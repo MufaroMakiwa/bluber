@@ -4,7 +4,7 @@
       <v-img 
         class=".rounded-lg"
         :src="imageUrl"
-        max-height="300"
+        height="300px"
         contain
         ></v-img>
     </v-flex> 
@@ -78,7 +78,7 @@ export default {
       imageData: null,
       state: "",
       uploadButtonLabel: "Upload a photo",
-      fileSizeLimit: 10**7,
+      fileSizeLimit: 3 * 10 ** 7,
       errorMessage: "",
       hideHints: false
     }
