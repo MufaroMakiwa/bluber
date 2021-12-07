@@ -132,7 +132,8 @@ export default {
   },
 
   beforeMount(){
-    eventBus.$on("openMarkDetails",(mark)=>{
+    eventBus.$on("openMarkDetails",(mark) => {
+      if (this.displayFilters) this.displayFilters = false;
       this.displayedMark = mark;
     }); 
   },
