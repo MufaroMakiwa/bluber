@@ -62,7 +62,6 @@ export default {
     },
     methods: {
         onSigningWithGoogle(googleUser) {
-            console.log("called")
             this.username = googleUser.getBasicProfile().getName();
             this.imageUrl = googleUser.getBasicProfile().getImageUrl();
             this.$cookie.set("username", this.username);
@@ -76,21 +75,16 @@ export default {
                 imageUrl: this.imageUrl
             }
 
-            console.log(userInfo);
-
-            
-
             axios.post("/api/user/google-auth", userInfo)
                 .then(() => {
-                    console.log("successfully logged in")
                     eventBus.emit("on-sign-in", userInfo);
                 })
                 .catch((err) => {
                     console.log(err)
                 })
             },
-        onFailure(error) {
-            console.log("could not sign in with google", error);
+        onFailure(err) {
+            console.log(err);
         },
         onSigning() {
             let userInfo = {
@@ -101,14 +95,11 @@ export default {
             
             let logged = false;
             axios.post("/api/user", userInfo)
-              .then((response) => {
-                  console.log("successfully logged in")
-                  console.log("response", response.data)
+              .then(() => {
                   logged = true;
               })
               .catch((err) => {
                   console.log(err)
-                  console.log("got a response")
               })
               if (logged) {
                 this.$router.push("/");

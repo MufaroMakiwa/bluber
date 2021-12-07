@@ -125,7 +125,7 @@ export default {
           drawRadius && eventBus.$emit("draw-plan-radius", center, radius);
         })
         .catch((err) => {
-          console.log("this is my err", err);
+          console.log(err);
         });
     },
 
