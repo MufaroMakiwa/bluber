@@ -116,8 +116,8 @@ export default {
       about: {
         info: `
         Bluber is an application that is designed to help users to navigate the Cambridge traffic network safely. It gives bikers a platform to comment on
-      conditions of roads or bikelanes they have travelled through during their trips.This offers users first-hand information that they can rely on to make
-      make better judgements when choosing biking routes when planning new trips in a region.
+      the conditions of roads or bikelanes they have travelled through during their trips. This offers users first-hand information that they can rely on to make
+      better judgements when choosing biking routes when they plan new trips in a region.
       `,
       },
 
