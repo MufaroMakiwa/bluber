@@ -153,6 +153,14 @@ export default {
     }    
   },
 
+  created() {
+    eventBus.$emit("drawRoutes", {
+      marks: this.filteredMarks,
+      centerOnRender: false,
+      center: this.center
+    })
+  },
+
   computed: {
     hasFilters() {
       const noFilters = this.filters.sortBy === "dateAdded"
@@ -210,7 +218,7 @@ export default {
 
       } else {
         eventBus.$emit('drawRoutes', {
-          marks: this.marks,
+          marks: this.filteredMarks,
           centerOnRender: false,
           center: this.center
         });
@@ -224,6 +232,13 @@ export default {
         tags: [],
         sortOrder: "descending",
         minimumRating: 0
+      };
+
+      if (!this.userMarks) {
+        eventBus.$emit("drawRoutes", {
+          marks: this.filteredMarks,
+          centerOnRender: false
+        });
       }
     },
 
@@ -255,6 +270,13 @@ export default {
     handleUpdateFilters(filters) {
       this.displayFilters = false;
       this.filters = filters;
+
+      if (!this.userMarks) {
+        eventBus.$emit("drawRoutes", {
+          marks: this.filteredMarks,
+          centerOnRender: false
+        });
+      }
     },
 
     handleMarkClick(mark) {
@@ -263,9 +285,17 @@ export default {
   },
 
   watch: {
-      marks: function(newMarks){
-        if (this.displayedMark){
+      marks: function(newMarks, oldMarks) {
+        if (this.displayedMark) {
           this.displayedMark = newMarks.filter((m) => this.displayedMark._id===m._id)[0]
+        }
+
+        if (!this.userMarks && oldMarks.length !== newMarks.length) {
+          eventBus.$emit("drawRoutes", {
+            marks: this.filteredMarks,
+            centerOnRender: false,
+            center: this.center
+          })
         }
       }
   }

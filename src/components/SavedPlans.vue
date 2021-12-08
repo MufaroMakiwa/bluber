@@ -132,11 +132,6 @@ export default {
         this.marks = marksInSpannedArea;
         this.center = center;
         
-        drawRoutes && eventBus.$emit("drawRoutes", {
-            marks: this.marks,
-            centerOnRender: false,
-            center: this.center
-          })
         drawRadius && eventBus.$emit("draw-plan-radius", center, radius);
       })
       .catch((err) => {

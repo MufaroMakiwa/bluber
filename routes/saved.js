@@ -21,7 +21,6 @@ router.post(
   [
     validator.isUserLoggedIn,
     validator.isSavedNameValid,
-    validator.isSavedNameAlreadyExists,
   ],
   async (req, res) => {
     const { start, end, name } = req.body;

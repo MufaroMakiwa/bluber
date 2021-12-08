@@ -337,20 +337,6 @@ const isValidMarkTags = (req, res, next) => {
 }
 
 
-// checks if the name given to a saved object already exists (case insensitive)
-const isSavedNameAlreadyExists = async (req, res, next) => {
-  // need to allow renaming same object with same name but different case as in Fritter
-  const saved = await savedController.findOneByName(req.body.name);
-  if (saved) {
-    res.status(403).json({
-      error: "This saved object with this name already exists"
-    }).end();
-    return;
-  }
-  next();
-}
-
-
 // checks if the target user id is valid (rating, comment, reply)
 const isTargetUserIdExists = async (req, res, next) => {
   const user = await userController.findOne(req.body.targetUserId);
@@ -408,7 +394,6 @@ module.exports = Object.freeze({
   isReplyIdInParamsExists,
   isSavedIdInParamsExists,
   isValidSavedModifier,
-  isSavedNameAlreadyExists,
   isTargetUserIdExists,
   isValidUsername,
   isUsernameAvailable,
