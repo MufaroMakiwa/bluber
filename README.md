@@ -34,10 +34,9 @@ then you will find the application at `localhost:8080` in the browser
 - **Jianna Liu**:
 
   - src
-    <<<<<<< HEAD - Map.vue
+    Map.vue
   - models (mongo conversion)
   - routes - comment-controller.js - reply-controller.js - user-controller.js - saved-controller.js - rating-controller.js
-    ======= - Mapbox.vue
   - models/ \*
   - routes/ \*
 
@@ -50,15 +49,19 @@ then you will find the application at `localhost:8080` in the browser
     - MarksList.vue
     - Navigator.vue
     - MarkCard.vue
+    - ImageUploader.vue
   - routes
     - user.js
     - middleware.js
     - user.js
     - util.js
     - user-controller.js
+    - mark-controller.js
   - models
 
     - user.js
+    - mark.js
+    -
 
   - bluber-server/
 
