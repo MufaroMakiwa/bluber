@@ -40,8 +40,6 @@ then you will find the application at `localhost:8080` in the browser
   - models/ \*
   - routes/ \*
 
-> > > > > > > safety
-
 - **Hophin Kibona**:
 
   - components
