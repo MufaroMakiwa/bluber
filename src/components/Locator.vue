@@ -229,7 +229,7 @@ export default {
   cursor: pointer;
   position: relative;
   border-radius: 8px;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
 }
 
 .locator-card:first-of-type {

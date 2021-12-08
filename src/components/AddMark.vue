@@ -3,9 +3,7 @@
     <transition name="fade">
       <Search 
         mode="mark" 
-        v-if="!addingMarkDetails" 
-        :searchType="searchType"
-        @search-type="updateSearchType">
+        v-if="!addingMarkDetails">
         <template v-slot:heading> Where do you want to mark? </template>
         <template v-slot:content>
           <div class="search-results">
@@ -25,8 +23,7 @@
             :disabled="!canSubmit"
             color="primary"
             class="submit-button font-weight-bold"
-            @click="handleSubmit"
-          >
+            @click="handleSubmit">
             Continue
           </v-btn>
         </template>
@@ -53,7 +50,21 @@ import { toPrecision } from "../utils";
 export default {
   name: "AddMark",
 
-  beforeMount() {
+  components: {
+    Search,
+    CreateMarkDetails,
+    SearchSuggestionCard
+  },
+
+  data() {
+    return {
+      addingMarkDetails: false,
+      results: [],
+      type: "start",
+    };
+  },
+
+  mounted() {
     eventBus.$on("searchResultMark", (results, type) => {
       this.type = type;
       this.results = results;
@@ -76,10 +87,6 @@ export default {
 
   },
 
-  mounted() {
-
-  }, 
-
   beforeDestroy() {
     // update the user object
     this.$store.dispatch('getUser');
@@ -89,20 +96,6 @@ export default {
     eventBus.$off("clearSuggestionsMark");
     eventBus.$off("searchResultMark");
     eventBus.$emit("clearAddMark");
-  },
-  components: {
-    Search,
-    CreateMarkDetails,
-    SearchSuggestionCard
-  },
-
-  data() {
-    return {
-      addingMarkDetails: false,
-      results: [],
-      type: "start",
-      searchType: "intersection"
-    };
   },
 
   computed: {
@@ -118,10 +111,14 @@ export default {
               lng: ${toPrecision(this.$store.getters.endMarker[1], 8)}`
     },
 
+    markType() {
+      return this.$store.getters.markType;
+    },
+
     canSubmit() {
       const hasStart = this.$store.getters.startMarker.length > 0;
       const hasEnd = this.$store.getters.endMarker.length > 0;
-      return this.searchType === 'intersection' ? hasStart : hasStart && hasEnd;
+      return this.markType === 'intersection' ? hasStart : hasStart && hasEnd;
     }
   },
   methods: {
@@ -144,10 +141,6 @@ export default {
         eventBus.$emit("navigateToEndMark", suggestion.center);
         eventBus.$emit("setEndInput", suggestion.place_name);
       }
-    },
-
-    updateSearchType(type) {
-      this.searchType = type;
     }
   }
 };

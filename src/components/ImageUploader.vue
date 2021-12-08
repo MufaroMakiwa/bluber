@@ -100,8 +100,7 @@ export default {
         eventBus.$emit("image-upload", "");
 
       }).catch((error) => {
-         console.log("Could not delete file successfully");
-         console.log(error)
+        console.log(error)
       });
     },
 

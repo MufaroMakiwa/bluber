@@ -71,7 +71,6 @@ router.post(
       
       const user = await controller.addOne(req.body.name, req.body.email, req.body.imageUrl);
       req.session.userId = user._id;
-      console.log(req.session.userId);
 
       res.status(201).json({
         message: 'Your account was created successfully.', 

@@ -131,8 +131,9 @@ export default {
       axios.patch("/api/user", body)
         .then(() => {
           this.$store.dispatch("setViewedDemo", true);
-        }).catch((err) => console.log(err));
-      // this.$store.dispatch("setViewedDemo", true)
+        }).catch((err) => {
+          console.log(err)
+        });
     }
   },
 
@@ -164,8 +165,8 @@ export default {
           this.$store.dispatch('setUser', null);
           this.$store.dispatch('setTemplate', 'authentication');
         })
-        .catch(error => {
-          console.log(error);
+        .catch(err => {
+          console.log(err);
         })
 
     })

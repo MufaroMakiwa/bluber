@@ -36,10 +36,9 @@ async function process_bluebike_data(){
 
     const processedData = {}
     stationInfoData.data.stations.forEach((station)=>{
-        // console.log(station)
         processedData[station.station_id] = { stationId: station.station_id,lat: station.lat , lng: station.lon, name: station.name }
     })
-    // console.log(processedData)
+    
     stationStatusData.data.stations.forEach((station)=>{
         if (stationStatusData.station_status==='active'){
             processedData[station.station_id].active = true

@@ -266,7 +266,7 @@ export default {
             }
           }
         }
-      } else {
+      } else if(this.getMapState() === "marking") {
         if (!this.isIntersectionState()) {
           this.$store.dispatch("setEndMarker", coords);
           eventBus.$emit("setEnd");
@@ -629,7 +629,6 @@ export default {
 
       // remove the currentselected bluebikes popup
       if (this.currentBikePopup) {
-        console.log("has pop up");
         this.currentBikePopup.remove();
       }
     });
@@ -765,6 +764,9 @@ export default {
       }
     });
 
+    eventBus.$on("planning", () => {
+      this.$store.dispatch("setMarkType", "path");
+    });
 
     eventBus.$on("marking", this.listenForMarkers);
 
@@ -851,56 +853,58 @@ export default {
         clusterRadius: 50,
       };
 
-      this.map.addSource("places", layer);
-
-      this.map.addLayer({
-        id: "clusters",
-        type: "circle",
-        source: "places",
-        filter: ["has", "point_count"],
-        paint: {
-          // Use step expressions (https://docs.mapbox.com/mapbox-gl-js/style-spec/#expressions-step)
-          // with three steps to implement three types of circles:
-          //   * Blue, 20px circles when point count is less than 100
-          //   * Yellow, 30px circles when point count is between 100 and 750
-          //   * Pink, 40px circles when point count is greater than or equal to 750
-          "circle-color": [
-            "step",
-            ["get", "point_count"],
-            "#51bbd6",
-            100,
-            "#f1f075",
-            750,
-            "#f28cb1",
-          ],
-          "circle-radius": [
-            "step",
-            ["get", "point_count"],
-            20,
-            100,
-            30,
-            750,
-            40,
-          ],
-        },
-      });
-
-      this.map.addLayer({
-        id: "cluster-count",
-        type: "symbol",
-        source: "places",
-        filter: ["has", "point_count"],
-        layout: {
-          "text-field": "{point_count_abbreviated}",
-          "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
-          "text-size": 12,
-        },
-      });
 
       this.map.loadImage(
         "https://img.icons8.com/external-wanicon-lineal-color-wanicon/64/000000/external-bike-healthy-wanicon-lineal-color-wanicon.png",
         (error, image) => {
           if (error) throw error;
+
+          this.map.addSource("places", layer);
+
+          this.map.addLayer({
+            id: "clusters",
+            type: "circle",
+            source: "places",
+            filter: ["has", "point_count"],
+            paint: {
+              // Use step expressions (https://docs.mapbox.com/mapbox-gl-js/style-spec/#expressions-step)
+              // with three steps to implement three types of circles:
+              //   * Blue, 20px circles when point count is less than 100
+              //   * Yellow, 30px circles when point count is between 100 and 750
+              //   * Pink, 40px circles when point count is greater than or equal to 750
+              "circle-color": [
+                "step",
+                ["get", "point_count"],
+                "#51bbd6",
+                100,
+                "#f1f075",
+                750,
+                "#f28cb1",
+              ],
+              "circle-radius": [
+                "step",
+                ["get", "point_count"],
+                20,
+                100,
+                30,
+                750,
+                40,
+              ],
+            },
+          });
+
+          this.map.addLayer({
+            id: "cluster-count",
+            type: "symbol",
+            source: "places",
+            filter: ["has", "point_count"],
+            layout: {
+              "text-field": "{point_count_abbreviated}",
+              "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
+              "text-size": 12,
+            },
+          });
+
           // Add the image to the map style.
           this.map.addImage("bicycle", image);
           this.map.addLayer({
@@ -1202,6 +1206,12 @@ export default {
     async getRouteStart(start) {
       this.startMarker = start;
       let end = this.endMarker;
+
+      // do not query if one of the points is not given
+      if (start.length !== 2 || end.length !== 2) {
+        return;
+      }
+
       const query = await axios.get(
         `https://api.mapbox.com/directions/v5/mapbox/cycling/${start[0]},${start[1]};${end[0]},${end[1]}?steps=false&geometries=geojson&access_token=${mapboxgl.accessToken}`
       );
@@ -1248,6 +1258,12 @@ export default {
     async getRoute(end) {
       let start = this.startMarker;
       this.endMarker = end;
+
+      // do not query if one of the points is not given
+      if (start.length !== 2 || end.length !== 2) {
+        return;
+      }
+
       const query = await axios.get(
         `https://api.mapbox.com/directions/v5/mapbox/cycling/${start[0]},${start[1]};${end[0]},${end[1]}?steps=false&geometries=geojson&access_token=${mapboxgl.accessToken}`
       );
@@ -1357,6 +1373,7 @@ export default {
       }
 
       this.$store.dispatch("setStartMarker", this.startMarker);
+      this.$store.dispatch("setMarkType", "intersection");
       eventBus.$emit("setStart");
 
 
@@ -1498,8 +1515,6 @@ export default {
 
       eventBus.$on("navigateToEndMark", (coords) => {
         this.$store.dispatch("setEndMarker", coords);
-        // this.$store.dispatch('setMarkType', this.startMarker);
-        // eventBus.$emit("setEnd");
         const end = {
           type: "FeatureCollection",
           features: [
@@ -1620,8 +1635,16 @@ export default {
             },
           ],
         };
-        if (this.map.getLayer("end")) {
-          this.map.getSource("end").setData(end);
+        if (this.map.getLayer("point2")){
+          this.map.removeLayer("point2")
+        }
+
+        if (this.map.getSource("point2")){
+          this.map.removeSource("point2")
+        }
+
+        if (this.map.getLayer("point2")) {
+          this.map.getSource("point2").setData(end);
         } else {
           this.map.addLayer({
             id: "point2",

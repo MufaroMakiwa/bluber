@@ -9,7 +9,7 @@
 
       <div class="input-container start">
         <div 
-          :class="['search-icon-container', searchType === 'path' ? 'icon-line top' : '']">
+          :class="['search-icon-container', markType === 'path' ? 'icon-line top' : '']">
           <div class="icon start"></div>
         </div>
         <SearchInputField
@@ -28,14 +28,14 @@
           @click="setSearchType"
         >
           <font-awesome-icon
-            :icon="searchType === 'path' ? 'minus' : 'plus'"
+            :icon="markType === 'path' ? 'minus' : 'plus'"
             class="button-icon"
           />
         </v-btn>
       </div>
       <div class="input-container end" v-if="displayEndPointInput">
         <div 
-          :class="['search-icon-container', searchType === 'path' ? 'icon-line bottom' : '']">
+          :class="['search-icon-container', markType === 'path' ? 'icon-line bottom' : '']">
           <div class="icon end"></div>
         </div>
 
@@ -83,7 +83,6 @@ export default {
 
   props: {
     mode: String,
-    searchType: String,
   },
 
   data() {
@@ -134,6 +133,10 @@ export default {
   },
 
   computed: {
+    markType() {
+      return this.$store.getters.markType;
+    },
+
     startLabel() {
       let directive;
 
@@ -141,7 +144,7 @@ export default {
         directive = "start";
       } else {
         directive =
-          this.searchType === "intersection" ? "intersection" : "start";
+          this.markType === "intersection" ? "intersection" : "start";
       }
       return this.template === "mark" 
               ? `Enter ${directive} point, or drag the red marker`
@@ -160,7 +163,7 @@ export default {
       if (this.mode === "plan") {
         return true;
       } else {
-        return this.searchType === "path";
+        return this.markType === "path";
       }
     },
 
@@ -199,18 +202,18 @@ export default {
 
   methods: {
     setSearchType() {
-      let prevType = this.searchType;
-      const updatedType = this.searchType === "intersection" ? "path" : "intersection";
+      const prevType = this.markType;
+      const updatedType = this.markType === "intersection" ? "path" : "intersection";
+
+      if (updatedType === "intersection") {
+        this.$store.dispatch("setEndMarker", []);
+      }
 
       this.$store.dispatch("setMarkType", updatedType);
       if (updatedType === "intersection" && prevType === "path") {
         eventBus.$emit("removeEnd");
         this.end = "";
       }
-
-      // emit searchtype to the addMark parent to know how to block submit button
-      this.$emit('search-type', updatedType);
-
     },
 
     switchStartEnd() {
@@ -243,7 +246,7 @@ export default {
           eventBus.$emit("searchResultPlan", query.data.features, type);
           eventBus.$emit("searchResultMark", query.data.features, type);
           eventBus.$emit("searchResultLocator", query.data.features, type);
-          // eventBus.$emit("searchRes", query.data.features, type);
+
         } catch (error) {
           eventBus.$emit("searchResultPlan", [], type);
           eventBus.$emit("searchResultLocator", [], type);
@@ -251,12 +254,6 @@ export default {
           
         }       
       } 
-      // else {
-
-      //     eventBus.$emit("searchResultPlan", [], type);
-      //     eventBus.$emit("searchResultLocator", [], type);
-      //     eventBus.$emit("searchResultMark", [], type);
-      // }
     },
     toPrecision(x) {
       return toPrecision(x);

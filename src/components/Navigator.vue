@@ -73,12 +73,30 @@ export default {
 
     isSignedIn() {
       return this.$store.getters.isSignedIn;
+    },
+
+    mapStyle() {
+      return this.$store.getters.mapStyle;
     }
   },
 
   data() {
     return {
-      displayAuthDialog: false
+      displayAuthDialog: false,
+      bikeStations: []
+    }
+  },
+
+  watch: {
+    template: function() {
+      if (this.template !== "locator") this.bikeStations = [];
+    },
+
+    mapStyle: function() {
+      if (this.template === "locator") {
+         eventBus.$emit("clearLocator");
+        eventBus.$emit("mark-stations", this.bikeStations);
+      }
     }
   },
 
@@ -103,7 +121,10 @@ export default {
       this.$store.dispatch('setTemplate', 'locator');
       axios
         .get("/api/bluebikes")
-        .then((res) => { eventBus.$emit("mark-stations",res.data)})
+        .then((res) => { 
+          this.bikeStations = res.data;
+          eventBus.$emit("mark-stations", this.bikeStations);
+        })
         .catch((err) => {
             console.log(err);
         });
