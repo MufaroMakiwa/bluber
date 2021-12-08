@@ -46,6 +46,9 @@ import CreateMarkDetails from "./CreateMarkDetails";
 import SearchSuggestionCard from "./SearchSuggestionCard";
 import { eventBus } from "../main";
 import { toPrecision } from "../utils";
+import axios from "axios";
+import mapboxgl from "mapbox-gl";
+
 
 export default {
   name: "AddMark",
@@ -61,6 +64,8 @@ export default {
       addingMarkDetails: false,
       results: [],
       type: "start",
+      start: "",
+      end: ""
     };
   },
 
@@ -99,18 +104,6 @@ export default {
   },
 
   computed: {
-    start: function () {
-      if (this.$store.getters.startMarker.length === 0) return "";
-      return `lat: ${toPrecision(this.$store.getters.startMarker[0], 8)} -- 
-              lng: ${toPrecision(this.$store.getters.startMarker[1], 8)}`
-    },
-
-    end: function () {
-      if (this.$store.getters.endMarker.length === 0) return "";
-      return `lat: ${toPrecision(this.$store.getters.endMarker[0], 8)} -- 
-              lng: ${toPrecision(this.$store.getters.endMarker[1], 8)}`
-    },
-
     markType() {
       return this.$store.getters.markType;
     },
@@ -122,13 +115,53 @@ export default {
     }
   },
   methods: {
+    getCoordStart() {
+      if (this.$store.getters.startMarker.length === 0) return "";
+      return `lat: ${toPrecision(this.$store.getters.startMarker[0], 8)} -- 
+              lng: ${toPrecision(this.$store.getters.startMarker[1], 8)}`
+    },
+
+    getCoordEnd() {
+      if (this.$store.getters.endMarker.length === 0) return "";
+      return `lat: ${toPrecision(this.$store.getters.endMarker[0], 8)} -- 
+              lng: ${toPrecision(this.$store.getters.endMarker[1], 8)}`
+    },
+
     handleBack() {
       this.addingMarkDetails = false;
+      this.start = "";
+      this.end = "";
       eventBus.$emit("disable-adding-marks", false);
     },
 
-    handleSubmit() {
+    async handleSubmit() {
       this.addingMarkDetails = true;
+      const startLatLng = this.$store.getters.startMarker;
+      const endLatLng = this.$store.getters.endMarker;
+
+      if (startLatLng.length !== 0) {
+        // get the name
+        let startResponse = await axios.get(
+          `https://api.mapbox.com/geocoding/v5/mapbox.places/${startLatLng[0]},${startLatLng[1]}.json?access_token=${mapboxgl.accessToken}`
+        );
+        try {
+          this.start = startResponse.data.features[0].place_name;
+        } catch {
+          this.start = this.getCoordStart();
+        }
+      } 
+
+      if (endLatLng.length !== 0) {
+        let endResponse = await axios.get(
+          `https://api.mapbox.com/geocoding/v5/mapbox.places/${endLatLng[0]},${endLatLng[1]}.json?access_token=${mapboxgl.accessToken}`
+        );
+        try {
+          this.end = endResponse.data.features[0].place_name;
+        } catch {
+          this.end = this.getCoordEnd();
+        }
+      }
+
       eventBus.$emit("disable-adding-marks", true);
     },
 

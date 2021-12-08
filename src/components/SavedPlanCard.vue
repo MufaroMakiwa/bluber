@@ -12,8 +12,8 @@
 
     <MarkPoints 
       class="mark-points"
-      :startName="startName"
-      :endName="endName"/>
+      :startName="start"
+      :endName="end"/>
   </div>
 </template>
 
@@ -21,6 +21,9 @@
 import OptionsMenu from "./OptionsMenu.vue"
 import { formatDate, toPrecision } from '../utils';
 import MarkPoints from "./MarkPoints.vue";
+import axios from "axios";
+import mapboxgl from "mapbox-gl";
+
 
 
 export default {
@@ -36,27 +39,49 @@ export default {
 
   data() {
     return {
+      start: "",
+      end: "",
       options: [
         {
           title: "Delete plan",
           icon: "trash-alt",
-          event: "delete-plan"
+          event: "delete-plan",
         }
       ]
     }
   },
 
-  computed: {
+  async created() {
+    const start = this.plan.start;
+    let startResponse = await axios.get(
+      `https://api.mapbox.com/geocoding/v5/mapbox.places/${start.lng},${start.lat}.json?access_token=${mapboxgl.accessToken}`
+    );
+    try {
+      this.start = startResponse.data.features[0].place_name;
+    } catch {
+      this.start = this.startName();
+    }
+
+    const end = this.plan.end;
+    let endResponse = await axios.get(
+      `https://api.mapbox.com/geocoding/v5/mapbox.places/${end.lng},${end.lat}.json?access_token=${mapboxgl.accessToken}`
+    );
+    try {
+      this.end = endResponse.data.features[0].place_name;
+    } catch {
+      this.end = this.endName();
+    }
+  },
+
+  methods: {
     startName() {
       return `lat: ${toPrecision(this.plan.start.lat, 8)} -- lng: ${toPrecision(this.plan.start.lng, 8)}`
     },
 
     endName() {
       return `lat: ${toPrecision(this.plan.end.lat, 8)} -- lng: ${toPrecision(this.plan.end.lng, 8)}`
-    }
-  },
+    },
 
-  methods: {
     deleteSavedPlan() {
       this.$emit('delete-plan');
     },

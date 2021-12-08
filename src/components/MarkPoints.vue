@@ -11,7 +11,7 @@
     </div>
     <div class="plan-point end" v-if="displayEnd">
       <div 
-        :class="['point-icon-container', dense ? '' : 'padded', displayEnd ? 'dotted' : '']">
+        :class="['point-icon-container', 'padded', displayEnd ? 'dotted' : '']">
         <div class="point-icon"></div>
       </div>
       <div class="name-container">
@@ -28,10 +28,6 @@ export default {
   props: {
     startName: String,
     endName: String,
-    dense: {
-      default: true,
-      type: Boolean,
-    }
   },
 
   computed: {
@@ -54,24 +50,28 @@ export default {
 .plan-point {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
   justify-content: flex-start;
   width: 100%;
   overflow: hidden;
 }
 
+.plan-point:first-of-type {
+  padding-bottom: 1rem;
+}
+
 .point-icon-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   position: relative;
   height: 100%;
-  padding: 0.75rem 0;
 }
 
 .point-icon-container.padded {
-  padding: 1.25rem 0;
+  padding-top: 0.25rem;
+  padding-bottom: 2rem;
 }
 
 .point-icon {
@@ -89,29 +89,15 @@ export default {
   background-color: rgb(248, 76, 76);
 }
 
-.point-icon-container.dotted::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  transform: translateX(-100%);
-  border: 1px dashed rgb(57, 135, 190);
-  height: 100%;
-  z-index: 0;
-}
-
-.start .point-icon-container.dotted::before {
-  top: 50%;
-}
-
-.end .point-icon-container.dotted::before {
-  bottom: 50%;
-}
-
 .name-container {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
-  align-items: center;
+  align-items: flex-start;
   margin-left: 2rem;
+}
+
+.name-container .name {
+  text-align: start;
 }
 </style>

@@ -5,7 +5,6 @@
 
       <template v-slot:content>
         <MarkPoints 
-          :dense="false"
           class="mark-points"
           :startName="start"
           :endName="end"/>
