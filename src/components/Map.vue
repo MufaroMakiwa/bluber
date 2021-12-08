@@ -1635,8 +1635,16 @@ export default {
             },
           ],
         };
-        if (this.map.getLayer("end")) {
-          this.map.getSource("end").setData(end);
+        if (this.map.getLayer("point2")){
+          this.map.removeLayer("point2")
+        }
+
+        if (this.map.getSource("point2")){
+          this.map.removeSource("point2")
+        }
+
+        if (this.map.getLayer("point2")) {
+          this.map.getSource("point2").setData(end);
         } else {
           this.map.addLayer({
             id: "point2",
