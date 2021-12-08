@@ -8,6 +8,12 @@ Bluber is an application that allows users to navigate Cambridge traffic network
 
 ### Instructions to Run Locally:
 
+In root folder:
+
+```
+Find a file with filename ".env.template" and change the file extension to ".env"
+```
+
 In command line:
 
 ```console
