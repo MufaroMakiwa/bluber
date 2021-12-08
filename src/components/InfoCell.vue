@@ -2,9 +2,11 @@
   <div class="cell-wrapper">
     <span class="cell-header">{{ header }}</span>
     <div class="cell-body">
-      <div class="cell-info">{{ info }}</div>
-      <div class="cell-video">
-        <youtube video-id="Aforhf_LpgU"></youtube>
+      <div v-if="!isAbout" class="cell-info">{{ info }}</div>
+      <div v-if="isAbout" class="about-info">{{ info }}</div>
+
+      <div v-if="!isAbout" class="cell-video">
+        <youtube :video-id="videoUrl"></youtube>
       </div>
     </div>
   </div>
@@ -18,6 +20,7 @@ export default {
     info: String,
     imageUrls: Array,
     cellName: String,
+    videoUrl: String,
   },
   data() {
     return {};
@@ -47,11 +50,11 @@ export default {
 
 .cell-body {
   /* margin-top: 16px; */
-  color: #8b4000;
+  color: #793802;
 }
 
 .cell-video {
-  margin-top: 16px;
+  margin-top: 24px;
 }
 
 .step-header {
@@ -62,5 +65,16 @@ export default {
 .content {
   margin-top: 8px;
   overflow-y: scroll;
+}
+
+.cell-info {
+  margin: 12px;
+  font-weight: 400;
+}
+
+.about-info {
+  margin: 64px;
+  font-size: 24px;
+  font-weight: 800;
 }
 </style>

@@ -35,23 +35,53 @@
           </v-carousel-item>
 
           <v-carousel-item>
-            <Cell header="Marking" :info="markingInfo" />
+            <Cell
+              header="Marking"
+              :info="marking.info"
+              :videoUrl="marking.videoUrl"
+            />
           </v-carousel-item>
-
+          <v-carousel-item>
+            <Cell
+              header="My Marks"
+              :info="mymarks.info"
+              :videoUrl="mymarks.videoUrl"
+            />
+          </v-carousel-item>
           <v-carousel-item>
             <Cell
               header="Planning a Trip"
-              :info="planningInfo"
+              :info="planning.info"
+              :videoUrl="planning.videoUrl"
               cellName="plan"
             />
           </v-carousel-item>
 
           <v-carousel-item>
-            <Cell header="Saving a Trip Plan" cellName="saving" />
+            <Cell
+              header="Rating"
+              cellName="rating"
+              :info="rating.info"
+              :videoUrl="rating.videoUrl"
+            />
           </v-carousel-item>
 
           <v-carousel-item>
-            <Cell header="Locator" :info="locator.info" cellName="locator" />
+            <Cell
+              header="Notifications"
+              :info="notifications.info"
+              :videoUrl="notifications.videoUrl"
+              cellName="notifications"
+            />
+          </v-carousel-item>
+
+          <v-carousel-item>
+            <Cell
+              header="Locator"
+              :info="locator.info"
+              cellName="locator"
+              :videoUrl="locator.videoUrl"
+            />
           </v-carousel-item>
         </v-carousel>
       </div>
@@ -78,30 +108,44 @@ export default {
       currentIndex: 0,
       carouselSize: 5, // number of slides in carousel
       viewedSlides: [0],
+
+      notifications: {
+        info: "Notifications help the user stay updated on the status of their marks. A notification is triggered when another user rates one of your marks or comments on one of your marks.",
+        videoUrl: "eEB6dS3ecrk",
+      },
       about: {
         info: `
         Bluber is an application that is designed to help users to navigate the Cambridge traffic network safely. It gives bikers a platform to comment on
       conditions of roads or bikelanes they have travelled through during their trips.This offers users first-hand information that they can rely on to make
       make better judgements when choosing biking routes when planning new trips in a region.
       `,
-        videoUrl: "",
       },
 
-      markingInfo: {
-        info: "",
-        videoUrl: "",
+      marking: {
+        info: "Users can specify the problems they encountered on specific roads or bikelanes they travelled through by marking issues on a map",
+        videoUrl: "Eo7bNcicZcY",
       },
 
-      planningInfo: {
-        info: "",
-        videoUrl: "",
+      rating: {
+        info: "Rating is a metric for a user's credibility or a mark's credibility. A user's rating is the expected average of their marks' ratings",
+        videoUrl: "BE4Wt23QeUU",
+      },
+      planning: {
+        info: "Planning a trip helps users see safety concerns or inconveniences raised by other bikers, in a specific area",
+        videoUrl: "wPdCCcMSf0g",
       },
 
       locator: {
         info: `
-        The Bluebike locator is meant to help users find the nearest Bluebike stations from a specific location. 
+        The Bluebike locator helps users find the nearest Bluebike stations from a specific location. It also shows the current
+        status of each Bluebike stations i.e. the number of bikes and docks available 
       `,
-        videoUrl: "",
+        videoUrl: "mkpqsI_KMrI",
+      },
+
+      mymarks: {
+        info: "A user has the ability to view their marks separately",
+        videoUrl: "3SpAaHPdNzM",
       },
     };
   },

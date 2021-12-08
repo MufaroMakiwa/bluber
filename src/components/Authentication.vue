@@ -2,14 +2,18 @@
   <div class="authentication-page-container">
     <div class="title-container">
       <h1>Bluber</h1>
-    </div>  
+    </div>
 
-    <img class="button-bike-icon" alt="" src="https://img.icons8.com/external-wanicon-lineal-color-wanicon/64/000000/external-bike-healthy-wanicon-lineal-color-wanicon.png" />
+    <img
+      class="button-bike-icon"
+      alt=""
+      src="https://img.icons8.com/external-wanicon-lineal-color-wanicon/64/000000/external-bike-healthy-wanicon-lineal-color-wanicon.png"
+    />
 
-    <span class="tag-line">...making Cambridge safer for bikers</span>
+    <span class="tag-line">...building a safer Cambridge for bikers</span>
 
     <div class="login-container">
-      <GoogleLoginButton redirect="plan"/>
+      <GoogleLoginButton redirect="plan" />
     </div>
   </div>
 </template>
@@ -17,27 +21,25 @@
 <script>
 import GoogleLoginButton from "./GoogleLoginButton";
 
-
 export default {
   name: "Authentication",
 
   components: {
-    GoogleLoginButton
+    GoogleLoginButton,
   },
 
   computed: {
     isSignedIn() {
       return this.$store.getters.isSignedIn;
-    }
+    },
   },
 
   created() {
     if (this.isSignedIn) {
       this.$store.dispatch("setTemplate", "plan");
     }
-  }
-
-}
+  },
+};
 </script>
 
 <style scoped>
