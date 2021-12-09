@@ -210,7 +210,7 @@ export default {
         targetUserId: this.mark.user.userId
       })
       .then(() => {       
-        eventBus.$emit("refresh",  {drawRoutes: false});
+        eventBus.$emit("refresh");
       })
       .catch((err) => {
         console.log(err)
@@ -231,7 +231,7 @@ export default {
       }
       axios.delete('/api/rating/' + this.mark._id)
         .then(() => {     
-          eventBus.$emit("refresh",  {drawRoutes: false});
+          eventBus.$emit("refresh");
         })
         .catch(err => {
           console.log(err)
@@ -252,7 +252,7 @@ export default {
           this.$emit('back');
           this.userMarks 
             ? await this.$store.dispatch('getUser')
-            : eventBus.$emit("refresh",  {drawRoutes: true});
+            : eventBus.$emit("refresh");
         })
         .catch((err) => console.log(err))
     },

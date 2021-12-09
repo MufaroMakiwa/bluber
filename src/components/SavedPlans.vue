@@ -13,7 +13,7 @@
               v-for="(plan, index) in user.saved"
               :key="index"
               :plan="plan"
-              @click.native="renderPlan(plan, true, true)"
+              @click.native="renderPlan(plan, true)"
               @delete-plan="deleteSavedPlan(plan._id)"/>
           </div>
 
@@ -77,8 +77,8 @@ export default {
   },
 
   mounted() {
-    eventBus.$on("refresh", (obj) => {
-      this.displayedPlan !== null && this.renderPlan(this.displayedPlan, obj.drawRoutes, false);
+    eventBus.$on("refresh", () => {
+      this.displayedPlan !== null && this.renderPlan(this.displayedPlan, false);
     })
   },
 
@@ -117,7 +117,7 @@ export default {
         })
     },
 
-    renderPlan(plan, drawRoutes, drawRadius) {
+    renderPlan(plan, drawRadius) {
       let params = {
         startLat: plan.start.lat,
         startLng: plan.start.lng,

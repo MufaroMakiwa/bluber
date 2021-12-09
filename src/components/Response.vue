@@ -127,7 +127,7 @@ export default {
       }
       axios.delete('/api/comment/'+this.response._id)
         .then(() => { 
-          eventBus.$emit("refresh",  {drawRoutes: false});
+          eventBus.$emit("refresh");
         })
         .catch((err) => {
           console.log(err)
@@ -145,7 +145,7 @@ export default {
       }
       axios.delete('/api/reply/'+this.response._id)
         .then(() => { 
-          eventBus.$emit("refresh",  {drawRoutes: false});
+          eventBus.$emit("refresh");
         })
         .catch((err) => {
           console.log(err)

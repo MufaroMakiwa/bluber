@@ -2,7 +2,7 @@
   <div class="plan-details">
     <div class="plan-point start">
       <div 
-        :class="['point-icon-container', dense ? '' : 'padded', displayEnd ? 'dotted' : '']">
+        :class="['point-icon-container', 'padded', displayEnd ? 'dotted' : '']">
         <div class="point-icon"></div>
       </div>
       <div class="name-container">

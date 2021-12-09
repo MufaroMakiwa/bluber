@@ -119,7 +119,7 @@ export default {
           })
           .then(() => {
             this.comment = "";
-            eventBus.$emit("refresh", {drawRoutes: false});
+            eventBus.$emit("refresh");
           })
           .catch((err) => {
             console.log(err);
@@ -134,7 +134,7 @@ export default {
           .then(() => {
             this.comment = "";
             this.$emit('cancel');
-            eventBus.$emit("refresh", {drawRoutes: false});
+            eventBus.$emit("refresh");
           })
           .catch((err) => {
             console.log(err);
